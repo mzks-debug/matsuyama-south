@@ -187,7 +187,8 @@
       .topbar { display: none; }
       .fab { bottom: var(--sp-6) !important; right: var(--sp-6) !important; }
     }
-    @media (max-width: 767px) { .sidebar { display: none; } }
+    .sidebar { display: none; }
+    @media (min-width: 768px) { .sidebar { display: flex; } }
 
     /* ============================================================
        PAGES
@@ -1550,7 +1551,7 @@ async function handleInviteToken(token,user) {
 function bootApp(user,member) {
   currentUser=user;currentMember=member;
   $("loginScreen").style.display="none";
-  $("sidebar").style.display="flex";
+  // sidebar is CSS-controlled (PC only)
   $("bottomNav").style.display="flex";
   $("main").style.display="block";
   if(member.role==="admin")document.querySelectorAll(".admin-only").forEach(el=>el.style.display="");
