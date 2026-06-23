@@ -86,14 +86,7 @@
     /* ============================================================
        TOPBAR
     ============================================================ */
-    .topbar {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--white);
-      border-bottom: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 var(--sp-4);
-      height: 52px;
-    }
+    .topbar { display: none; }
     .topbar__logo { display: flex; align-items: center; gap: var(--sp-3); }
     .topbar__logo img { width: 28px; height: 28px; border-radius: 4px; object-fit: cover; }
     .topbar__title {
@@ -206,19 +199,17 @@
        HOME PAGE — logo hero + clean list
     ============================================================ */
     .home-hero {
-      padding: var(--sp-8) var(--sp-6) var(--sp-6);
+      padding: var(--sp-6) var(--sp-4) var(--sp-4);
       border-bottom: 1px solid var(--line);
-      display: flex; align-items: center; gap: var(--sp-4);
     }
-    .home-hero__logo { width: 56px; height: 56px; object-fit: contain; }
-    .home-hero__text {}
     .home-hero__team {
-      font-size: var(--text-lg);
+      font-size: var(--text-2xl);
       font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
       color: var(--ink);
+      line-height: 1.1;
     }
-    .home-hero__sub { font-size: var(--text-xs); color: var(--ink-faint); margin-top: 2px; }
+    .home-hero__sub { font-size: var(--text-sm); color: var(--ink-faint); margin-top: var(--sp-1); }
 
     .home-body { padding: 0 var(--sp-4); }
 
@@ -938,10 +929,9 @@
 <main id="main" style="display:none">
   <div id="page-home" class="page active">
     <div class="home-hero">
-      <img class="home-hero__logo" src="logo.jpg" alt="Matsuyama South">
       <div class="home-hero__text">
         <div class="home-hero__team">Matsuyama South</div>
-        <div class="home-hero__sub">チーム運営アプリ</div>
+        <div class="home-hero__sub" id="homeGreeting">チーム運営アプリ</div>
       </div>
     </div>
     <div class="home-body">
@@ -1104,16 +1094,24 @@ async function loadPage(page) {
 
 // HOME
 async function loadHome() {
+  // 挨拶セット
+  const hr=new Date().getHours();
+  const greet=hr<12?'おはようございます':'こんにちは';
+  const greetEl=$("homeGreeting");
+  if(greetEl) greetEl.textContent=`${greet}、${currentMember?.displayName?.split(' ')[0]||''}さん`;
   $("homeContent").innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
   const today=new Date().toISOString().split("T")[0];
-  const [sq,rq,nq]=await Promise.all([
-    getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),where("date",">=",today),orderBy("date","asc"),limit(1))),
-    getDocs(query(collection(db,"teams",TEAM_ID,"results"),orderBy("date","desc"),limit(1))),
-    getDocs(query(collection(db,"teams",TEAM_ID,"notices"),orderBy("createdAt","desc"),limit(1)))
-  ]);
-  const s=sq.docs[0]?{id:sq.docs[0].id,...sq.docs[0].data()}:null;
-  const r=rq.docs[0]?{id:rq.docs[0].id,...rq.docs[0].data()}:null;
-  const n=nq.docs[0]?{id:nq.docs[0].id,...nq.docs[0].data()}:null;
+  let s=null,r=null,n=null;
+  try {
+    const [sq,rq,nq]=await Promise.all([
+      getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),where("date",">=",today),orderBy("date","asc"),limit(1))),
+      getDocs(query(collection(db,"teams",TEAM_ID,"results"),orderBy("date","desc"),limit(1))),
+      getDocs(query(collection(db,"teams",TEAM_ID,"notices"),orderBy("createdAt","desc"),limit(1)))
+    ]);
+    s=sq.docs[0]?{id:sq.docs[0].id,...sq.docs[0].data()}:null;
+    r=rq.docs[0]?{id:rq.docs[0].id,...rq.docs[0].data()}:null;
+    n=nq.docs[0]?{id:nq.docs[0].id,...nq.docs[0].data()}:null;
+  } catch(e) { console.log('Home load error:', e); }
   const resLabel = r ? (r.result==='勝'?'WIN':r.result==='負'?'LOSE':'DRAW') : '';
   const resClass = r ? (r.result==='勝'?'result--win':r.result==='負'?'result--lose':'result--draw') : '';
   const typeLabel = s ? (TL[s.type]||s.type) : '';
@@ -1136,7 +1134,10 @@ async function loadHome() {
         <div class="next-card__cta">出欠を入力する
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </div>
-      </div>`:`<div class="empty-state" style="padding:32px 0"><div class="empty-state__title">予定はありません</div></div>`}
+      </div>`:`<div style="padding:24px 0 8px">
+        <div style="font-size:13px;color:var(--ink-faint);margin-bottom:16px">まだ予定が登録されていません</div>
+        ${currentMember?.role==='admin'?`<button class="btn btn--ghost btn--sm" onclick="navigate('schedule')">予定を登録する</button>`:''}
+      </div>`}
     </div>
     <div class="home-section">
       <div class="section-eyebrow">最新試合結果 <span class="section-more" onclick="navigate('result')">すべて見る</span></div>
@@ -1167,8 +1168,10 @@ async function loadHome() {
 // SCHEDULE
 async function loadSchedule() {
   $("scheduleList").innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
-  const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
-  schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
+  try {
+    const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
+    schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) { console.log('Schedule error:',e); schedules=[]; }
   if(currentMember.role==="admin"){$("fab").style.display="flex";$("fab").onclick=()=>openScheduleForm(null);}
   renderScheduleList();
 }
@@ -1297,8 +1300,10 @@ window.delSchedule = async function(id) {
 // RESULT
 async function loadResult() {
   $("resultList").innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
-  const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"results"),orderBy("date","desc")));
-  results=snap.docs.map(d=>({id:d.id,...d.data()}));
+  try {
+    const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"results"),orderBy("date","desc")));
+    results=snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) { console.log('Result error:',e); results=[]; }
   if(currentMember.role==="admin"){$("fab").style.display="flex";$("fab").onclick=()=>openResultForm(null);}
   if(!results.length){$("resultList").innerHTML=`<div class="empty-state"><div class="empty-state__title">試合結果はありません</div></div>`;return;}
   $("resultList").innerHTML=results.map(r=>{
@@ -1378,8 +1383,10 @@ window.delResult = async function(id) {
 // PLAYERS
 async function loadPlayers() {
   $("playerList").innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
-  const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"players"),orderBy("number","asc")));
-  players=snap.docs.map(d=>({id:d.id,...d.data()}));
+  try {
+    const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"players"),orderBy("number","asc")));
+    players=snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) { console.log('Players error:',e); players=[]; }
   $("playerCount").textContent=`${players.length}名登録中`;
   if(currentMember.role==="admin"){$("fab").style.display="flex";$("fab").onclick=()=>openPlayerForm(null);}
   if(!players.length){$("playerList").innerHTML=`<div class="empty-state"><div class="empty-state__title">選手が登録されていません</div></div>`;return;}
@@ -1435,8 +1442,10 @@ window.openPlayerForm = function(id) {
 // NOTICE
 async function loadNotice() {
   $("noticeList").innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
-  const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"notices"),orderBy("createdAt","desc")));
-  notices=snap.docs.map(d=>({id:d.id,...d.data()}));
+  try {
+    const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"notices"),orderBy("createdAt","desc")));
+    notices=snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) { console.log('Notice error:',e); notices=[]; }
   if(currentMember.role==="admin"){$("fab").style.display="flex";$("fab").onclick=()=>openNoticeForm();}
   if(!notices.length){$("noticeList").innerHTML=`<div class="empty-state"><div class="empty-state__title">お知らせはありません</div></div>`;return;}
   $("noticeList").innerHTML=notices.map(n=>`<div class="notice-item" onclick="showNoticeDetail('${n.id}')">
@@ -1556,29 +1565,24 @@ async function handleInviteToken(token,user) {
 function bootApp(user,member) {
   currentUser=user;currentMember=member;
   $("loginScreen").style.display="none";
-  $("topbar").style.display="flex";
-  $("topbarUser").textContent=member.displayName?.split(" ")[0]||"";
   $("sidebar").style.display="flex";
   $("bottomNav").style.display="flex";
   $("main").style.display="block";
   if(member.role==="admin")document.querySelectorAll(".admin-only").forEach(el=>el.style.display="");
-  $("sidebarUser").textContent=member.displayName||"";
+  const su=$("sidebarUser"); if(su) su.textContent=member.displayName||"";
   navigate("home");
 }
 
 // AUTH
 const googleSvg=`<svg class="google-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>`;
 
-$("loginBtn").addEventListener("click",()=>{
-  // ⚠️ 開発用：ログインスキップ
-  bootApp(_devUser, _devMember);
-});
-
 const handleLogout=async()=>{if(confirm("ログアウトしますか？")){await signOut(auth);location.reload();}};
-$("logoutBtn").addEventListener("click",handleLogout);
+const logoutBtn=$("logoutBtn"); if(logoutBtn) logoutBtn.addEventListener("click",handleLogout);
 $("sidebarLogout").addEventListener("click",handleLogout);
 
-// リダイレクト後の結果を処理
+// ⚠️ 開発用：ログインボタン → そのまま入る
+$("loginBtn").addEventListener("click",()=>bootApp(_devUser, _devMember));
+
 // ⚠️ 認証一時解除モード（開発用）
 const _devMember = { displayName: "みずき", email: "mizuki.s1125@gmail.com", role: "admin", playerIds: [] };
 const _devUser = { uid: "dev", displayName: "みずき", email: "mizuki.s1125@gmail.com" };
