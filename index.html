@@ -901,8 +901,12 @@ $("logoutBtn").addEventListener("click",handleLogout);
 $("sidebarLogout").addEventListener("click",handleLogout);
 
 // リダイレクト後の結果を処理
+let _booted = false;
+
 getRedirectResult(auth).then(async result=>{
-  if(!result)return;
+  if(!result) return;
+  if(_booted) return;
+  _booted = true;
   const user=result.user;
   const params=new URLSearchParams(location.search);const token=params.get("token");
   if(token){handleInviteToken(token,user);return;}
@@ -914,16 +918,17 @@ getRedirectResult(auth).then(async result=>{
   }
   bootApp(user,member);
 }).catch(e=>{
-  $("loginError").textContent="ログインに失敗しました。もう一度お試しください。";
-  $("loginError").style.display="block";
+  console.error("RedirectResult error:", e);
 });
 
 onAuthStateChanged(auth,async user=>{
-  if(!user)return;
+  if(!user) return;
+  if(_booted) return;
+  _booted = true;
   const params=new URLSearchParams(location.search);const token=params.get("token");
   if(token){handleInviteToken(token,user);return;}
   const member=await getMember(user.uid);
-  if(member)bootApp(user,member);
+  if(member) bootApp(user,member);
 });
 </script>
 
