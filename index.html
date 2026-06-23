@@ -522,7 +522,7 @@ document.querySelectorAll(".filter-tab").forEach(tab=>{
 window.showScheduleDetail = async function(id) {
   const s=schedules.find(x=>x.id===id); if(!s)return;
   const attSnap=await getDoc(doc(db,"teams",TEAM_ID,"attendance",id,"responses",currentUser.uid));
-  const myResponses=attSnap.exists()?attSnap.data().responses||[];
+  const myResponses=attSnap.exists()?attSnap.data().responses||[]:[];
   const pSnap=await getDocs(query(collection(db,"teams",TEAM_ID,"players"),orderBy("number","asc")));
   players=pSnap.docs.map(d=>({id:d.id,...d.data()}));
   const myPlayers=players.filter(p=>currentMember.playerIds?.includes(p.id));
