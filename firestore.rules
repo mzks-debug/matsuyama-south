@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ヘルパー関数
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getMember(teamId) {
+      return get(/databases/$(database)/documents/teams/$(teamId)/members/$(request.auth.uid)).data;
+    }
+
+    function isAdmin(teamId) {
+      return isSignedIn() && getMember(teamId).role == 'admin';
+    }
+
+    function isMember(teamId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/teams/$(teamId)/members/$(request.auth.uid));
+    }
+
+    match /teams/{teamId} {
+
+      // チーム情報：メンバーのみ読み取り可
+      allow read: if isMember(teamId);
+      allow write: if isAdmin(teamId);
+
+      // メンバー
+      match /members/{uid} {
+        allow read: if isMember(teamId);
+        allow create: if isSignedIn() && request.auth.uid == uid; // 招待後の自己登録
+        allow update: if isAdmin(teamId);
+        allow delete: if isAdmin(teamId);
+      }
+
+      // 招待トークン
+      match /invites/{token} {
+        allow read: if isSignedIn(); // トークン検証のため認証済みなら読める
+        allow create: if isAdmin(teamId);
+        allow update: if isSignedIn(); // consumeInvite（使用済みフラグ）
+        allow delete: if isAdmin(teamId);
+      }
+
+      // スケジュール
+      match /schedules/{scheduleId} {
+        allow read: if isMember(teamId);
+        allow create, update, delete: if isAdmin(teamId);
+      }
+
+      // 出欠
+      match /attendance/{scheduleId}/responses/{uid} {
+        allow read: if isMember(teamId);
+        allow write: if isSignedIn() && request.auth.uid == uid; // 自分の出欠のみ書き込み可
+      }
+
+      // 試合結果
+      match /results/{resultId} {
+        allow read: if isMember(teamId);
+        allow create, update, delete: if isAdmin(teamId);
+      }
+
+      // 選手名簿
+      match /players/{playerId} {
+        allow read: if isMember(teamId);
+        allow create, update, delete: if isAdmin(teamId);
+      }
+
+      // お知らせ
+      match /notices/{noticeId} {
+        allow read: if isMember(teamId);
+        allow create, delete: if isAdmin(teamId);
+      }
+    }
+  }
+}
