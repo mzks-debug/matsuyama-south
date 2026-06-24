@@ -1481,9 +1481,6 @@ async function loadHome() {
 // ============================================================
 let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth(); // 0-indexed
-const TYPE_CLASS = {practice:'practice',friendly:'friendly',official:'official',event:'event'};
-const TYPE_LABEL = {practice:'練習',friendly:'練習試合',official:'公式戦',event:'イベント'};
-
 async function loadSchedule() {
   try {
     const snap = await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
