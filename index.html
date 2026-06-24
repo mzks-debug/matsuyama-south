@@ -1313,13 +1313,12 @@ import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject }
 
 // ⚠️ ここにFirebase設定を貼り付けてください
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAYWLKgwp2yXT5srDEzFBumCG95c1b5hdk",
-  authDomain: "matsuyama-south.firebaseapp.com",
-  projectId: "matsuyama-south",
-  storageBucket: "matsuyama-south.firebasestorage.app",
-  messagingSenderId: "81438015858",
-  appId: "1:81438015858:web:40c3279e02c5b43e515deb",
-  measurementId: "G-VVXN70KVV2"
+  apiKey: "AIzaSyD9Xjg1DMv4usML5IM9RhcI0KkE9Tf2nW8",
+  authDomain: "matsuyama-south-ce88a.firebaseapp.com",
+  projectId: "matsuyama-south-ce88a",
+  storageBucket: "matsuyama-south-ce88a.firebasestorage.app",
+  messagingSenderId: "12671596624",
+  appId: "1:12671596624:web:9e58c1940891f260d87955"
 };
 const TEAM_ID = "matsuyama-south";
 
@@ -1477,56 +1476,104 @@ async function loadHome() {
 }
 
 // ============================================================
-// SCHEDULE — カレンダー月表示
+// SCHEDULE — Googleカレンダー連携（GAS経由）
 // ============================================================
-let calYear = new Date().getFullYear();
+
+// ⚠️ GASデプロイ後にここにURLを設定してください
+const GAS_URL = 'YOUR_GAS_WEB_APP_URL_HERE';
+
+let calYear  = new Date().getFullYear();
 let calMonth = new Date().getMonth(); // 0-indexed
+let gasEvents = []; // GASから取得したイベント
+
 async function loadSchedule() {
+  $("calGrid").innerHTML = '';
+  $("calMonthLabel").textContent = `${calYear}年${calMonth+1}月`;
+
+  // GASからイベント取得
+  try {
+    $("calGrid").innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;font-size:13px;color:var(--ink-faint)"><div class="spinner" style="margin:0 auto 8px"></div>読み込み中...</div>';
+    const res = await fetch(`${GAS_URL}?year=${calYear}&month=${calMonth+1}`);
+    const json = await res.json();
+    if(json.error) throw new Error(json.error);
+    gasEvents = json.events || [];
+  } catch(e) {
+    console.log('GAS fetch error:', e);
+    // GAS未設定の場合はFirestoreのスケジュールをフォールバック
+    try {
+      const snap = await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
+      gasEvents = snap.docs.map(d=>({id:d.id,...d.data()}));
+    } catch(e2) { gasEvents = []; }
+  }
+
+  // Firestoreの補足データとマージ
   try {
     const snap = await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
-    schedules = snap.docs.map(d=>({id:d.id,...d.data()}));
-  } catch(e) { console.log('Schedule error:',e); schedules=[]; }
-  if(currentMember.role==="admin"){
-    $("fab").style.display="flex";
-    $("fab").onclick=()=>openScheduleForm(null);
+    const fsData = {};
+    snap.docs.forEach(d => { fsData[d.id] = d.data(); });
+    // GASイベントにFirestoreの補足データをマージ
+    gasEvents = gasEvents.map(ev => {
+      const fs = fsData[ev.id] || {};
+      return { ...ev, ...fs, id: ev.id }; // GASデータ優先、FSで補完
+    });
+  } catch(e) { /* ignore */ }
+
+  if(currentMember.role === "admin") {
+    $("fab").style.display = "flex";
+    $("fab").onclick = () => openScheduleForm(null);
   }
+
   renderCalendar();
-  // ナビゲーションイベント
-  $("calPrevBtn").onclick = () => { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); };
-  $("calNextBtn").onclick = () => { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); };
-  $("calTodayBtn").onclick = () => { const t=new Date(); calYear=t.getFullYear(); calMonth=t.getMonth(); renderCalendar(); };
-  $("dayScheduleClose").onclick = () => { $("daySchedulePanel").style.display="none"; };
+
+  // ナビゲーション
+  $("calPrevBtn").onclick = () => {
+    calMonth--;
+    if(calMonth < 0){ calMonth = 11; calYear--; }
+    loadSchedule();
+  };
+  $("calNextBtn").onclick = () => {
+    calMonth++;
+    if(calMonth > 11){ calMonth = 0; calYear++; }
+    loadSchedule();
+  };
+  $("calTodayBtn").onclick = () => {
+    const t = new Date();
+    calYear = t.getFullYear();
+    calMonth = t.getMonth();
+    loadSchedule();
+  };
+  $("dayScheduleClose").onclick = () => {
+    $("daySchedulePanel").style.display = "none";
+  };
 }
 
 function renderCalendar() {
   const todayStr = new Date().toISOString().split("T")[0];
   $("calMonthLabel").textContent = `${calYear}年${calMonth+1}月`;
 
-  const firstDay = new Date(calYear, calMonth, 1);
-  const lastDay = new Date(calYear, calMonth+1, 0);
-  const startDow = firstDay.getDay(); // 0=Sun
+  const firstDay  = new Date(calYear, calMonth, 1);
+  const lastDay   = new Date(calYear, calMonth+1, 0);
+  const startDow  = firstDay.getDay();
   const totalDays = lastDay.getDate();
 
-  // 当月予定をdateでインデックス
+  // 当月イベントをdate別に整理
   const byDate = {};
-  schedules.forEach(s => {
-    if(!byDate[s.date]) byDate[s.date]=[]; byDate[s.date].push(s);
+  gasEvents.forEach(ev => {
+    if(!byDate[ev.date]) byDate[ev.date] = [];
+    byDate[ev.date].push(ev);
   });
 
   let cells = [];
-  // 前月の空白
-  for(let i=0;i<startDow;i++){
+  for(let i = 0; i < startDow; i++){
     const d = new Date(calYear, calMonth, -startDow+i+1);
-    cells.push({date:d, current:false});
+    cells.push({ date: d, current: false });
   }
-  // 当月
-  for(let d=1;d<=totalDays;d++){
-    cells.push({date:new Date(calYear,calMonth,d), current:true});
+  for(let d = 1; d <= totalDays; d++){
+    cells.push({ date: new Date(calYear, calMonth, d), current: true });
   }
-  // 次月の空白（6行×7=42マス）
   const remaining = 42 - cells.length;
-  for(let d=1;d<=remaining;d++){
-    cells.push({date:new Date(calYear,calMonth+1,d), current:false});
+  for(let d = 1; d <= remaining; d++){
+    cells.push({ date: new Date(calYear, calMonth+1, d), current: false });
   }
 
   const pad = n => String(n).padStart(2,'0');
@@ -1535,12 +1582,12 @@ function renderCalendar() {
     const dow = c.date.getDay();
     const isToday = dateStr === todayStr;
     const events = byDate[dateStr] || [];
-    const shown = events.slice(0,2);
-    const more = events.length - shown.length;
+    const shown = events.slice(0, 2);
+    const more  = events.length - shown.length;
     const numClass = dow===0?'sun':dow===6?'sat':'';
     return `<div class="cal-cell${c.current?'':' other-month'}${isToday?' today':''}" onclick="openDaySchedule('${dateStr}')">
       <div class="cal-day-num ${numClass}">${c.date.getDate()}</div>
-      ${shown.map(s=>`<div class="cal-event ${TYPE_CLASS[s.type]||'practice'}" onclick="event.stopPropagation();showScheduleDetail('${s.id}')">${s.title}</div>`).join('')}
+      ${shown.map(ev=>`<div class="cal-event ${TYPE_CLASS[ev.type]||'practice'}" onclick="event.stopPropagation();showScheduleDetail('${ev.id}')">${ev.title}</div>`).join('')}
       ${more>0?`<div class="cal-more">+${more}件</div>`:''}
     </div>`;
   }).join('');
@@ -1550,40 +1597,40 @@ window.openDaySchedule = function(dateStr) {
   const d = new Date(dateStr+'T00:00:00');
   const dows = '日月火水木金土';
   $("dayScheduleDate").textContent = `${d.getMonth()+1}月${d.getDate()}日（${dows[d.getDay()]}）`;
-  const events = schedules.filter(s=>s.date===dateStr);
-  if(events.length===0){
+  const events = gasEvents.filter(ev => ev.date === dateStr);
+  if(!events.length){
     $("dayScheduleList").innerHTML = `<div class="empty-state" style="padding:24px"><div class="empty-state__title">この日の予定はありません</div></div>`;
   } else {
-    $("dayScheduleList").innerHTML = events.map(s=>`
-      <div class="day-event-row" onclick="showScheduleDetail('${s.id}')">
-        <div class="day-event-bar ${TYPE_CLASS[s.type]||'practice'}"></div>
+    $("dayScheduleList").innerHTML = events.map(ev=>`
+      <div class="day-event-row" onclick="showScheduleDetail('${ev.id}')">
+        <div class="day-event-bar ${TYPE_CLASS[ev.type]||'practice'}"></div>
         <div class="day-event-info">
-          <div class="day-event-type ${TYPE_CLASS[s.type]||'practice'}">${TYPE_LABEL[s.type]||s.type}</div>
-          <div class="day-event-title">${s.title}</div>
-          <div class="day-event-meta">${s.startTime||''}${s.location?' · '+s.location:''}</div>
+          <div class="day-event-type ${TYPE_CLASS[ev.type]||'practice'}">${TYPE_LABEL[ev.type]||ev.type}</div>
+          <div class="day-event-title">${ev.title}</div>
+          <div class="day-event-meta">${ev.startTime||''}${ev.location?' · '+ev.location:''}</div>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
-  $("daySchedulePanel").style.display="block";
-  $("daySchedulePanel").scrollIntoView({behavior:'smooth',block:'start'});
+  $("daySchedulePanel").style.display = "block";
+  $("daySchedulePanel").scrollIntoView({ behavior:'smooth', block:'start' });
 };
 
 window.showScheduleDetail = async function(id) {
-  const s = schedules.find(x=>x.id===id); if(!s) return;
-  const isAdmin = currentMember.role==="admin";
-  const tc = TYPE_CLASS[s.type]||'practice';
-  const tl = TYPE_LABEL[s.type]||s.type;
+  const ev = gasEvents.find(x => x.id === id);
+  if(!ev) return;
+  const isAdmin = currentMember.role === "admin";
+  const tc = TYPE_CLASS[ev.type] || 'practice';
+  const tl = TYPE_LABEL[ev.type] || ev.type;
   const dows = '日月火水木金土';
-  const d = new Date(s.date+'T00:00:00');
+  const d = new Date(ev.date+'T00:00:00');
   const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${dows[d.getDay()]}）`;
 
-  // 出欠取得
+  // 出欠取得（Firestoreから：キーはGoogleカレンダーのeventId）
   let myResponses = [];
   try {
     const attSnap = await getDoc(doc(db,"teams",TEAM_ID,"attendance",id,"responses",currentUser.uid));
-    if(attSnap.exists()) myResponses = attSnap.data().responses||[];
+    if(attSnap.exists()) myResponses = attSnap.data().responses || [];
   } catch(e) {}
 
   // 選手取得
@@ -1591,41 +1638,20 @@ window.showScheduleDetail = async function(id) {
     const pSnap = await getDocs(query(collection(db,"teams",TEAM_ID,"players"),orderBy("number","asc")));
     players = pSnap.docs.map(d=>({id:d.id,...d.data()}));
   } catch(e) {}
-  const myPlayers = players.filter(p=>currentMember.playerIds?.includes(p.id));
+  const myPlayers = players.filter(p => currentMember.playerIds?.includes(p.id));
 
-  // 添付ファイル取得
-  let attachHtml = '';
-  const files = s.attachments||[];
-  if(files.length>0 || isAdmin){
-    attachHtml = `<div class="attach-section">
-      <div class="attach-section-hdr">添付ファイル</div>
-      ${files.map(f=>`
-        <a href="${f.url}" target="_blank" class="attach-item">
-          <div class="attach-item__icon">${f.type==='pdf'?'PDF':f.type==='map'?'MAP':'IMG'}</div>
-          <div>
-            <div class="attach-item__name">${f.name}</div>
-          </div>
-        </a>
-      `).join('')}
-      ${isAdmin?`<button class="attach-upload-btn" onclick="openAttachUpload('${s.id}')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        ファイルを添付
-      </button>`:''}
-    </div>`;
-  }
-
-  // 管理者出欠確認
+  // 管理者出欠集計
   let attSummaryHtml = '';
   if(isAdmin){
-    try{
+    try {
       const aSnap = await getDocs(collection(db,"teams",TEAM_ID,"attendance",id,"responses"));
       const allAtt = aSnap.docs.map(d=>d.data());
-      const flat = allAtt.flatMap(a=>a.responses||[]);
+      const flat = allAtt.flatMap(a => a.responses||[]);
       const total = flat.length;
-      const ok = flat.filter(r=>r.status==='○').length;
-      const ng = flat.filter(r=>r.status==='×').length;
+      const ok    = flat.filter(r=>r.status==='○').length;
+      const ng    = flat.filter(r=>r.status==='×').length;
       const maybe = flat.filter(r=>r.status==='△').length;
-      const rate = total>0?Math.round(ok/total*100):0;
+      const rate  = total>0 ? Math.round(ok/total*100) : 0;
       attSummaryHtml = `<div class="att-summary">
         <div class="att-summary-hdr">出欠状況（管理者）</div>
         <div class="att-stat-row">
@@ -1637,55 +1663,63 @@ window.showScheduleDetail = async function(id) {
         <div style="font-size:12px;color:var(--ink-faint);margin-bottom:10px">出席率 ${rate}%（${total}名回答）</div>
         ${flat.map(r=>`<div class="att-member-row"><span>${r.playerName||r.playerId}</span><span class="att-status-${r.status||'?'}">${r.status||'—'}</span></div>`).join('')}
       </div>`;
-    }catch(e){}
+    } catch(e) {}
   }
 
-  openModal(s.title, `
+  // DriveリンクHTML
+  const linksHtml = (ev.driveUrl || ev.parkingUrl) ? `
+    <div class="sch-detail-row">
+      <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div>
+        <div class="sch-detail-label">ファイル・資料</div>
+        ${ev.driveUrl?`<a href="${ev.driveUrl}" target="_blank" class="sch-detail-link" style="display:block;margin-bottom:4px">大会要項・資料を開く</a>`:''}
+        ${ev.parkingUrl?`<a href="${ev.parkingUrl}" target="_blank" class="sch-detail-link">駐車場案内を開く</a>`:''}
+      </div>
+    </div>` : '';
+
+  openModal(ev.title, `
     <div class="sch-detail-hero">
       <div class="sch-detail-type ${tc}">${tl}</div>
-      <div class="sch-detail-title">${s.title}</div>
+      <div class="sch-detail-title">${ev.title}</div>
     </div>
     <div class="sch-detail-rows">
       <div class="sch-detail-row">
         <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <div><div class="sch-detail-label">日時</div><div class="sch-detail-val">${dateStr}${s.startTime?' '+s.startTime+(s.endTime?' 〜 '+s.endTime:''):''}</div></div>
+        <div><div class="sch-detail-label">日時</div>
+        <div class="sch-detail-val">${dateStr}${ev.startTime?' '+ev.startTime+(ev.endTime?' 〜 '+ev.endTime:''):''}</div></div>
       </div>
-      ${s.gatherTime?`<div class="sch-detail-row">
+      ${ev.gatherTime?`<div class="sch-detail-row">
         <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-        <div><div class="sch-detail-label">集合時間</div><div class="sch-detail-val">${s.gatherTime}</div></div>
+        <div><div class="sch-detail-label">集合</div><div class="sch-detail-val">${ev.gatherTime}${ev.gatherPlace?' · '+ev.gatherPlace:''}</div></div>
       </div>`:''}
-      ${s.location?`<div class="sch-detail-row">
+      ${ev.location?`<div class="sch-detail-row">
         <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-        <div><div class="sch-detail-label">場所</div><div class="sch-detail-val">${s.location}${s.mapUrl?`<br><a href="${s.mapUrl}" target="_blank" class="sch-detail-link">Googleマップで開く</a>`:''}</div></div>
+        <div><div class="sch-detail-label">場所</div><div class="sch-detail-val">${ev.location}${ev.mapUrl?`<br><a href="${ev.mapUrl}" target="_blank" class="sch-detail-link">Googleマップで開く</a>`:''}</div></div>
       </div>`:''}
-      ${s.gatherPlace?`<div class="sch-detail-row">
-        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-        <div><div class="sch-detail-label">集合場所</div><div class="sch-detail-val">${s.gatherPlace}</div></div>
-      </div>`:''}
-      ${s.opponent?`<div class="sch-detail-row">
+      ${ev.opponent?`<div class="sch-detail-row">
         <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <div><div class="sch-detail-label">対戦相手</div><div class="sch-detail-val">${s.opponent}</div></div>
+        <div><div class="sch-detail-label">対戦相手</div><div class="sch-detail-val">${ev.opponent}</div></div>
       </div>`:''}
-      ${s.items?`<div class="sch-detail-row">
+      ${ev.items?`<div class="sch-detail-row">
         <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
-        <div><div class="sch-detail-label">持参物</div><div class="sch-detail-val">${s.items}</div></div>
+        <div><div class="sch-detail-label">持参物</div><div class="sch-detail-val">${ev.items}</div></div>
       </div>`:''}
-      ${s.note?`<div class="sch-detail-row">
+      ${linksHtml}
+      ${ev.note?`<div class="sch-detail-row">
         <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div><div class="sch-detail-label">備考</div><div class="sch-detail-val" style="white-space:pre-wrap">${s.note}</div></div>
+        <div><div class="sch-detail-label">備考</div><div class="sch-detail-val" style="white-space:pre-wrap">${ev.note}</div></div>
       </div>`:''}
     </div>
-    ${attachHtml}
     <div class="att-section">
       <div class="att-section-hdr">出欠の入力</div>
       ${myPlayers.length===0
         ?`<p style="font-size:13px;color:var(--ink-faint)">選手が紐付けられていません。メンバー管理から設定してください。</p>`
         :myPlayers.map(p=>{
-          const cur=myResponses.find(r=>r.playerId===p.id)?.status||'';
+          const cur = myResponses.find(r=>r.playerId===p.id)?.status||'';
           return `<div class="att-player-card">
             <div class="att-player-card__name">${p.name}<span class="att-player-card__grade">${p.grade}年 #${p.number}</span></div>
             <div class="att-seg">
-              ${['○','△','×'].map(st=>`<button class="att-seg-btn ${cur===st?`sel-${st}`:''}" data-pid="${p.id}" data-st="${st}" onclick="selectAtt('${s.id}','${p.id}','${st}',this)">
+              ${['○','△','×'].map(st=>`<button class="att-seg-btn ${cur===st?`sel-${st}`:''}" data-pid="${p.id}" data-st="${st}" onclick="selectAtt('${id}','${p.id}','${st}',this)">
                 ${st==='○'?'出席':st==='△'?'未定':'欠席'}
               </button>`).join('')}
             </div>
@@ -1693,137 +1727,89 @@ window.showScheduleDetail = async function(id) {
         }).join('')}
     </div>
     ${attSummaryHtml}
-    ${isAdmin?`<div style="display:flex;gap:8px;padding:0 16px 16px">
-      <button class="btn btn--ghost btn--sm" onclick="openScheduleForm('${s.id}')">編集</button>
-      <button class="btn btn--danger btn--sm" onclick="delSchedule('${s.id}')">削除</button>
+    ${isAdmin?`<div style="padding:0 16px 16px">
+      <button class="btn btn--ghost btn--sm" onclick="openScheduleForm('${id}')">Firestoreに補足情報を登録</button>
     </div>`:''}
   `);
 };
 
-window.selectAtt = async function(scheduleId,playerId,status,btn) {
+window.selectAtt = async function(scheduleId, playerId, status, btn) {
   document.querySelectorAll(`[data-pid="${playerId}"]`).forEach(b=>b.className="att-seg-btn");
   btn.classList.add(`sel-${status}`);
-  const cards=document.querySelectorAll(".att-player-card"), responses=[];
+  const cards = document.querySelectorAll(".att-player-card"), responses = [];
   cards.forEach(card=>{
-    const pid=card.querySelector("[data-pid]")?.dataset.pid;
-    const sel=card.querySelector(".att-seg-btn[class*='sel-']");
-    if(pid&&sel){const p=players.find(x=>x.id===pid);responses.push({playerId:pid,playerName:p?.name||pid,status:sel.dataset.st});}
+    const pid = card.querySelector("[data-pid]")?.dataset.pid;
+    const sel = card.querySelector(".att-seg-btn[class*='sel-']");
+    if(pid&&sel){ const p=players.find(x=>x.id===pid); responses.push({playerId:pid,playerName:p?.name||pid,status:sel.dataset.st}); }
   });
   try{
-    await setDoc(doc(db,"teams",TEAM_ID,"attendance",scheduleId,"responses",currentUser.uid),{responses,updatedAt:serverTimestamp()},{merge:true});
+    // 出欠はFirestoreへ（キー = GoogleカレンダーのイベントID）
+    await setDoc(doc(db,"teams",TEAM_ID,"attendance",scheduleId,"responses",currentUser.uid),
+      {responses, updatedAt:serverTimestamp()}, {merge:true});
     toast("出欠を保存しました","success");
-  }catch(e){toast("保存に失敗しました","error");}
+  } catch(e){ toast("保存に失敗しました","error"); }
 };
 
-// ファイルアップロード
-window.openAttachUpload = function(scheduleId) {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.pdf,.jpg,.jpeg,.png';
-  input.multiple = true;
-  input.onchange = async () => {
-    const files = Array.from(input.files);
-    if(!files.length) return;
-    toast('アップロード中...','');
-    try{
-      const s = schedules.find(x=>x.id===scheduleId);
-      const existing = s?.attachments||[];
-      const uploaded = [];
-      for(const file of files){
-        const storageRef = ref(storage,`teams/${TEAM_ID}/schedules/${scheduleId}/${file.name}`);
-        await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-        const ext = file.name.split('.').pop().toLowerCase();
-        const type = ext==='pdf'?'pdf':['jpg','jpeg','png'].includes(ext)?'image':'file';
-        uploaded.push({name:file.name, url, type});
-      }
-      await updateDoc(doc(db,"teams",TEAM_ID,"schedules",scheduleId),{attachments:[...existing,...uploaded],updatedAt:serverTimestamp()});
-      const snap = await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
-      schedules = snap.docs.map(d=>({id:d.id,...d.data()}));
-      closeModal();
-      showScheduleDetail(scheduleId);
-      toast('アップロード完了','success');
-    }catch(e){console.error(e);toast('アップロードに失敗しました','error');}
-  };
-  input.click();
-};
-
-// MapURL プレビュー
-function updateMapPreview(url) {
-  const preview = $('f_map_preview');
-  if(!preview) return;
-  if(url && url.includes('google.com/maps')){
-    // embed URL変換
-    const embedUrl = url.replace('/maps/','/maps/embed/v1/').includes('embed')
-      ? url
-      : `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
-    preview.innerHTML = `<iframe src="${url.replace('/maps/','/maps/embed?pb=')}" loading="lazy"></iframe>`;
-  } else {
-    preview.innerHTML = '<span>GoogleマップのURLを入力するとプレビューが表示されます</span>';
-  }
-}
-
+// Firestoreへの補足情報登録（GASで取れない情報を補完）
 window.openScheduleForm = function(id) {
   closeModal();
-  const s = id ? schedules.find(x=>x.id===id) : null;
-  openModal(s?"予定を編集":"予定を登録", `
-    <div class="form-group"><label class="form-label">タイトル *</label><input id="f_title" value="${s?.title||''}" placeholder="例：春季市民大会"></div>
+  const ev = id ? gasEvents.find(x=>x.id===id) : null;
+  openModal(ev?"補足情報を編集":"Firestoreに予定を登録", `
+    <p style="font-size:12px;color:var(--ink-faint);margin-bottom:12px">
+      ${ev ? 'Googleカレンダーに登録できない補足情報を保存します' : '予定を直接Firestoreに登録します（GAS未設定時）'}
+    </p>
+    ${!ev?`<div class="form-group"><label class="form-label">タイトル *</label><input id="f_title" placeholder="例：春季市民大会"></div>
     <div class="form-group"><label class="form-label">種別 *</label><select id="f_type">
-      <option value="practice" ${s?.type==='practice'?'selected':''}>練習</option>
-      <option value="friendly" ${s?.type==='friendly'?'selected':''}>練習試合</option>
-      <option value="official" ${s?.type==='official'?'selected':''}>公式戦</option>
-      <option value="event" ${s?.type==='event'?'selected':''}>イベント・総会</option>
+      <option value="practice">練習</option><option value="friendly">練習試合</option>
+      <option value="official">公式戦</option><option value="event">イベント</option>
     </select></div>
-    <div class="form-group"><label class="form-label">日付 *</label><input type="date" id="f_date" value="${s?.date||''}"></div>
+    <div class="form-group"><label class="form-label">日付 *</label><input type="date" id="f_date"></div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">開始時間</label><input type="time" id="f_st" value="${s?.startTime||''}"></div>
-      <div class="form-group"><label class="form-label">終了時間</label><input type="time" id="f_et" value="${s?.endTime||''}"></div>
-    </div>
+      <div class="form-group"><label class="form-label">開始</label><input type="time" id="f_st"></div>
+      <div class="form-group"><label class="form-label">終了</label><input type="time" id="f_et"></div>
+    </div>`:''}
     <div class="form-row">
-      <div class="form-group"><label class="form-label">集合時間</label><input type="time" id="f_gt" value="${s?.gatherTime||''}"></div>
-      <div class="form-group"><label class="form-label">集合場所</label><input id="f_gp" value="${s?.gatherPlace||''}" placeholder="例：駐車場入口"></div>
+      <div class="form-group"><label class="form-label">集合時間</label><input type="time" id="f_gt" value="${ev?.gatherTime||''}"></div>
+      <div class="form-group"><label class="form-label">集合場所</label><input id="f_gp" value="${ev?.gatherPlace||''}" placeholder="例：駐車場入口"></div>
     </div>
-    <div class="form-section-title">場所</div>
-    <div class="form-group"><label class="form-label">場所名</label><input id="f_loc" value="${s?.location||''}" placeholder="例：松山市民球場"></div>
-    <div class="form-group"><label class="form-label">GoogleマップURL</label><input id="f_map" value="${s?.mapUrl||''}" placeholder="https://maps.google.com/..." oninput="updateMapPreview(this.value)">
-      <div class="map-preview" id="f_map_preview"><span>GoogleマップのURLを入力するとリンクが追加されます</span></div>
-    </div>
-    <div class="form-section-title">試合情報</div>
-    <div class="form-group"><label class="form-label">対戦相手</label><input id="f_opp" value="${s?.opponent||''}" placeholder="例：南山スポーツ少年団"></div>
-    <div class="form-section-title">その他</div>
-    <div class="form-group"><label class="form-label">持参物</label><input id="f_items" value="${s?.items||''}" placeholder="例：ユニフォーム、グローブ"></div>
-    <div class="form-group"><label class="form-label">備考</label><textarea id="f_note" placeholder="連絡事項など">${s?.note||''}</textarea></div>
+    ${!ev?`<div class="form-group"><label class="form-label">場所</label><input id="f_loc" value="" placeholder="例：松山市民球場"></div>`:''}
+    <div class="form-group"><label class="form-label">対戦相手</label><input id="f_opp" value="${ev?.opponent||''}" placeholder="例：南山スポーツ少年団"></div>
+    <div class="form-group"><label class="form-label">持参物</label><input id="f_items" value="${ev?.items||''}" placeholder="例：ユニフォーム、グローブ"></div>
+    <div class="form-group"><label class="form-label">Driveリンク（大会要項など）</label><input id="f_drive" value="${ev?.driveUrl||''}" placeholder="https://drive.google.com/..."></div>
+    <div class="form-group"><label class="form-label">駐車場案内リンク</label><input id="f_parking" value="${ev?.parkingUrl||''}" placeholder="https://drive.google.com/..."></div>
+    <div class="form-group"><label class="form-label">備考</label><textarea id="f_note" placeholder="連絡事項など">${ev?.note||''}</textarea></div>
     <button class="btn btn--primary btn--full" id="saveSchBtn">保存する</button>
   `);
+
   $("saveSchBtn").addEventListener("click", async () => {
-    const title=$("f_title").value.trim(), date=$("f_date").value;
-    if(!title||!date){toast("タイトルと日付は必須です","error");return;}
     $("saveSchBtn").disabled=true; $("saveSchBtn").textContent="保存中...";
     try{
-      const data={
-        title, date,
-        type: $("f_type").value,
-        startTime: $("f_st").value,
-        endTime: $("f_et").value,
-        gatherTime: $("f_gt").value,
-        gatherPlace: $("f_gp").value.trim(),
-        location: $("f_loc").value.trim(),
-        mapUrl: $("f_map").value.trim(),
-        opponent: $("f_opp").value.trim(),
-        items: $("f_items").value.trim(),
-        note: $("f_note").value.trim(),
-        createdBy: currentUser.uid
+      const data = {
+        gatherTime:  $("f_gt")?.value||'',
+        gatherPlace: $("f_gp")?.value.trim()||'',
+        opponent:    $("f_opp")?.value.trim()||'',
+        items:       $("f_items")?.value.trim()||'',
+        driveUrl:    $("f_drive")?.value.trim()||'',
+        parkingUrl:  $("f_parking")?.value.trim()||'',
+        note:        $("f_note")?.value.trim()||'',
+        updatedAt:   serverTimestamp()
       };
-      if(s?.id){
-        await updateDoc(doc(db,"teams",TEAM_ID,"schedules",s.id),{...data,updatedAt:serverTimestamp()});
+      if(!ev){
+        // Firestore直接登録（GAS未使用時）
+        const title = $("f_title")?.value.trim();
+        const date  = $("f_date")?.value;
+        if(!title||!date){toast("タイトルと日付は必須です","error");$("saveSchBtn").disabled=false;$("saveSchBtn").textContent="保存する";return;}
+        Object.assign(data,{title,date,type:$("f_type")?.value,startTime:$("f_st")?.value,endTime:$("f_et")?.value,location:$("f_loc")?.value.trim(),createdAt:serverTimestamp()});
+        const ref = await addDoc(collection(db,"teams",TEAM_ID,"schedules"),data);
+        gasEvents.push({...data, id:ref.id});
       } else {
-        await addDoc(collection(db,"teams",TEAM_ID,"schedules"),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+        await setDoc(doc(db,"teams",TEAM_ID,"schedules",id),data,{merge:true});
+        const idx = gasEvents.findIndex(x=>x.id===id);
+        if(idx>=0) gasEvents[idx]={...gasEvents[idx],...data};
       }
-      const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
-      schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
       renderCalendar();
       closeModal();
-      toast(s?"更新しました":"登録しました","success");
+      toast("保存しました","success");
     }catch(e){
       console.error(e);
       toast("保存に失敗しました","error");
@@ -1833,13 +1819,16 @@ window.openScheduleForm = function(id) {
 };
 
 window.delSchedule = async function(id) {
-  if(!confirm("この予定を削除しますか？"))return;
-  await deleteDoc(doc(db,"teams",TEAM_ID,"schedules",id));
-  const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
-  schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
-  renderCalendar();
-  closeModal();
-  toast("削除しました");
+  if(!confirm("Firestoreの補足情報を削除しますか？
+※Googleカレンダーの予定は削除されません"))return;
+  try{
+    await deleteDoc(doc(db,"teams",TEAM_ID,"schedules",id));
+    const idx = gasEvents.findIndex(x=>x.id===id);
+    if(idx>=0) gasEvents.splice(idx,1);
+    renderCalendar();
+    closeModal();
+    toast("削除しました");
+  }catch(e){ toast("削除に失敗しました","error"); }
 };
 
 // RESULT
