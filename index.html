@@ -1820,8 +1820,7 @@ window.openScheduleForm = function(id) {
 };
 
 window.delSchedule = async function(id) {
-  if(!confirm("Firestoreの補足情報を削除しますか？
-※Googleカレンダーの予定は削除されません"))return;
+  if(!confirm("Firestoreの補足情報を削除しますか？\n※Googleカレンダーの予定は削除されません"))return;
   try{
     await deleteDoc(doc(db,"teams",TEAM_ID,"schedules",id));
     const idx = gasEvents.findIndex(x=>x.id===id);
