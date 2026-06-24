@@ -1317,8 +1317,11 @@ async function handleInviteToken(token,user){
   $('inviteScreen').style.display='block';
   const box=$('inviteBox');
   try{
-    const existing=await getMember(user.uid);
-    if(existing){$('inviteScreen').style.display='none';bootApp(user,existing);return}
+    // userがnull（未ログイン）の場合は招待フォームを直接表示
+    if(user){
+      const existing=await getMember(user.uid);
+      if(existing){$('inviteScreen').style.display='none';bootApp(user,existing);return}
+    }
     const inv=await validateInvite(token);
     if(!inv){box.innerHTML=`<div class="invite-title" style="color:#DC2626">招待URLが無効です</div><div class="invite-sub">期限切れまたは使用済みです</div>`;return}
     const roleLabel=inv.role==='admin'?'管理者':'保護者';
@@ -1373,13 +1376,23 @@ const handleLogout=async()=>{if(confirm('ログアウトしますか？')){await
 $('logoutBtn').onclick=handleLogout;
 $('sidebarLogout').onclick=handleLogout;
 
-onAuthStateChanged(auth,async user=>{
-  if(!user)return;
-  const params=new URLSearchParams(location.search);
-  const token=params.get('token');
-  if(token){await handleInviteToken(token,user);return}
-  try{const mem=await getMember(user.uid);if(mem)bootApp(user,mem)}catch(e){console.error(e)}
-});
+// ページ読み込み時にtokenチェック
+const _initParams=new URLSearchParams(location.search);
+const _initToken=_initParams.get('token');
+if(_initToken){
+  // 招待URLの場合：ログイン画面ではなく招待画面を表示
+  $('loginScreen').style.display='none';
+  $('inviteScreen').style.display='block';
+  // ログイン状態をチェックして処理
+  onAuthStateChanged(auth,async user=>{
+    await handleInviteToken(_initToken, user);
+  });
+} else {
+  onAuthStateChanged(auth,async user=>{
+    if(!user)return;
+    try{const mem=await getMember(user.uid);if(mem)bootApp(user,mem)}catch(e){console.error(e)}
+  });
+}
 
 // Schedule HTML is in the DOM
 </script>
