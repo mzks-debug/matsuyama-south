@@ -596,7 +596,7 @@ select{
 </div>
 
 <!-- INVITE -->
-<div id="inviteScreen" class="screen">
+<div id="inviteScreen" class="screen" style="display:none">
   <div style="position:fixed;inset:0;background:linear-gradient(160deg,#0057B8 0%,#1E3A5F 100%);display:flex;align-items:center;justify-content:center;padding:24px">
     <div class="invite-box" id="inviteBox">
       <div class="loading"><div class="spinner"></div></div>
@@ -1239,8 +1239,8 @@ $('inviteAdminBtn').onclick=()=>handleInvite('admin');
 // ===== BOOT =====
 function bootApp(user,member){
   CU=user;CM=member;
-  $('loginScreen').classList.remove('active');
-  $('inviteScreen').classList.remove('active');
+  $('loginScreen').style.display='none';
+  $('inviteScreen').style.display='none';
   $('app').style.display='block';
   $('headerUser').textContent=member.displayName?.split(' ')[0]||'';
   $('sidebarUser').textContent=member.displayName||'';
@@ -1253,12 +1253,12 @@ function bootApp(user,member){
 
 // ===== INVITE HANDLING =====
 async function handleInviteToken(token,user){
-  $('loginScreen').classList.remove('active');
-  $('inviteScreen').classList.add('active');
+  $('loginScreen').style.display='none';
+  $('inviteScreen').style.display='block';
   const box=$('inviteBox');
   try{
     const existing=await getMember(user.uid);
-    if(existing){$('inviteScreen').classList.remove('active');bootApp(user,existing);return}
+    if(existing){$('inviteScreen').style.display='none';bootApp(user,existing);return}
     const inv=await validateInvite(token);
     if(!inv){box.innerHTML=`<div class="invite-title" style="color:#DC2626">招待URLが無効です</div><div class="invite-sub">期限切れまたは使用済みです</div>`;return}
     const roleLabel=inv.role==='admin'?'管理者':'保護者';
@@ -1284,7 +1284,7 @@ async function handleInviteToken(token,user){
         await updateProfile(cred.user,{displayName:name});
         await consumeInvite(token,cred.user.uid,name,email);
         const mem=await getMember(cred.user.uid);
-        $('inviteScreen').classList.remove('active');bootApp(cred.user,mem);
+        $('inviteScreen').style.display='none';bootApp(cred.user,mem);
       }catch(e){
         errEl.textContent=e.code==='auth/email-already-in-use'?'このメールアドレスはすでに登録されています':e.message;
         errEl.style.display='block';$('joinBtn').disabled=false;$('joinBtn').textContent='チームに参加する';
