@@ -854,6 +854,298 @@
     .score-display__num { font-size: var(--text-3xl); font-weight: 700; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; color: var(--ink); line-height: 1; }
     .score-display__vs { font-size: var(--text-sm); color: var(--line); }
 
+
+    /* ============================================================
+       CALENDAR — Google Calendar style
+    ============================================================ */
+    :root {
+      --blue-main: #0057B8;
+      --blue-light: #E8F0FE;
+      --blue-soft: #4A90D9;
+      --navy: #1E3A5F;
+      --cal-gray: #F5F7FA;
+      --cal-border: #E0E4EA;
+      --cal-today: #0057B8;
+      --type-official: #0057B8;
+      --type-friendly: #4A90D9;
+      --type-practice: #8A99AA;
+      --type-event: #1E3A5F;
+    }
+    .cal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 16px 12px;
+      background: var(--white);
+      border-bottom: 1px solid var(--cal-border);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .cal-header__month {
+      font-size: 17px; font-weight: 700; color: var(--navy);
+      letter-spacing: -0.02em;
+    }
+    .cal-header__nav { display: flex; align-items: center; gap: 4px; }
+    .cal-nav-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--navy); font-size: 16px;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cal-nav-btn:hover { background: var(--cal-gray); }
+    .cal-today-btn {
+      font-size: 12px; font-weight: 600; color: var(--blue-main);
+      padding: 5px 12px; border-radius: 20px;
+      border: 1.5px solid var(--blue-main);
+      transition: all 0.15s;
+    }
+    .cal-today-btn:hover { background: var(--blue-light); }
+
+    .cal-weekdays {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      background: var(--white);
+      border-bottom: 1px solid var(--cal-border);
+    }
+    .cal-weekday {
+      text-align: center; padding: 6px 0;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+      color: var(--ink-faint); text-transform: uppercase;
+    }
+    .cal-weekday.sun { color: #C62828; }
+    .cal-weekday.sat { color: var(--blue-main); }
+
+    .cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      background: var(--cal-border);
+      gap: 1px;
+    }
+    .cal-cell {
+      background: var(--white);
+      min-height: 72px;
+      padding: 4px 3px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s;
+    }
+    .cal-cell:hover { background: var(--cal-gray); }
+    .cal-cell.other-month { background: var(--cal-gray); }
+    .cal-cell.other-month .cal-day-num { color: var(--ink-faint); }
+    .cal-cell.today .cal-day-num {
+      background: var(--cal-today);
+      color: var(--white);
+      border-radius: 50%;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+    }
+    .cal-day-num {
+      font-size: 12px; font-weight: 500;
+      color: var(--ink); text-align: center;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 2px;
+    }
+    .cal-day-num.sun { color: #C62828; }
+    .cal-day-num.sat { color: var(--blue-main); }
+    .cal-event {
+      border-radius: 3px; padding: 1px 4px;
+      font-size: 10px; font-weight: 600;
+      margin-bottom: 2px; color: var(--white);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      cursor: pointer; line-height: 1.5;
+    }
+    .cal-event.official  { background: var(--type-official); }
+    .cal-event.friendly  { background: var(--type-friendly); }
+    .cal-event.practice  { background: var(--type-practice); }
+    .cal-event.event     { background: var(--type-event); }
+    .cal-more {
+      font-size: 10px; color: var(--blue-main); font-weight: 600;
+      padding: 0 3px; cursor: pointer;
+    }
+
+    /* 日別予定リスト（日付タップ後） */
+    .day-schedule-header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--cal-border);
+      background: var(--white);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .day-schedule-header__date {
+      font-size: 15px; font-weight: 700; color: var(--navy);
+    }
+    .day-schedule-list { padding: 8px 0; }
+    .day-event-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--cal-border);
+      cursor: pointer; transition: background 0.1s;
+    }
+    .day-event-row:hover { background: var(--cal-gray); }
+    .day-event-bar {
+      width: 4px; align-self: stretch; border-radius: 2px; flex-shrink: 0;
+    }
+    .day-event-bar.official { background: var(--type-official); }
+    .day-event-bar.friendly { background: var(--type-friendly); }
+    .day-event-bar.practice { background: var(--type-practice); }
+    .day-event-bar.event    { background: var(--type-event); }
+    .day-event-info { flex: 1; min-width: 0; }
+    .day-event-type {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; margin-bottom: 2px;
+    }
+    .day-event-type.official { color: var(--type-official); }
+    .day-event-type.friendly { color: var(--type-friendly); }
+    .day-event-type.practice { color: var(--type-practice); }
+    .day-event-type.event    { color: var(--type-event); }
+    .day-event-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+    .day-event-meta { font-size: 12px; color: var(--ink-muted); }
+
+    /* 予定詳細モーダル — リッチ版 */
+    .sch-detail-hero {
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid var(--cal-border);
+    }
+    .sch-detail-type {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; margin-bottom: 8px;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .sch-detail-type.official { background: rgba(0,87,184,.1); color: var(--type-official); }
+    .sch-detail-type.friendly { background: rgba(74,144,217,.1); color: var(--type-friendly); }
+    .sch-detail-type.practice { background: rgba(138,153,170,.12); color: var(--type-practice); }
+    .sch-detail-type.event    { background: rgba(30,58,95,.1); color: var(--type-event); }
+    .sch-detail-title { font-size: 20px; font-weight: 800; color: var(--navy); letter-spacing: -0.02em; line-height: 1.2; }
+    .sch-detail-rows { padding: 0 16px; }
+    .sch-detail-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 13px 0; border-bottom: 1px solid var(--cal-border);
+    }
+    .sch-detail-row:last-child { border-bottom: none; }
+    .sch-detail-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--cal-gray);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--navy);
+    }
+    .sch-detail-icon svg { width: 18px; height: 18px; }
+    .sch-detail-label { font-size: 11px; color: var(--ink-faint); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 2px; }
+    .sch-detail-val { font-size: 14px; color: var(--ink); line-height: 1.5; }
+    .sch-detail-link { color: var(--blue-main); text-decoration: underline; }
+
+    /* 出欠セクション */
+    .att-section {
+      padding: 16px;
+      border-top: 1px solid var(--cal-border);
+    }
+    .att-section-hdr {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--ink-faint);
+      margin-bottom: 12px;
+    }
+    .att-player-card {
+      background: var(--cal-gray); border-radius: 10px;
+      padding: 12px; margin-bottom: 8px;
+    }
+    .att-player-card__name { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .att-player-card__grade { font-size: 11px; color: var(--ink-faint); margin-left: 4px; }
+    .att-seg {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 6px;
+    }
+    .att-seg-btn {
+      padding: 8px 4px; border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      border: 1.5px solid var(--cal-border);
+      background: var(--white); color: var(--ink-muted);
+      text-align: center; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .att-seg-btn.sel-○ { background: rgba(22,101,52,.08); border-color: #2E7D32; color: #2E7D32; }
+    .att-seg-btn.sel-△ { background: rgba(245,158,11,.08); border-color: #D97706; color: #D97706; }
+    .att-seg-btn.sel-× { background: rgba(185,28,28,.08); border-color: #C62828; color: #C62828; }
+
+    /* 添付ファイル */
+    .attach-section { padding: 0 16px 16px; }
+    .attach-section-hdr {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--ink-faint);
+      margin-bottom: 10px; margin-top: 16px;
+    }
+    .attach-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; background: var(--cal-gray);
+      border-radius: 8px; margin-bottom: 6px;
+      cursor: pointer; text-decoration: none;
+    }
+    .attach-item__icon {
+      width: 36px; height: 36px; border-radius: 6px;
+      background: var(--blue-main); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .attach-item__name { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .attach-item__size { font-size: 11px; color: var(--ink-faint); }
+    .attach-upload-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px; border: 1.5px dashed var(--cal-border);
+      border-radius: 8px; color: var(--blue-main); font-size: 13px; font-weight: 600;
+      background: var(--white); cursor: pointer; width: 100%;
+      transition: background 0.15s;
+    }
+    .attach-upload-btn:hover { background: var(--blue-light); }
+
+    /* 出欠状況（管理者） */
+    .att-summary {
+      padding: 16px; border-top: 1px solid var(--cal-border);
+    }
+    .att-summary-hdr {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--ink-faint);
+      margin-bottom: 10px;
+    }
+    .att-rate-bar {
+      height: 6px; border-radius: 3px; background: var(--cal-border);
+      margin-bottom: 12px; overflow: hidden;
+    }
+    .att-rate-fill { height: 100%; background: var(--blue-main); border-radius: 3px; transition: width 0.4s; }
+    .att-stat-row {
+      display: flex; gap: 8px; margin-bottom: 12px;
+    }
+    .att-stat {
+      flex: 1; text-align: center; padding: 8px 4px;
+      background: var(--cal-gray); border-radius: 8px;
+    }
+    .att-stat__num { font-size: 20px; font-weight: 800; color: var(--navy); }
+    .att-stat__label { font-size: 11px; color: var(--ink-faint); }
+    .att-member-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 0; border-bottom: 1px solid var(--cal-border);
+      font-size: 13px;
+    }
+    .att-member-row:last-child { border-bottom: none; }
+    .att-status-○ { color: #2E7D32; font-weight: 700; }
+    .att-status-△ { color: #D97706; font-weight: 700; }
+    .att-status-× { color: #C62828; font-weight: 700; }
+
+    /* カレンダーview切替 */
+    .cal-view-toggle { display: none; } /* 月表示固定 */
+
+    /* スケジュール登録フォーム拡張 */
+    .form-section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--ink-faint);
+      margin: 16px 0 8px; padding-top: 12px;
+      border-top: 1px solid var(--cal-border);
+    }
+    .map-preview {
+      width: 100%; height: 120px; border-radius: 8px;
+      background: var(--cal-gray); border: 1px solid var(--cal-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: var(--ink-faint);
+      margin-top: 6px; overflow: hidden;
+    }
+    .map-preview iframe { width: 100%; height: 100%; border: none; }
+
   </style>
 </head>
 <body>
@@ -919,16 +1211,43 @@
       <div id="homeContent"><div class="loading"><div class="spinner"></div></div></div>
     </div>
   </div>
-  <div id="page-schedule" class="page">
-    <div class="page-header"><h1>スケジュール</h1></div>
-    <div class="filter-bar">
-      <button class="filter-tab active" data-filter="all">すべて</button>
-      <button class="filter-tab" data-filter="practice">練習</button>
-      <button class="filter-tab" data-filter="friendly">練習試合</button>
-      <button class="filter-tab" data-filter="official">公式戦</button>
+  <div id="page-schedule" class="page" style="padding:0">
+    <!-- カレンダーヘッダー -->
+    <div class="cal-header">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="cal-header__month" id="calMonthLabel">2026年6月</div>
+        <button class="cal-today-btn" id="calTodayBtn">今日</button>
+      </div>
+      <div class="cal-header__nav">
+        <button class="cal-nav-btn" id="calPrevBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="cal-nav-btn" id="calNextBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
     </div>
-    <div class="schedule-body">
-      <div id="scheduleList"><div class="loading"><div class="spinner"></div></div></div>
+    <!-- 曜日ヘッダー -->
+    <div class="cal-weekdays">
+      <div class="cal-weekday sun">日</div>
+      <div class="cal-weekday">月</div>
+      <div class="cal-weekday">火</div>
+      <div class="cal-weekday">水</div>
+      <div class="cal-weekday">木</div>
+      <div class="cal-weekday">金</div>
+      <div class="cal-weekday sat">土</div>
+    </div>
+    <!-- カレンダーグリッド -->
+    <div class="cal-grid" id="calGrid"></div>
+    <!-- 日別予定リスト（タップ後に表示） -->
+    <div id="daySchedulePanel" style="display:none">
+      <div class="day-schedule-header">
+        <div class="day-schedule-header__date" id="dayScheduleDate"></div>
+        <button class="cal-nav-btn" id="dayScheduleClose">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="day-schedule-list" id="dayScheduleList"></div>
     </div>
   </div>
   <div id="page-result" class="page">
@@ -989,6 +1308,8 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, updateDoc, deleteDoc,
   getDocs, query, where, orderBy, limit, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // ⚠️ ここにFirebase設定を貼り付けてください
 const FIREBASE_CONFIG = {
@@ -1005,6 +1326,7 @@ const TEAM_ID = "matsuyama-south";
 const app = initializeApp(FIREBASE_CONFIG);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 const provider = new GoogleAuthProvider();
 
 let currentUser = null, currentMember = null;
@@ -1017,6 +1339,8 @@ const fmtDateFull = s => { if(!s)return""; const d=new Date(s+"T00:00:00"); retu
 const fmtMonth = s => { const d=new Date(s+"T00:00:00"); return `${d.getFullYear()}年${d.getMonth()+1}月`; };
 const fmtTS = ts => { if(!ts)return""; const d=ts.toDate?ts.toDate():new Date(ts); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; };
 const TL = {practice:"練習",friendly:"練習試合",official:"公式戦"};
+const TYPE_LABEL = {practice:'練習',friendly:'練習試合',official:'公式戦',event:'イベント'};
+const TYPE_CLASS = {practice:'practice',friendly:'friendly',official:'official',event:'event'};
 const TB = {practice:"badge--practice",friendly:"badge--friendly",official:"badge--official"};
 const RB = {"勝":"badge--win","負":"badge--lose","分":"badge--draw"};
 
@@ -1095,25 +1419,31 @@ async function loadHome() {
   } catch(e) { console.log('Home load error:', e); }
   const resLabel = r ? (r.result==='勝'?'WIN':r.result==='負'?'LOSE':'DRAW') : '';
   const resClass = r ? (r.result==='勝'?'result--win':r.result==='負'?'result--lose':'result--draw') : '';
-  const typeLabel = s ? (TL[s.type]||s.type) : '';
+  const typeLabel = s ? (TYPE_LABEL[s.type]||s.type) : '';
   $("homeContent").innerHTML=`
     <div class="home-section">
       <div class="section-eyebrow">次回の予定 <span class="section-more" onclick="navigate('schedule')">すべて見る</span></div>
-      ${s?`<div class="next-card" onclick="showScheduleDetail('${s.id}')">
-        <div class="next-card__type">${typeLabel}</div>
-        <div class="next-card__title">${s.title}</div>
-        <div class="next-card__meta">
-          <div class="next-card__meta-row">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            ${fmtDate(s.date)}${s.startTime?' — '+s.startTime:''}
+      ${s?`<div onclick="showScheduleDetail('${s.id}')" style="cursor:pointer;padding:16px 0">
+        <div style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:10px;background:${s.type==='official'?'rgba(0,87,184,.1)':s.type==='friendly'?'rgba(74,144,217,.1)':'rgba(138,153,170,.12)'};color:${s.type==='official'?'#0057B8':s.type==='friendly'?'#4A90D9':'#8A99AA'}">${TYPE_LABEL[s.type]||s.type}</div>
+        <div style="font-size:22px;font-weight:800;color:var(--navy);letter-spacing:-0.03em;line-height:1.15;margin-bottom:8px">${s.title}</div>
+        ${s.opponent?`<div style="font-size:13px;color:var(--ink-muted);margin-bottom:6px">vs ${s.opponent}</div>`:''}
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div style="font-size:13px;color:var(--ink-muted);display:flex;align-items:center;gap:6px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            ${fmtDate(s.date)}${s.startTime?' 開始 '+s.startTime:''}
           </div>
-          ${s.location?`<div class="next-card__meta-row">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${s.gatherTime?`<div style="font-size:13px;color:var(--ink-muted);display:flex;align-items:center;gap:6px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            集合 ${s.gatherTime}${s.gatherPlace?' · '+s.gatherPlace:''}
+          </div>`:''}
+          ${s.location?`<div style="font-size:13px;color:var(--ink-muted);display:flex;align-items:center;gap:6px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
             ${s.location}
           </div>`:''}
         </div>
-        <div class="next-card__cta">出欠を入力する
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <div style="margin-top:14px;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#0057B8;border-bottom:1px solid rgba(0,87,184,.2);padding-bottom:1px">
+          出欠を入力する
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </div>
       </div>`:`<div style="padding:24px 0 8px">
         <div style="font-size:13px;color:var(--ink-faint);margin-bottom:16px">まだ予定が登録されていません</div>
@@ -1146,136 +1476,373 @@ async function loadHome() {
   `;
 }
 
-// SCHEDULE
+// ============================================================
+// SCHEDULE — カレンダー月表示
+// ============================================================
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-indexed
+const TYPE_CLASS = {practice:'practice',friendly:'friendly',official:'official',event:'event'};
+const TYPE_LABEL = {practice:'練習',friendly:'練習試合',official:'公式戦',event:'イベント'};
+
 async function loadSchedule() {
-  $("scheduleList").innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
   try {
-    const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
-    schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const snap = await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
+    schedules = snap.docs.map(d=>({id:d.id,...d.data()}));
   } catch(e) { console.log('Schedule error:',e); schedules=[]; }
-  if(currentMember.role==="admin"){$("fab").style.display="flex";$("fab").onclick=()=>openScheduleForm(null);}
-  renderScheduleList();
+  if(currentMember.role==="admin"){
+    $("fab").style.display="flex";
+    $("fab").onclick=()=>openScheduleForm(null);
+  }
+  renderCalendar();
+  // ナビゲーションイベント
+  $("calPrevBtn").onclick = () => { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); };
+  $("calNextBtn").onclick = () => { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); };
+  $("calTodayBtn").onclick = () => { const t=new Date(); calYear=t.getFullYear(); calMonth=t.getMonth(); renderCalendar(); };
+  $("dayScheduleClose").onclick = () => { $("daySchedulePanel").style.display="none"; };
 }
-function renderScheduleList() {
-  const today=new Date().toISOString().split("T")[0];
-  const filtered=currentFilter==="all"?schedules:schedules.filter(s=>s.type===currentFilter);
-  if(!filtered.length){$("scheduleList").innerHTML=`<div class="empty-state"><div class="empty-state__title">予定はありません</div><div class="empty-state__sub">管理者が予定を登録するとここに表示されます</div></div>`;return;}
-  const grouped={};
-  filtered.forEach(s=>{const m=fmtMonth(s.date);if(!grouped[m])grouped[m]=[];grouped[m].push(s);});
-  const barClass={practice:'bar--practice',friendly:'bar--friendly',official:'bar--official'};
-  const lblClass={practice:'label--practice',friendly:'label--friendly',official:'label--official'};
-  $("scheduleList").innerHTML=Object.entries(grouped).map(([month,items])=>`
-    <div class="schedule-month-label">${month}</div>
-    ${items.map(s=>`<div class="schedule-row ${s.date<today?'past':''}" onclick="showScheduleDetail('${s.id}')">
-      <div class="schedule-row__bar ${barClass[s.type]||'bar--practice'}"></div>
-      <div class="schedule-row__body">
-        <div class="schedule-row__title">${s.title}</div>
-        <div class="schedule-row__meta">
-          <span class="schedule-row__type-label ${lblClass[s.type]||'label--practice'}">${TL[s.type]||s.type}</span>
-          <span>${fmtDate(s.date)}${s.startTime?' '+s.startTime:''}</span>
-          ${s.location?`<span>${s.location}</span>`:''}
-        </div>
-      </div>
-    </div>`).join("")}
-  `).join("");
-}
-document.querySelectorAll(".filter-tab").forEach(tab=>{
-  tab.addEventListener("click",()=>{
-    document.querySelectorAll(".filter-tab").forEach(t=>{t.className="btn btn--ghost btn--sm filter-tab";});
-    tab.className="btn btn--primary btn--sm filter-tab";
-    currentFilter=tab.dataset.filter; renderScheduleList();
+
+function renderCalendar() {
+  const todayStr = new Date().toISOString().split("T")[0];
+  $("calMonthLabel").textContent = `${calYear}年${calMonth+1}月`;
+
+  const firstDay = new Date(calYear, calMonth, 1);
+  const lastDay = new Date(calYear, calMonth+1, 0);
+  const startDow = firstDay.getDay(); // 0=Sun
+  const totalDays = lastDay.getDate();
+
+  // 当月予定をdateでインデックス
+  const byDate = {};
+  schedules.forEach(s => {
+    if(!byDate[s.date]) byDate[s.date]=[]; byDate[s.date].push(s);
   });
-});
+
+  let cells = [];
+  // 前月の空白
+  for(let i=0;i<startDow;i++){
+    const d = new Date(calYear, calMonth, -startDow+i+1);
+    cells.push({date:d, current:false});
+  }
+  // 当月
+  for(let d=1;d<=totalDays;d++){
+    cells.push({date:new Date(calYear,calMonth,d), current:true});
+  }
+  // 次月の空白（6行×7=42マス）
+  const remaining = 42 - cells.length;
+  for(let d=1;d<=remaining;d++){
+    cells.push({date:new Date(calYear,calMonth+1,d), current:false});
+  }
+
+  const pad = n => String(n).padStart(2,'0');
+  $("calGrid").innerHTML = cells.map(c => {
+    const dateStr = `${c.date.getFullYear()}-${pad(c.date.getMonth()+1)}-${pad(c.date.getDate())}`;
+    const dow = c.date.getDay();
+    const isToday = dateStr === todayStr;
+    const events = byDate[dateStr] || [];
+    const shown = events.slice(0,2);
+    const more = events.length - shown.length;
+    const numClass = dow===0?'sun':dow===6?'sat':'';
+    return `<div class="cal-cell${c.current?'':' other-month'}${isToday?' today':''}" onclick="openDaySchedule('${dateStr}')">
+      <div class="cal-day-num ${numClass}">${c.date.getDate()}</div>
+      ${shown.map(s=>`<div class="cal-event ${TYPE_CLASS[s.type]||'practice'}" onclick="event.stopPropagation();showScheduleDetail('${s.id}')">${s.title}</div>`).join('')}
+      ${more>0?`<div class="cal-more">+${more}件</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+window.openDaySchedule = function(dateStr) {
+  const d = new Date(dateStr+'T00:00:00');
+  const dows = '日月火水木金土';
+  $("dayScheduleDate").textContent = `${d.getMonth()+1}月${d.getDate()}日（${dows[d.getDay()]}）`;
+  const events = schedules.filter(s=>s.date===dateStr);
+  if(events.length===0){
+    $("dayScheduleList").innerHTML = `<div class="empty-state" style="padding:24px"><div class="empty-state__title">この日の予定はありません</div></div>`;
+  } else {
+    $("dayScheduleList").innerHTML = events.map(s=>`
+      <div class="day-event-row" onclick="showScheduleDetail('${s.id}')">
+        <div class="day-event-bar ${TYPE_CLASS[s.type]||'practice'}"></div>
+        <div class="day-event-info">
+          <div class="day-event-type ${TYPE_CLASS[s.type]||'practice'}">${TYPE_LABEL[s.type]||s.type}</div>
+          <div class="day-event-title">${s.title}</div>
+          <div class="day-event-meta">${s.startTime||''}${s.location?' · '+s.location:''}</div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    `).join('');
+  }
+  $("daySchedulePanel").style.display="block";
+  $("daySchedulePanel").scrollIntoView({behavior:'smooth',block:'start'});
+};
 
 window.showScheduleDetail = async function(id) {
-  const s=schedules.find(x=>x.id===id); if(!s)return;
-  const attSnap=await getDoc(doc(db,"teams",TEAM_ID,"attendance",id,"responses",currentUser.uid));
-  const myResponses=attSnap.exists()?attSnap.data().responses||[]:[];
-  const pSnap=await getDocs(query(collection(db,"teams",TEAM_ID,"players"),orderBy("number","asc")));
-  players=pSnap.docs.map(d=>({id:d.id,...d.data()}));
-  const myPlayers=players.filter(p=>currentMember.playerIds?.includes(p.id));
-  const isAdmin=currentMember.role==="admin";
-  let allAttHtml="";
-  if(isAdmin){
-    const aSnap=await getDocs(collection(db,"teams",TEAM_ID,"attendance",id,"responses"));
-    const allAtt=aSnap.docs.map(d=>d.data());
-    allAttHtml=`<div style="border-top:1px solid var(--gray-200);margin-top:.9rem;padding-top:.75rem">
-      <div class="form-label" style="margin-bottom:.45rem">出欠状況（管理者）</div>
-      ${allAtt.length===0?`<p style="font-size:.78rem;color:var(--gray-600)">まだ回答がありません</p>`:
-        allAtt.map(ua=>ua.responses?.map(r=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)">
-          <span style="font-size:13px">${r.playerName||r.playerId}</span>
-          <span style="font-size:13px;font-weight:700;color:${r.status==="○"?"var(--ok)":r.status==="×"?"var(--danger)":"#92650A"}">${r.status||"—"}</span>
-        </div>`).join("")).join("")}
-    </div>
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn--ghost btn--sm" onclick="openScheduleForm('${s.id}')">編集</button>
-      <button class="btn btn--danger btn--sm" onclick="delSchedule('${s.id}')">削除</button>
+  const s = schedules.find(x=>x.id===id); if(!s) return;
+  const isAdmin = currentMember.role==="admin";
+  const tc = TYPE_CLASS[s.type]||'practice';
+  const tl = TYPE_LABEL[s.type]||s.type;
+  const dows = '日月火水木金土';
+  const d = new Date(s.date+'T00:00:00');
+  const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${dows[d.getDay()]}）`;
+
+  // 出欠取得
+  let myResponses = [];
+  try {
+    const attSnap = await getDoc(doc(db,"teams",TEAM_ID,"attendance",id,"responses",currentUser.uid));
+    if(attSnap.exists()) myResponses = attSnap.data().responses||[];
+  } catch(e) {}
+
+  // 選手取得
+  try {
+    const pSnap = await getDocs(query(collection(db,"teams",TEAM_ID,"players"),orderBy("number","asc")));
+    players = pSnap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) {}
+  const myPlayers = players.filter(p=>currentMember.playerIds?.includes(p.id));
+
+  // 添付ファイル取得
+  let attachHtml = '';
+  const files = s.attachments||[];
+  if(files.length>0 || isAdmin){
+    attachHtml = `<div class="attach-section">
+      <div class="attach-section-hdr">添付ファイル</div>
+      ${files.map(f=>`
+        <a href="${f.url}" target="_blank" class="attach-item">
+          <div class="attach-item__icon">${f.type==='pdf'?'PDF':f.type==='map'?'MAP':'IMG'}</div>
+          <div>
+            <div class="attach-item__name">${f.name}</div>
+          </div>
+        </a>
+      `).join('')}
+      ${isAdmin?`<button class="attach-upload-btn" onclick="openAttachUpload('${s.id}')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        ファイルを添付
+      </button>`:''}
     </div>`;
   }
-  openModal("予定の詳細",`
-    <div class="detail-row"><div class="detail-row__label">${TL[s.type]||s.type}</div><div class="detail-row__val" style="font-size:1.1rem;font-weight:700;letter-spacing:-0.01em">${fmtDateFull(s.date)}</div></div>
-    ${s.startTime?`<div class="detail-row"><div class="detail-row__label">時間</div><div class="detail-row__val">${s.startTime}${s.endTime?' — '+s.endTime:''}</div></div>`:""}
-    ${s.location?`<div class="detail-row"><div class="detail-row__label">場所</div><div class="detail-row__val">${s.location}</div></div>`:""}
-    ${s.note?`<div class="detail-row"><div class="detail-row__label">備考</div><div class="detail-row__val" style="color:var(--ink-muted)">${s.note}</div></div>`:""}
-    <div class="att-section-title">出欠の入力</div>
-    ${myPlayers.length===0?`<p style="font-size:13px;color:var(--ink-faint);padding:12px 0">選手が紐付けられていません。メンバー管理から設定してください。</p>`:
-      myPlayers.map(p=>{const cur=myResponses.find(r=>r.playerId===p.id)?.status||"";
-        return `<div class="att-player-row">
-          <div><div class="att-player-name">${p.name}</div><div class="att-player-grade">${p.grade}年 #${p.number}</div></div>
-          <div class="att-segment">
-            ${["○","△","×"].map(st=>`<button class="att-btn ${cur===st?`sel-${st}`:""}" data-pid="${p.id}" data-st="${st}" onclick="selectAtt('${s.id}','${p.id}','${st}',this)">${st}</button>`).join("")}
-          </div>
-        </div>`;
-      }).join("")}
-    ${allAttHtml}`);
+
+  // 管理者出欠確認
+  let attSummaryHtml = '';
+  if(isAdmin){
+    try{
+      const aSnap = await getDocs(collection(db,"teams",TEAM_ID,"attendance",id,"responses"));
+      const allAtt = aSnap.docs.map(d=>d.data());
+      const flat = allAtt.flatMap(a=>a.responses||[]);
+      const total = flat.length;
+      const ok = flat.filter(r=>r.status==='○').length;
+      const ng = flat.filter(r=>r.status==='×').length;
+      const maybe = flat.filter(r=>r.status==='△').length;
+      const rate = total>0?Math.round(ok/total*100):0;
+      attSummaryHtml = `<div class="att-summary">
+        <div class="att-summary-hdr">出欠状況（管理者）</div>
+        <div class="att-stat-row">
+          <div class="att-stat"><div class="att-stat__num att-status-○">${ok}</div><div class="att-stat__label">出席</div></div>
+          <div class="att-stat"><div class="att-stat__num att-status-△">${maybe}</div><div class="att-stat__label">未定</div></div>
+          <div class="att-stat"><div class="att-stat__num att-status-×">${ng}</div><div class="att-stat__label">欠席</div></div>
+        </div>
+        <div class="att-rate-bar"><div class="att-rate-fill" style="width:${rate}%"></div></div>
+        <div style="font-size:12px;color:var(--ink-faint);margin-bottom:10px">出席率 ${rate}%（${total}名回答）</div>
+        ${flat.map(r=>`<div class="att-member-row"><span>${r.playerName||r.playerId}</span><span class="att-status-${r.status||'?'}">${r.status||'—'}</span></div>`).join('')}
+      </div>`;
+    }catch(e){}
+  }
+
+  openModal(s.title, `
+    <div class="sch-detail-hero">
+      <div class="sch-detail-type ${tc}">${tl}</div>
+      <div class="sch-detail-title">${s.title}</div>
+    </div>
+    <div class="sch-detail-rows">
+      <div class="sch-detail-row">
+        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div><div class="sch-detail-label">日時</div><div class="sch-detail-val">${dateStr}${s.startTime?' '+s.startTime+(s.endTime?' 〜 '+s.endTime:''):''}</div></div>
+      </div>
+      ${s.gatherTime?`<div class="sch-detail-row">
+        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <div><div class="sch-detail-label">集合時間</div><div class="sch-detail-val">${s.gatherTime}</div></div>
+      </div>`:''}
+      ${s.location?`<div class="sch-detail-row">
+        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div><div class="sch-detail-label">場所</div><div class="sch-detail-val">${s.location}${s.mapUrl?`<br><a href="${s.mapUrl}" target="_blank" class="sch-detail-link">Googleマップで開く</a>`:''}</div></div>
+      </div>`:''}
+      ${s.gatherPlace?`<div class="sch-detail-row">
+        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div><div class="sch-detail-label">集合場所</div><div class="sch-detail-val">${s.gatherPlace}</div></div>
+      </div>`:''}
+      ${s.opponent?`<div class="sch-detail-row">
+        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div><div class="sch-detail-label">対戦相手</div><div class="sch-detail-val">${s.opponent}</div></div>
+      </div>`:''}
+      ${s.items?`<div class="sch-detail-row">
+        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+        <div><div class="sch-detail-label">持参物</div><div class="sch-detail-val">${s.items}</div></div>
+      </div>`:''}
+      ${s.note?`<div class="sch-detail-row">
+        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div><div class="sch-detail-label">備考</div><div class="sch-detail-val" style="white-space:pre-wrap">${s.note}</div></div>
+      </div>`:''}
+    </div>
+    ${attachHtml}
+    <div class="att-section">
+      <div class="att-section-hdr">出欠の入力</div>
+      ${myPlayers.length===0
+        ?`<p style="font-size:13px;color:var(--ink-faint)">選手が紐付けられていません。メンバー管理から設定してください。</p>`
+        :myPlayers.map(p=>{
+          const cur=myResponses.find(r=>r.playerId===p.id)?.status||'';
+          return `<div class="att-player-card">
+            <div class="att-player-card__name">${p.name}<span class="att-player-card__grade">${p.grade}年 #${p.number}</span></div>
+            <div class="att-seg">
+              ${['○','△','×'].map(st=>`<button class="att-seg-btn ${cur===st?`sel-${st}`:''}" data-pid="${p.id}" data-st="${st}" onclick="selectAtt('${s.id}','${p.id}','${st}',this)">
+                ${st==='○'?'出席':st==='△'?'未定':'欠席'}
+              </button>`).join('')}
+            </div>
+          </div>`;
+        }).join('')}
+    </div>
+    ${attSummaryHtml}
+    ${isAdmin?`<div style="display:flex;gap:8px;padding:0 16px 16px">
+      <button class="btn btn--ghost btn--sm" onclick="openScheduleForm('${s.id}')">編集</button>
+      <button class="btn btn--danger btn--sm" onclick="delSchedule('${s.id}')">削除</button>
+    </div>`:''}
+  `);
 };
 
 window.selectAtt = async function(scheduleId,playerId,status,btn) {
-  document.querySelectorAll(`[data-pid="${playerId}"]`).forEach(b=>b.className="att-btn");
+  document.querySelectorAll(`[data-pid="${playerId}"]`).forEach(b=>b.className="att-seg-btn");
   btn.classList.add(`sel-${status}`);
-  const rows=document.querySelectorAll(".att-player-row"), responses=[];
-  rows.forEach(row=>{
-    const pid=row.querySelector("[data-pid]")?.dataset.pid;
-    const sel=row.querySelector(".att-btn[class*='sel-']");
+  const cards=document.querySelectorAll(".att-player-card"), responses=[];
+  cards.forEach(card=>{
+    const pid=card.querySelector("[data-pid]")?.dataset.pid;
+    const sel=card.querySelector(".att-seg-btn[class*='sel-']");
     if(pid&&sel){const p=players.find(x=>x.id===pid);responses.push({playerId:pid,playerName:p?.name||pid,status:sel.dataset.st});}
   });
-  try{await setDoc(doc(db,"teams",TEAM_ID,"attendance",scheduleId,"responses",currentUser.uid),{responses,updatedAt:serverTimestamp()},{merge:true});toast("出欠を保存しました","success");}
-  catch(e){toast("保存に失敗しました","error");}
+  try{
+    await setDoc(doc(db,"teams",TEAM_ID,"attendance",scheduleId,"responses",currentUser.uid),{responses,updatedAt:serverTimestamp()},{merge:true});
+    toast("出欠を保存しました","success");
+  }catch(e){toast("保存に失敗しました","error");}
 };
 
+// ファイルアップロード
+window.openAttachUpload = function(scheduleId) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.pdf,.jpg,.jpeg,.png';
+  input.multiple = true;
+  input.onchange = async () => {
+    const files = Array.from(input.files);
+    if(!files.length) return;
+    toast('アップロード中...','');
+    try{
+      const s = schedules.find(x=>x.id===scheduleId);
+      const existing = s?.attachments||[];
+      const uploaded = [];
+      for(const file of files){
+        const storageRef = ref(storage,`teams/${TEAM_ID}/schedules/${scheduleId}/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        const ext = file.name.split('.').pop().toLowerCase();
+        const type = ext==='pdf'?'pdf':['jpg','jpeg','png'].includes(ext)?'image':'file';
+        uploaded.push({name:file.name, url, type});
+      }
+      await updateDoc(doc(db,"teams",TEAM_ID,"schedules",scheduleId),{attachments:[...existing,...uploaded],updatedAt:serverTimestamp()});
+      const snap = await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
+      schedules = snap.docs.map(d=>({id:d.id,...d.data()}));
+      closeModal();
+      showScheduleDetail(scheduleId);
+      toast('アップロード完了','success');
+    }catch(e){console.error(e);toast('アップロードに失敗しました','error');}
+  };
+  input.click();
+};
+
+// MapURL プレビュー
+function updateMapPreview(url) {
+  const preview = $('f_map_preview');
+  if(!preview) return;
+  if(url && url.includes('google.com/maps')){
+    // embed URL変換
+    const embedUrl = url.replace('/maps/','/maps/embed/v1/').includes('embed')
+      ? url
+      : `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
+    preview.innerHTML = `<iframe src="${url.replace('/maps/','/maps/embed?pb=')}" loading="lazy"></iframe>`;
+  } else {
+    preview.innerHTML = '<span>GoogleマップのURLを入力するとプレビューが表示されます</span>';
+  }
+}
+
 window.openScheduleForm = function(id) {
-  closeModal(); const s=id?schedules.find(x=>x.id===id):null;
-  openModal(s?"予定を編集":"予定を登録",`
-    <div class="form-group"><label class="form-label">タイトル *</label><input id="f_title" value="${s?.title||''}" placeholder="例：第3回練習"></div>
+  closeModal();
+  const s = id ? schedules.find(x=>x.id===id) : null;
+  openModal(s?"予定を編集":"予定を登録", `
+    <div class="form-group"><label class="form-label">タイトル *</label><input id="f_title" value="${s?.title||''}" placeholder="例：春季市民大会"></div>
     <div class="form-group"><label class="form-label">種別 *</label><select id="f_type">
       <option value="practice" ${s?.type==='practice'?'selected':''}>練習</option>
       <option value="friendly" ${s?.type==='friendly'?'selected':''}>練習試合</option>
       <option value="official" ${s?.type==='official'?'selected':''}>公式戦</option>
+      <option value="event" ${s?.type==='event'?'selected':''}>イベント・総会</option>
     </select></div>
     <div class="form-group"><label class="form-label">日付 *</label><input type="date" id="f_date" value="${s?.date||''}"></div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">開始</label><input type="time" id="f_st" value="${s?.startTime||''}"></div>
-      <div class="form-group"><label class="form-label">終了</label><input type="time" id="f_et" value="${s?.endTime||''}"></div>
+      <div class="form-group"><label class="form-label">開始時間</label><input type="time" id="f_st" value="${s?.startTime||''}"></div>
+      <div class="form-group"><label class="form-label">終了時間</label><input type="time" id="f_et" value="${s?.endTime||''}"></div>
     </div>
-    <div class="form-group"><label class="form-label">場所</label><input id="f_loc" value="${s?.location||''}" placeholder="例：松山SOUTHグラウンド"></div>
-    <div class="form-group"><label class="form-label">備考</label><textarea id="f_note">${s?.note||''}</textarea></div>
-    <button class="btn btn--primary btn--full" id="saveSchBtn">保存する</button>`);
-  $("saveSchBtn").addEventListener("click",async()=>{
-    const title=$("f_title").value.trim(),date=$("f_date").value;
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">集合時間</label><input type="time" id="f_gt" value="${s?.gatherTime||''}"></div>
+      <div class="form-group"><label class="form-label">集合場所</label><input id="f_gp" value="${s?.gatherPlace||''}" placeholder="例：駐車場入口"></div>
+    </div>
+    <div class="form-section-title">場所</div>
+    <div class="form-group"><label class="form-label">場所名</label><input id="f_loc" value="${s?.location||''}" placeholder="例：松山市民球場"></div>
+    <div class="form-group"><label class="form-label">GoogleマップURL</label><input id="f_map" value="${s?.mapUrl||''}" placeholder="https://maps.google.com/..." oninput="updateMapPreview(this.value)">
+      <div class="map-preview" id="f_map_preview"><span>GoogleマップのURLを入力するとリンクが追加されます</span></div>
+    </div>
+    <div class="form-section-title">試合情報</div>
+    <div class="form-group"><label class="form-label">対戦相手</label><input id="f_opp" value="${s?.opponent||''}" placeholder="例：南山スポーツ少年団"></div>
+    <div class="form-section-title">その他</div>
+    <div class="form-group"><label class="form-label">持参物</label><input id="f_items" value="${s?.items||''}" placeholder="例：ユニフォーム、グローブ"></div>
+    <div class="form-group"><label class="form-label">備考</label><textarea id="f_note" placeholder="連絡事項など">${s?.note||''}</textarea></div>
+    <button class="btn btn--primary btn--full" id="saveSchBtn">保存する</button>
+  `);
+  $("saveSchBtn").addEventListener("click", async () => {
+    const title=$("f_title").value.trim(), date=$("f_date").value;
     if(!title||!date){toast("タイトルと日付は必須です","error");return;}
-    $("saveSchBtn").disabled=true;$("saveSchBtn").textContent="保存中...";
+    $("saveSchBtn").disabled=true; $("saveSchBtn").textContent="保存中...";
     try{
-      const data={title,type:$("f_type").value,date,startTime:$("f_st").value,endTime:$("f_et").value,location:$("f_loc").value.trim(),note:$("f_note").value.trim(),createdBy:currentUser.uid};
-      if(s?.id)await updateDoc(doc(db,"teams",TEAM_ID,"schedules",s.id),{...data,updatedAt:serverTimestamp()});
-      else await addDoc(collection(db,"teams",TEAM_ID,"schedules"),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
-      closeModal();await loadSchedule();toast(s?"更新しました":"登録しました","success");
-    }catch(e){toast("保存に失敗しました","error");$("saveSchBtn").disabled=false;$("saveSchBtn").textContent="保存する";}
+      const data={
+        title, date,
+        type: $("f_type").value,
+        startTime: $("f_st").value,
+        endTime: $("f_et").value,
+        gatherTime: $("f_gt").value,
+        gatherPlace: $("f_gp").value.trim(),
+        location: $("f_loc").value.trim(),
+        mapUrl: $("f_map").value.trim(),
+        opponent: $("f_opp").value.trim(),
+        items: $("f_items").value.trim(),
+        note: $("f_note").value.trim(),
+        createdBy: currentUser.uid
+      };
+      if(s?.id){
+        await updateDoc(doc(db,"teams",TEAM_ID,"schedules",s.id),{...data,updatedAt:serverTimestamp()});
+      } else {
+        await addDoc(collection(db,"teams",TEAM_ID,"schedules"),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+      }
+      const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
+      schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderCalendar();
+      closeModal();
+      toast(s?"更新しました":"登録しました","success");
+    }catch(e){
+      console.error(e);
+      toast("保存に失敗しました","error");
+      $("saveSchBtn").disabled=false; $("saveSchBtn").textContent="保存する";
+    }
   });
 };
+
 window.delSchedule = async function(id) {
   if(!confirm("この予定を削除しますか？"))return;
   await deleteDoc(doc(db,"teams",TEAM_ID,"schedules",id));
-  closeModal();await loadSchedule();toast("削除しました");
+  const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
+  schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderCalendar();
+  closeModal();
+  toast("削除しました");
 };
 
 // RESULT
