@@ -1381,7 +1381,7 @@ async function consumeInvite(token,uid,displayName,email) {
 // NAVIGATION
 function navigate(page) {
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  const el=$(`page-${page}`); if(el)el.classList.add("active");
+  const el=$(`page-${page}`); if(el)el.classList.add("active"); else console.warn('page not found:',page);
   document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
   $("fab").style.display="none";
   loadPage(page);

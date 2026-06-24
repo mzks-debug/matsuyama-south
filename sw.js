@@ -1,5 +1,5 @@
 // Service Worker - 松山SOUTH
-const CACHE_NAME = 'matsuyama-south-v1';
+const CACHE_NAME = 'matsuyama-south-v3';
 const CACHE_FILES = [
   './index.html',
   './manifest.json'
