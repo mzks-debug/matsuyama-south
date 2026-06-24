@@ -784,7 +784,7 @@
     #loginScreen {
       position: fixed; inset: 0;
       background: var(--white);
-      display: none !important;
+      display: flex; align-items: center; justify-content: center;
       z-index: 300; padding: var(--sp-6);
     }
     .login-card {
@@ -1567,12 +1567,54 @@ const handleLogout=async()=>{if(confirm("ログアウトしますか？")){await
 $("sidebarLogout").addEventListener("click",handleLogout);
 
 // ⚠️ 開発用：ログインボタン → そのまま入る
-$("loginBtn").addEventListener("click",()=>bootApp(_devUser, _devMember));
+$("loginBtn").addEventListener("click", async () => {
+  $("loginBtn").disabled = true;
+  $("loginBtn").textContent = "移動中...";
+  $("loginError").style.display = "none";
+  try {
+    await signInWithRedirect(auth, provider);
+  } catch(e) {
+    $("loginError").textContent = "ログインに失敗しました。もう一度お試しください。";
+    $("loginError").style.display = "block";
+    $("loginBtn").disabled = false;
+    $("loginBtn").innerHTML = googleSvg + " Googleでログイン";
+  }
+});
 
 // ⚠️ 認証一時解除モード（開発用）
-const _devMember = { displayName: "みずき", email: "mizuki.s1125@gmail.com", role: "admin", playerIds: [] };
-const _devUser = { uid: "dev", displayName: "みずき", email: "mizuki.s1125@gmail.com" };
-bootApp(_devUser, _devMember);
+// リダイレクト後の処理
+let _booted = false;
+
+getRedirectResult(auth).then(async result => {
+  if (!result || _booted) return;
+  _booted = true;
+  const user = result.user;
+  const params = new URLSearchParams(location.search);
+  const token = params.get("token");
+  if (token) { handleInviteToken(token, user); return; }
+  const member = await getMember(user.uid);
+  if (!member) {
+    $("loginError").textContent = "このアカウントはチームに登録されていません。招待URLから参加してください。";
+    $("loginError").style.display = "block";
+    await signOut(auth);
+    return;
+  }
+  bootApp(user, member);
+}).catch(e => { console.error("Redirect error:", e); });
+
+onAuthStateChanged(auth, async user => {
+  if (!user || _booted) return;
+  _booted = true;
+  const params = new URLSearchParams(location.search);
+  const token = params.get("token");
+  if (token) { handleInviteToken(token, user); return; }
+  try {
+    const member = await getMember(user.uid);
+    if (member) bootApp(user, member);
+  } catch(e) {
+    console.error("Auth error:", e);
+  }
+});
 </script>
 
 <script>
