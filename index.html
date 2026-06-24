@@ -913,8 +913,12 @@ window.showSchDetail=async function(id){
   const isAdmin=CM?.role==='admin';
   let myResp=[];
   try{const a=await getDoc(doc(db,'teams',TEAM_ID,'attendance',id,'responses',CU.uid));if(a.exists())myResp=a.data().responses||[]}catch(e){}
+  // 選手・自分のplayerIds両方を最新で取得
   try{const ps=await getDocs(query(collection(db,'teams',TEAM_ID,'players'),orderBy('number','asc')));players=ps.docs.map(d=>({id:d.id,...d.data()}))}catch(e){}
-  const myPlayers=players.filter(p=>CM?.playerIds?.includes(p.id));
+  let myPlayerIds=CM?.playerIds||[];
+  // Firestoreから最新のplayerIdsを取得
+  try{const mSnap=await getDoc(doc(db,'teams',TEAM_ID,'members',CU.uid));if(mSnap.exists()){myPlayerIds=mSnap.data().playerIds||[];CM={...CM,playerIds:myPlayerIds}}}catch(e){}
+  const myPlayers=players.filter(p=>myPlayerIds.includes(p.id));
   let attSummary='';
   if(isAdmin){
     try{
@@ -1241,14 +1245,32 @@ window.openMemberForm=async function(uid){
           ?`<p style="font-size:13px;color:var(--gray-400);padding:8px 0">選手が登録されていません。先に選手名簿に選手を登録してください。</p>`
           :players.map(p=>{
             const checked=m.playerIds?.includes(p.id);
-            return`<label style="display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;border-bottom:1px solid var(--gray-100)">
-              <input type="checkbox" value="${p.id}"${checked?' checked':''} style="width:20px;height:20px;accent-color:var(--blue);flex-shrink:0;cursor:pointer">
-              <span style="font-size:14px;color:var(--gray-800)">${p.name}<span style="font-size:12px;color:var(--gray-400);margin-left:6px">${p.grade}年 #${p.number}</span></span>
-            </label>`;
+            return`<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--gray-100)" onclick="this.querySelector('input').click()">
+              <span style="font-size:14px;color:var(--gray-800)">${p.name}<span style="font-size:12px;color:var(--gray-400);margin-left:8px">${p.grade}年 #${p.number}</span></span>
+              <div style="position:relative;width:24px;height:24px;flex-shrink:0">
+                <input type="checkbox" value="${p.id}"${checked?' checked':''} style="opacity:0;position:absolute;width:100%;height:100%;cursor:pointer;margin:0">
+                <div class="custom-cb${checked?' checked':''}" style="width:24px;height:24px;border-radius:6px;border:2px solid ${checked?'var(--blue)':'var(--gray-200)'};background:${checked?'var(--blue)':'var(--white)'};display:flex;align-items:center;justify-content:center;pointer-events:none;transition:all .15s">
+                  ${checked?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`:''}
+                </div>
+              </div>
+            </div>`;
           }).join('')}
       </div>
       <button class="btn btn-blue btn-full" id="saveMBtn">保存する</button>
     `);
+    // チェックボックスのビジュアル更新
+    document.querySelectorAll('#modalBody input[type=checkbox]').forEach(cb=>{
+      cb.addEventListener('change',()=>{
+        const div=cb.nextElementSibling;
+        if(cb.checked){
+          div.style.background='var(--blue)';div.style.borderColor='var(--blue)';
+          div.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+        }else{
+          div.style.background='var(--white)';div.style.borderColor='var(--gray-200)';
+          div.innerHTML='';
+        }
+      });
+    });
     $('saveMBtn').onclick=async()=>{
       const role=$('f_role').value;
       const pids=[...document.querySelectorAll('#modalBody input[type=checkbox]:checked')].map(el=>el.value);
