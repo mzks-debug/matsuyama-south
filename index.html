@@ -915,10 +915,10 @@ window.showSchDetail=async function(id){
   try{const a=await getDoc(doc(db,'teams',TEAM_ID,'attendance',id,'responses',CU.uid));if(a.exists())myResp=a.data().responses||[]}catch(e){}
   // 選手・自分のplayerIds両方を最新で取得
   try{const ps=await getDocs(query(collection(db,'teams',TEAM_ID,'players'),orderBy('number','asc')));players=ps.docs.map(d=>({id:d.id,...d.data()}))}catch(e){}
+  // 管理者は全選手、保護者は紐付けられた選手のみ
   let myPlayerIds=CM?.playerIds||[];
-  // Firestoreから最新のplayerIdsを取得
   try{const mSnap=await getDoc(doc(db,'teams',TEAM_ID,'members',CU.uid));if(mSnap.exists()){myPlayerIds=mSnap.data().playerIds||[];CM={...CM,playerIds:myPlayerIds}}}catch(e){}
-  const myPlayers=players.filter(p=>myPlayerIds.includes(p.id));
+  const myPlayers=CM?.role==='admin' ? players : players.filter(p=>myPlayerIds.includes(p.id));
   let attSummary='';
   if(isAdmin){
     try{
