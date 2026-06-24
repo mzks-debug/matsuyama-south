@@ -644,7 +644,30 @@ select{
   <!-- PAGES -->
   <main>
     <div id="page-home" class="page active"><div class="page-wrap"><div id="homeInner"><div class="loading"><div class="spinner"></div></div></div></div></div>
-    <div id="page-schedule" class="page"><div class="page-wrap" id="scheduleInner"></div></div>
+    <div id="page-schedule" class="page">
+    <div class="page-wrap">
+      <div class="cal-header">
+        <div class="cal-month" id="calMonthLabel"></div>
+        <div class="cal-controls">
+          <button class="cal-today" id="calTodayBtn">今日</button>
+          <button class="cal-nav" id="calPrevBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="cal-nav" id="calNextBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="cal-weekdays">
+        <div class="cal-wd sun">日</div><div class="cal-wd">月</div><div class="cal-wd">火</div>
+        <div class="cal-wd">水</div><div class="cal-wd">木</div><div class="cal-wd">金</div><div class="cal-wd sat">土</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div id="dayPanel" style="display:none">
+        <div class="day-panel-header">
+          <div class="day-panel-date" id="dayPanelDate"></div>
+          <button class="day-panel-close" id="dayPanelClose"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        </div>
+        <div id="dayPanelList"></div>
+      </div>
+    </div>
+  </div>
     <div id="page-results" class="page"><div class="page-wrap"><div class="page-header"><h1>試合結果</h1></div><div class="notice-wrap" id="resultsList"><div class="loading"><div class="spinner"></div></div></div></div></div>
     <div id="page-players" class="page"><div class="page-wrap"><div class="page-header"><h1>選手名簿</h1><p id="playerCount"></p></div><div class="players-wrap" id="playersList"><div class="loading"><div class="spinner"></div></div></div></div></div>
     <div id="page-notices" class="page"><div class="page-wrap"><div class="page-header"><h1>お知らせ</h1></div><div class="notice-wrap" id="noticesList"><div class="loading"><div class="spinner"></div></div></div></div></div>
@@ -784,7 +807,7 @@ async function loadHome(){
     </div>
     ${next?`<div class="home-next">
       <div class="home-next__label">次回の予定</div>
-      <div class="home-next__body" onclick="showSchDetail('${next.id}')">
+      <div class="home-next__body" onclick="window.showSchDetail&&window.showSchDetail('${next.id}')">
         <div class="home-next__type" style="color:${next.type==='official'?'var(--blue)':next.type==='friendly'?'var(--blue-mid)':'var(--gray-400)'}">${TL[next.type]||next.type}</div>
         <div class="home-next__title">${next.title}</div>
         ${next.opponent?`<div style="font-size:13px;color:var(--gray-600);margin-bottom:10px">vs ${next.opponent}</div>`:''}
@@ -826,7 +849,7 @@ async function loadHome(){
 
 // ===== SCHEDULE =====
 async function loadSchedule(){
-  $('scheduleInner').innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
+  $('calGrid').innerHTML='';
   try{
     const snap=await getDocs(query(collection(db,'teams',TEAM_ID,'schedules'),orderBy('date','asc')));
     schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -1203,28 +1226,43 @@ async function loadMembers(){
     </div>`;
   }).join('');
 }
-window.openMemberForm=function(uid){
+window.openMemberForm=async function(uid){
   const m=members.find(x=>x.id===uid);if(!m)return;
-  openModal(m.displayName||'メンバー設定',`
-    <div class="form-group"><label class="form-label">権限</label><select id="f_role"><option value="parent"${m.role==='parent'?' selected':''}>保護者</option><option value="admin"${m.role==='admin'?' selected':''}>管理者</option></select></div>
-    <div class="form-group"><label class="form-label">紐付ける選手</label>
-      ${players.map(p=>`<label style="display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;border-bottom:1px solid var(--gray-100)">
-        <input type="checkbox" value="${p.id}"${m.playerIds?.includes(p.id)?' checked':''} style="width:auto;accent-color:var(--blue)">
-        <span style="font-size:14px">${p.name}（${p.grade}年 #${p.number}）</span>
-      </label>`).join('')}
-      ${!players.length?`<p style="font-size:13px;color:var(--gray-400)">選手が登録されていません</p>`:''}
-    </div>
-    <button class="btn btn-blue btn-full" id="saveMBtn">保存する</button>
-  `);
-  $('saveMBtn').onclick=async()=>{
-    const role=$('f_role').value;
-    const pids=[...document.querySelectorAll('#modalBody input[type=checkbox]:checked')].map(el=>el.value);
-    $('saveMBtn').disabled=true;$('saveMBtn').textContent='保存中...';
-    try{
-      await updateDoc(doc(db,'teams',TEAM_ID,'members',uid),{role,playerIds:pids});
-      await loadMembers();closeModal();toast('更新しました','ok');
-    }catch(e){toast('保存に失敗しました','err');$('saveMBtn').disabled=false;$('saveMBtn').textContent='保存する'}
+  // 選手データを必ず最新に取得
+  try{
+    const ps=await getDocs(query(collection(db,'teams',TEAM_ID,'players'),orderBy('number','asc')));
+    players=ps.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(e){}
+  const renderForm=()=>{
+    openModal(m.displayName||'メンバー設定',`
+      <div class="form-group"><label class="form-label">権限</label><select id="f_role"><option value="parent"${m.role==='parent'?' selected':''}>保護者</option><option value="admin"${m.role==='admin'?' selected':''}>管理者</option></select></div>
+      <div class="form-group"><label class="form-label">紐付ける選手</label>
+        ${players.length===0
+          ?`<p style="font-size:13px;color:var(--gray-400);padding:8px 0">選手が登録されていません。先に選手名簿に選手を登録してください。</p>`
+          :players.map(p=>{
+            const checked=m.playerIds?.includes(p.id);
+            return`<label style="display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;border-bottom:1px solid var(--gray-100)">
+              <input type="checkbox" value="${p.id}"${checked?' checked':''} style="width:20px;height:20px;accent-color:var(--blue);flex-shrink:0;cursor:pointer">
+              <span style="font-size:14px;color:var(--gray-800)">${p.name}<span style="font-size:12px;color:var(--gray-400);margin-left:6px">${p.grade}年 #${p.number}</span></span>
+            </label>`;
+          }).join('')}
+      </div>
+      <button class="btn btn-blue btn-full" id="saveMBtn">保存する</button>
+    `);
+    $('saveMBtn').onclick=async()=>{
+      const role=$('f_role').value;
+      const pids=[...document.querySelectorAll('#modalBody input[type=checkbox]:checked')].map(el=>el.value);
+      $('saveMBtn').disabled=true;$('saveMBtn').textContent='保存中...';
+      try{
+        await updateDoc(doc(db,'teams',TEAM_ID,'members',uid),{role,playerIds:pids});
+        // ローカルのmembersも更新
+        const idx=members.findIndex(x=>x.id===uid);
+        if(idx>=0)members[idx]={...members[idx],role,playerIds:pids};
+        await loadMembers();closeModal();toast('更新しました','ok');
+      }catch(e){console.error(e);toast('保存に失敗しました','err');$('saveMBtn').disabled=false;$('saveMBtn').textContent='保存する'}
+    };
   };
+  renderForm();
 };
 async function handleInvite(role){
   const token=await createInvite(role);
@@ -1321,29 +1359,7 @@ onAuthStateChanged(auth,async user=>{
   try{const mem=await getMember(user.uid);if(mem)bootApp(user,mem)}catch(e){console.error(e)}
 });
 
-// ===== SCHEDULE PAGE STRUCTURE =====
-$('scheduleInner').innerHTML=`
-  <div class="cal-header">
-    <div class="cal-month" id="calMonthLabel"></div>
-    <div class="cal-controls">
-      <button class="cal-today" id="calTodayBtn">今日</button>
-      <button class="cal-nav" id="calPrevBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
-      <button class="cal-nav" id="calNextBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>
-    </div>
-  </div>
-  <div class="cal-weekdays">
-    <div class="cal-wd sun">日</div><div class="cal-wd">月</div><div class="cal-wd">火</div>
-    <div class="cal-wd">水</div><div class="cal-wd">木</div><div class="cal-wd">金</div><div class="cal-wd sat">土</div>
-  </div>
-  <div class="cal-grid" id="calGrid"></div>
-  <div id="dayPanel" style="display:none">
-    <div class="day-panel-header">
-      <div class="day-panel-date" id="dayPanelDate"></div>
-      <button class="day-panel-close" id="dayPanelClose"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-    </div>
-    <div id="dayPanelList"></div>
-  </div>
-`;
+// Schedule HTML is in the DOM
 </script>
 
 <script>
