@@ -1481,7 +1481,7 @@ async function loadHome() {
 // ============================================================
 
 // ⚠️ GASデプロイ後にここにURLを設定してください
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxrSeAOX-wf5W5vhlYDVCePAX9-A19QDQOr-ucTDjqvBp7UwmHsrM7i6eS4HhD6_luNeA/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycby1bJs1C7gIGPUJRpXhBSSkbQpbVAY9JCmVfDi86Xc7aZkoVjN82lV5sMcNl76FSyFvqg/exec';
 
 let calYear  = new Date().getFullYear();
 let calMonth = new Date().getMonth(); // 0-indexed
@@ -1491,20 +1491,19 @@ async function loadSchedule() {
   $("calGrid").innerHTML = '';
   $("calMonthLabel").textContent = `${calYear}年${calMonth+1}月`;
 
-  // GASからイベント取得
+  // Firestoreから予定を取得（GAS連携は後日設定）
+  $("calGrid").innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;font-size:13px;color:var(--ink-faint)"><div class="spinner" style="margin:0 auto 8px"></div>読み込み中...</div>';
   try {
-    $("calGrid").innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;font-size:13px;color:var(--ink-faint)"><div class="spinner" style="margin:0 auto 8px"></div>読み込み中...</div>';
-    const res = await fetch(`${GAS_URL}?year=${calYear}&month=${calMonth+1}`);
-    const json = await res.json();
-    if(json.error) throw new Error(json.error);
-    gasEvents = json.events || [];
-  } catch(e) {
-    console.log('GAS fetch error:', e);
-    // GAS未設定の場合はFirestoreのスケジュールをフォールバック
+    const snap = await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
+    gasEvents = snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) { console.log("Load error:",e); gasEvents=[]; }
+  // GAS連携（設定済みの場合のみ）
+  if(GAS_URL && GAS_URL !== 'YOUR_GAS_WEB_APP_URL_HERE') {
     try {
-      const snap = await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
-      gasEvents = snap.docs.map(d=>({id:d.id,...d.data()}));
-    } catch(e2) { gasEvents = []; }
+      const res = await fetch(`${GAS_URL}?year=${calYear}&month=${calMonth+1}`);
+      const json = await res.json();
+      if(!json.error) gasEvents = json.events || [];
+    } catch(e) { console.log("GAS error:", e); }
   }
 
   // Firestoreの補足データとマージ
