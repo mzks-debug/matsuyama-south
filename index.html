@@ -1,2207 +1,1354 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>松山SOUTH</title>
-  <meta name="theme-color" content="#FFFFFF">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="松山SOUTH">
-  <link rel="apple-touch-icon" href="icon.jpg">
-  <link rel="manifest" href="manifest.json">
-  <style>
-    /* ============================================================
-       MATSUYAMA SOUTH — Design System 2026
-       Palette: White 75% / Grey 20% / Navy 5%
-       Typeface: System Sans — weight contrast carries personality
-    ============================================================ */
-    :root {
-      /* Palette */
-      --ink:       #0A0A0A;
-      --ink-muted: #6B6B6B;
-      --ink-faint: #A3A3A3;
-      --surface:   #F7F7F7;
-      --line:      #EBEBEB;
-      --white:     #FFFFFF;
-      --accent:    #1E3A5F;   /* logo navy — used sparingly */
-      --danger:    #B91C1C;
-      --ok:        #166534;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>松山SOUTH</title>
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="松山SOUTH">
+<link rel="apple-touch-icon" href="icon.jpg">
+<link rel="manifest" href="manifest.json">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0057B8;
+  --blue-dark:#004299;
+  --blue-light:#E8F0FE;
+  --blue-mid:#4A90D9;
+  --navy:#1E3A5F;
+  --white:#FFFFFF;
+  --gray-50:#F7F8FA;
+  --gray-100:#F0F2F5;
+  --gray-200:#E4E7EC;
+  --gray-400:#9AA3B0;
+  --gray-600:#5A6472;
+  --gray-800:#1A2030;
+  --green:#166534;
+  --green-bg:#F0FDF4;
+  --amber:#92400E;
+  --amber-bg:#FFFBEB;
+  --red:#991B1B;
+  --red-bg:#FEF2F2;
+  --radius:10px;
+  --radius-lg:16px;
+  --shadow:0 1px 4px rgba(0,0,0,.08);
+  --shadow-md:0 4px 16px rgba(0,0,0,.12);
+}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','BIZ UDPGothic',sans-serif;
+  background:var(--gray-50);color:var(--gray-800);min-height:100vh;
+  padding-bottom:72px;-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit;border:none;background:none;outline:none}
+input,select,textarea{
+  font-family:inherit;font-size:16px;width:100%;
+  padding:12px 14px;border:1.5px solid var(--gray-200);
+  border-radius:var(--radius);background:var(--white);
+  color:var(--gray-800);outline:none;
+  transition:border-color .15s;-webkit-appearance:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+textarea{resize:vertical;min-height:90px;line-height:1.6}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A6472' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;
+}
 
-      /* Type scale */
-      --text-xs:   0.6875rem;   /* 11px */
-      --text-sm:   0.8125rem;   /* 13px */
-      --text-base: 0.9375rem;   /* 15px */
-      --text-lg:   1.0625rem;   /* 17px */
-      --text-xl:   1.25rem;
-      --text-2xl:  1.625rem;
-      --text-3xl:  2.25rem;
+/* ===== SCREENS ===== */
+.screen{display:none;position:fixed;inset:0;z-index:200;background:var(--white);overflow-y:auto}
+.screen.active{display:block}
 
-      /* Spacing (8pt grid) */
-      --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
-      --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
-      --sp-12: 48px; --sp-16: 64px;
+/* ===== LOGIN ===== */
+#loginScreen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+  background:linear-gradient(160deg,#0057B8 0%,#1E3A5F 100%);
+}
+.login-box{
+  background:var(--white);border-radius:20px;padding:32px 24px;
+  width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo img{height:48px;width:auto;display:block;margin:0 auto}
+.login-subtitle{font-size:12px;color:var(--gray-400);margin-top:8px;letter-spacing:.04em;text-transform:uppercase}
+.login-form-title{font-size:15px;font-weight:700;color:var(--gray-800);margin-bottom:16px}
+.login-field{margin-bottom:12px}
+.login-field label{display:block;font-size:11px;font-weight:700;color:var(--gray-600);letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.login-error{
+  background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;
+  border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:16px;display:none;
+}
+.btn-primary{
+  width:100%;padding:14px;border-radius:var(--radius);
+  background:var(--blue);color:var(--white);
+  font-size:15px;font-weight:700;letter-spacing:.01em;
+  transition:background .15s;border:none;cursor:pointer;
+}
+.btn-primary:hover{background:var(--blue-dark)}
+.btn-primary:disabled{opacity:.5;pointer-events:none}
+.login-notice{font-size:12px;color:var(--gray-400);text-align:center;margin-top:16px;line-height:1.6}
 
-      --radius: 10px;
-      --radius-sm: 6px;
-      --radius-lg: 16px;
-      --tr: 150ms ease;
-    }
+/* ===== INVITE ===== */
+#inviteScreen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+  background:linear-gradient(160deg,#0057B8 0%,#1E3A5F 100%);
+}
+.invite-box{
+  background:var(--white);border-radius:20px;padding:32px 24px;
+  width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.invite-team-logo{text-align:center;margin-bottom:20px}
+.invite-team-logo img{height:40px;width:auto;display:block;margin:0 auto}
+.invite-title{font-size:18px;font-weight:800;color:var(--gray-800);letter-spacing:-.02em;margin-bottom:6px}
+.invite-sub{font-size:13px;color:var(--gray-600);margin-bottom:20px;line-height:1.5}
+.invite-role{
+  display:inline-block;background:var(--blue-light);color:var(--blue);
+  font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;
+  letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px;
+}
+.invite-field{margin-bottom:12px}
+.invite-field label{display:block;font-size:11px;font-weight:700;color:var(--gray-600);letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.invite-error{
+  background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;
+  border-radius:8px;padding:10px 12px;font-size:13px;margin-top:12px;display:none;
+}
 
-    /* Reset */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans',
-                   'Hiragino Kaku Gothic ProN', 'BIZ UDPGothic', sans-serif;
-      background: var(--white);
-      color: var(--ink);
-      min-height: 100vh;
-      padding-bottom: 72px;
-      -webkit-font-smoothing: antialiased;
-    }
-    a { color: inherit; text-decoration: none; }
-    button { cursor: pointer; font-family: inherit; border: none; outline: none; background: none; }
-    input, select, textarea {
-      font-family: inherit;
-      font-size: var(--text-base);
-      width: 100%;
-      padding: 11px var(--sp-4);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      background: var(--white);
-      color: var(--ink);
-      transition: border-color var(--tr);
-      outline: none;
-      -webkit-appearance: none;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(30,58,95,.08);
-    }
-    textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
-    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6B6B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+/* ===== MAIN APP ===== */
+#app{display:none}
+#app.active{display:block}
 
-    /* ============================================================
-       TOPBAR
-    ============================================================ */
-    .topbar { display: none; }
-    .topbar__logo { display: flex; align-items: center; gap: var(--sp-3); }
-    .topbar__logo img { width: 28px; height: 28px; border-radius: 4px; object-fit: cover; }
-    .topbar__title {
-      font-size: var(--text-sm);
-      font-weight: 600;
-      color: var(--ink);
-      letter-spacing: -0.01em;
-    }
-    .topbar__right { display: flex; align-items: center; gap: var(--sp-3); }
-    .topbar__user { font-size: var(--text-xs); color: var(--ink-muted); }
-    .topbar__logout {
-      font-size: var(--text-xs);
-      color: var(--ink-muted);
-      padding: 4px 10px;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      transition: border-color var(--tr), color var(--tr);
-    }
-    .topbar__logout:hover { border-color: var(--ink-muted); color: var(--ink); }
+/* ===== HEADER ===== */
+.app-header{
+  position:sticky;top:0;z-index:100;
+  background:var(--white);border-bottom:1px solid var(--gray-200);
+  padding:0 16px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.header-logo img{height:28px;width:auto}
+.header-right{display:flex;align-items:center;gap:8px}
+.header-user{font-size:12px;color:var(--gray-600)}
+.header-badge{
+  font-size:11px;font-weight:700;
+  background:var(--blue);color:var(--white);
+  padding:3px 8px;border-radius:20px;
+}
+.btn-logout{
+  font-size:12px;color:var(--gray-600);
+  padding:5px 10px;border-radius:20px;
+  border:1px solid var(--gray-200);
+  transition:all .15s;
+}
+.btn-logout:hover{border-color:var(--gray-400);color:var(--gray-800)}
 
-    /* ============================================================
-       BOTTOM NAV — minimal, 4 tabs, dot indicator
-    ============================================================ */
-    .bottom-nav {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-      background: var(--white);
-      border-top: 1px solid var(--line);
-      display: flex;
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .nav-item {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 10px 4px 8px;
-      color: var(--ink-faint);
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.01em;
-      gap: 4px;
-      transition: color var(--tr);
-      -webkit-tap-highlight-color: transparent;
-      position: relative;
-    }
-    .nav-item svg { width: 22px; height: 22px; stroke-width: 1.5; }
-    .nav-item.active { color: var(--accent); font-weight: 600; }
-    .nav-item.active::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 50%; transform: translateX(-50%);
-      width: 28px; height: 2.5px;
-      background: var(--accent);
-      border-radius: 0 0 3px 3px;
-    }
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--white);border-top:1px solid var(--gray-200);
+  display:flex;padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:8px 4px 6px;
+  color:var(--gray-400);font-size:10px;font-weight:500;gap:3px;
+  transition:color .15s;-webkit-tap-highlight-color:transparent;
+  position:relative;
+}
+.nav-btn svg{width:22px;height:22px;stroke-width:1.75}
+.nav-btn.active{color:var(--blue)}
+.nav-btn.active::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:28px;height:2.5px;background:var(--blue);border-radius:0 0 3px 3px;
+}
 
-    /* ============================================================
-       SIDEBAR (PC)
-    ============================================================ */
-    @media (min-width: 768px) {
-      body { padding-bottom: 0; padding-left: 220px; }
-      .bottom-nav { display: none; }
-      .sidebar {
-        display: flex; flex-direction: column;
-        position: fixed; left: 0; top: 0; bottom: 0;
-        width: 220px;
-        background: var(--white);
-        border-right: 1px solid var(--line);
-        padding: var(--sp-6) 0 var(--sp-4);
-        overflow-y: auto; z-index: 100;
-      }
-      .sidebar__logo {
-        padding: 0 var(--sp-5) var(--sp-5);
-        border-bottom: 1px solid var(--line);
-        margin-bottom: var(--sp-4);
-        display: flex; align-items: center; gap: var(--sp-3);
-      }
-      .sidebar__logo img { width: 28px; height: 28px; border-radius: 4px; }
-      .sidebar__logoname { font-size: var(--text-sm); font-weight: 600; color: var(--ink); }
-      .sidebar__item {
-        display: flex; align-items: center; gap: var(--sp-3);
-        padding: 9px var(--sp-5);
-        color: var(--ink-muted);
-        font-size: var(--text-sm);
-        font-weight: 500;
-        transition: color var(--tr), background var(--tr);
-        border-radius: 0;
-        width: 100%;
-        text-align: left;
-      }
-      .sidebar__item:hover { color: var(--ink); background: var(--surface); }
-      .sidebar__item.active { color: var(--accent); background: rgba(30,58,95,.05); }
-      .sidebar__item svg { width: 16px; height: 16px; flex-shrink: 0; stroke-width: 1.75; }
-      .sidebar__footer {
-        margin-top: auto;
-        padding: var(--sp-4) var(--sp-5) 0;
-        border-top: 1px solid var(--line);
-      }
-      .sidebar__username { font-size: var(--text-xs); color: var(--ink-faint); margin-bottom: var(--sp-2); }
-      .topbar { display: none; }
-      .fab { bottom: var(--sp-6) !important; right: var(--sp-6) !important; }
-    }
-    .sidebar { display: none; }
-    @media (min-width: 768px) { .sidebar { display: flex; } }
+/* ===== PAGES ===== */
+.page{display:none}
+.page.active{display:block}
+.page-wrap{max-width:600px;margin:0 auto}
 
-    /* ============================================================
-       PAGES
-    ============================================================ */
-    .page { display: none; max-width: 600px; margin: 0 auto; }
-    .page.active { display: block; }
+/* ===== HOME ===== */
+.home-hero{
+  background:linear-gradient(135deg,#0057B8 0%,#1E3A5F 100%);
+  padding:24px 20px 28px;
+  color:var(--white);
+}
+.home-hero__logo img{height:36px;width:auto;margin-bottom:12px;opacity:.95}
+.home-hero__greeting{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.2;margin-bottom:4px}
+.home-hero__date{font-size:13px;color:rgba(255,255,255,.7)}
 
-    /* ============================================================
-       HOME PAGE — logo hero + clean list
-    ============================================================ */
-    .home-hero {
-      padding: var(--sp-5) var(--sp-4) var(--sp-4);
-      border-bottom: 1px solid var(--line);
-    }
-    .home-hero__logo-img {
-      height: 52px; width: auto; display: block; margin-bottom: var(--sp-3); max-width: 220px;
-    }
-    .home-hero__sub { font-size: var(--text-sm); color: var(--ink-faint); }
+.home-next{
+  margin:16px 16px 0;
+  background:var(--white);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);overflow:hidden;
+}
+.home-next__label{
+  background:var(--blue);color:var(--white);
+  font-size:11px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;padding:8px 16px;
+}
+.home-next__body{padding:16px;cursor:pointer}
+.home-next__type{
+  font-size:11px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:6px;
+}
+.home-next__title{font-size:20px;font-weight:800;color:var(--gray-800);letter-spacing:-.02em;line-height:1.2;margin-bottom:10px}
+.home-next__meta{display:flex;flex-direction:column;gap:5px}
+.home-next__row{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--gray-600)}
+.home-next__row svg{width:14px;height:14px;flex-shrink:0;color:var(--blue)}
+.home-next__cta{
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-100);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.home-next__cta-text{font-size:13px;font-weight:600;color:var(--blue)}
+.home-next__cta-arrow{color:var(--blue)}
 
-    .home-body { padding: 0 var(--sp-4); }
+.home-sections{padding:20px 16px}
+.home-section{margin-bottom:24px}
+.home-section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.home-section-title{
+  font-size:11px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--gray-600);
+  display:flex;align-items:center;gap:6px;
+}
+.home-section-title::before{
+  content:'';width:3px;height:12px;background:var(--blue);
+  border-radius:2px;display:block;
+}
+.home-section-more{font-size:12px;color:var(--blue);font-weight:600;cursor:pointer}
 
-    .home-section { padding: var(--sp-6) 0 0; }
-    .home-section + .home-section { border-top: 1px solid var(--line); }
+/* ===== CARDS ===== */
+.card{
+  background:var(--white);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:14px;margin-bottom:8px;
+}
+.card--click{cursor:pointer;transition:box-shadow .15s;-webkit-tap-highlight-color:transparent}
+.card--click:active{box-shadow:var(--shadow-md)}
 
-    .section-eyebrow {
-      font-size: var(--text-xs);
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: var(--sp-4);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .section-more {
-      font-size: var(--text-xs);
-      color: var(--accent);
-      font-weight: 500;
-      cursor: pointer;
-      letter-spacing: 0;
-      text-transform: none;
-    }
+/* ===== RESULT CARD ===== */
+.result-card{display:flex;align-items:center;gap:12px}
+.result-score{font-size:22px;font-weight:800;color:var(--gray-800);letter-spacing:-.02em;font-variant-numeric:tabular-nums;flex-shrink:0}
+.result-sep{color:var(--gray-200);font-weight:300;margin:0 2px}
+.result-info{flex:1;min-width:0}
+.result-opp{font-size:14px;font-weight:600;color:var(--gray-800)}
+.result-date{font-size:12px;color:var(--gray-400)}
+.result-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;flex-shrink:0;letter-spacing:.03em}
+.badge-win{background:var(--green-bg);color:var(--green)}
+.badge-lose{background:var(--red-bg);color:var(--red)}
+.badge-draw{background:var(--gray-100);color:var(--gray-600)}
 
-    /* Next schedule card — hero treatment */
-    .next-card {
-      padding: var(--sp-5) 0 var(--sp-6);
-      cursor: pointer;
-    }
-    .next-card__type {
-      font-size: var(--text-xs);
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      margin-bottom: var(--sp-2);
-    }
-    .next-card__title {
-      font-size: var(--text-2xl);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      line-height: 1.15;
-      margin-bottom: var(--sp-3);
-    }
-    .next-card__meta {
-      display: flex; flex-direction: column; gap: var(--sp-1);
-    }
-    .next-card__meta-row {
-      font-size: var(--text-sm);
-      color: var(--ink-muted);
-      display: flex; align-items: center; gap: var(--sp-2);
-    }
-    .next-card__meta-row svg { width: 13px; height: 13px; flex-shrink: 0; }
-    .next-card__cta {
-      margin-top: var(--sp-4);
-      display: inline-flex; align-items: center; gap: var(--sp-2);
-      font-size: var(--text-sm);
-      font-weight: 600;
-      color: var(--accent);
-      border-bottom: 1px solid rgba(30,58,95,.2);
-      padding-bottom: 1px;
-    }
-    .next-card__cta svg { width: 14px; height: 14px; }
+/* ===== CALENDAR ===== */
+.cal-header{
+  position:sticky;top:52px;z-index:50;
+  background:var(--white);border-bottom:1px solid var(--gray-200);
+  padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cal-month{font-size:17px;font-weight:700;color:var(--gray-800);letter-spacing:-.02em}
+.cal-controls{display:flex;align-items:center;gap:4px}
+.cal-nav{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gray-600);transition:background .15s;
+}
+.cal-nav:hover{background:var(--gray-100)}
+.cal-today{
+  font-size:12px;font-weight:600;color:var(--blue);
+  padding:5px 12px;border-radius:20px;border:1.5px solid var(--blue);
+  transition:background .15s;
+}
+.cal-today:hover{background:var(--blue-light)}
+.cal-weekdays{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  background:var(--white);border-bottom:1px solid var(--gray-200);
+}
+.cal-wd{
+  text-align:center;padding:7px 0;
+  font-size:11px;font-weight:700;letter-spacing:.04em;
+  color:var(--gray-400);text-transform:uppercase;
+}
+.cal-wd.sun{color:#DC2626}
+.cal-wd.sat{color:var(--blue)}
+.cal-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:1px;background:var(--gray-200);
+}
+.cal-cell{
+  background:var(--white);min-height:68px;padding:4px 3px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:background .1s;
+}
+.cal-cell:hover{background:var(--gray-50)}
+.cal-cell.other{background:var(--gray-50)}
+.cal-cell.other .cal-num{color:var(--gray-400)}
+.cal-cell.today .cal-num{
+  background:var(--blue);color:var(--white);
+  border-radius:50%;width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;
+}
+.cal-num{
+  font-size:12px;font-weight:500;color:var(--gray-800);
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 2px;
+}
+.cal-num.sun{color:#DC2626}
+.cal-num.sat{color:var(--blue)}
+.cal-ev{
+  border-radius:3px;padding:1px 4px;font-size:10px;font-weight:700;
+  color:var(--white);margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  cursor:pointer;line-height:1.5;
+}
+.cal-ev.official{background:var(--blue)}
+.cal-ev.friendly{background:var(--blue-mid)}
+.cal-ev.practice{background:var(--gray-400)}
+.cal-ev.event{background:var(--navy)}
+.cal-more{font-size:10px;color:var(--blue);font-weight:600;padding:0 3px;cursor:pointer}
 
-    /* Score row */
-    .score-row {
-      padding: var(--sp-5) 0 var(--sp-6);
-      cursor: pointer;
-    }
-    .score-row__date { font-size: var(--text-xs); color: var(--ink-faint); margin-bottom: var(--sp-3); }
-    .score-row__main {
-      display: flex; align-items: baseline; gap: var(--sp-4);
-    }
-    .score-row__num {
-      font-size: var(--text-3xl);
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      font-variant-numeric: tabular-nums;
-      color: var(--ink);
-      line-height: 1;
-    }
-    .score-row__sep { font-size: var(--text-xl); color: var(--line); font-weight: 300; }
-    .score-row__teams {
-      display: flex; flex-direction: column; gap: 2px;
-    }
-    .score-row__team { font-size: var(--text-xs); color: var(--ink-muted); }
-    .score-row__result {
-      margin-left: auto;
-      font-size: var(--text-xs);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      padding: 3px 8px;
-      border-radius: 20px;
-    }
-    .result--win  { color: var(--ok);     background: rgba(22,101,52,.08); }
-    .result--lose { color: var(--danger); background: rgba(185,28,28,.08); }
-    .result--draw { color: var(--ink-muted); background: var(--surface); }
+/* ===== DAY PANEL ===== */
+.day-panel{background:var(--white);border-top:1px solid var(--gray-200)}
+.day-panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid var(--gray-200);
+}
+.day-panel-date{font-size:15px;font-weight:700;color:var(--gray-800)}
+.day-panel-close{
+  width:28px;height:28px;border-radius:50%;background:var(--gray-100);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gray-600);
+}
+.day-ev-row{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 16px;border-bottom:1px solid var(--gray-100);
+  cursor:pointer;transition:background .1s;
+}
+.day-ev-row:hover{background:var(--gray-50)}
+.day-ev-bar{width:4px;border-radius:2px;align-self:stretch;flex-shrink:0}
+.day-ev-bar.official{background:var(--blue)}
+.day-ev-bar.friendly{background:var(--blue-mid)}
+.day-ev-bar.practice{background:var(--gray-400)}
+.day-ev-bar.event{background:var(--navy)}
+.day-ev-info{flex:1;min-width:0}
+.day-ev-type{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px}
+.day-ev-type.official{color:var(--blue)}
+.day-ev-type.friendly{color:var(--blue-mid)}
+.day-ev-type.practice{color:var(--gray-600)}
+.day-ev-type.event{color:var(--navy)}
+.day-ev-title{font-size:14px;font-weight:600;color:var(--gray-800);margin-bottom:2px}
+.day-ev-meta{font-size:12px;color:var(--gray-400)}
 
-    /* Notice row */
-    .notice-row {
-      padding: var(--sp-5) 0 var(--sp-6);
-      cursor: pointer;
-    }
-    .notice-row__title {
-      font-size: var(--text-base);
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: var(--sp-1);
-      letter-spacing: -0.01em;
-    }
-    .notice-row__body {
-      font-size: var(--text-sm);
-      color: var(--ink-muted);
-      line-height: 1.5;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:flex-end;justify-content:center}
+.modal-overlay.hidden{display:none}
+.modal{
+  background:var(--white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+  width:100%;max-width:600px;max-height:92vh;overflow-y:auto;
+  padding:16px 16px 40px;
+}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:16px;font-weight:700;color:var(--gray-800);letter-spacing:-.01em}
+.modal-close{
+  width:28px;height:28px;border-radius:50%;background:var(--gray-100);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gray-600);font-size:14px;
+}
 
-    /* ============================================================
-       PAGE HEADER
-    ============================================================ */
-    .page-header {
-      padding: var(--sp-6) var(--sp-4) var(--sp-4);
-      border-bottom: 1px solid var(--line);
-    }
-    .page-header h1 {
-      font-size: var(--text-xl);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--accent);
-    }
-    .page-header p { font-size: var(--text-sm); color: var(--ink-faint); margin-top: var(--sp-1); }
+/* ===== SCHEDULE DETAIL ===== */
+.sch-hero{padding:4px 0 20px;border-bottom:1px solid var(--gray-100);margin-bottom:4px}
+.sch-type-badge{
+  display:inline-flex;align-items:center;font-size:11px;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;
+  border-radius:20px;margin-bottom:10px;
+}
+.sch-type-badge.official{background:var(--blue-light);color:var(--blue)}
+.sch-type-badge.friendly{background:#EFF6FF;color:var(--blue-mid)}
+.sch-type-badge.practice{background:var(--gray-100);color:var(--gray-600)}
+.sch-type-badge.event{background:#EEF2FF;color:var(--navy)}
+.sch-title{font-size:22px;font-weight:800;color:var(--gray-800);letter-spacing:-.03em;line-height:1.2}
+.sch-row{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--gray-100)}
+.sch-row:last-child{border-bottom:none}
+.sch-icon{
+  width:36px;height:36px;border-radius:8px;background:var(--gray-100);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  color:var(--blue);
+}
+.sch-icon svg{width:18px;height:18px}
+.sch-label{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-400);margin-bottom:3px}
+.sch-val{font-size:14px;color:var(--gray-800);line-height:1.5}
+.sch-link{color:var(--blue);font-weight:600;text-decoration:underline}
 
-    /* ============================================================
-       SCHEDULE LIST — line-separated, left accent bar
-    ============================================================ */
-    .schedule-body { padding: 0 var(--sp-4); }
-    .schedule-month-label {
-      font-size: var(--text-xs);
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      padding: var(--sp-5) 0 var(--sp-3);
-    }
-    .schedule-row {
-      display: flex; align-items: stretch; gap: var(--sp-4);
-      padding: var(--sp-4) 0;
-      border-bottom: 1px solid var(--line);
-      cursor: pointer;
-      transition: background var(--tr);
-      margin: 0 calc(-1 * var(--sp-4));
-      padding-left: var(--sp-4);
-      padding-right: var(--sp-4);
-    }
-    .schedule-row:hover { background: var(--surface); }
-    .schedule-row.past { opacity: 0.45; }
-    .schedule-row__bar {
-      width: 2px; border-radius: 2px; flex-shrink: 0; align-self: stretch;
-    }
-    .bar--practice { background: var(--ink-faint); }
-    .bar--friendly  { background: var(--accent); }
-    .bar--official  { background: var(--accent); }
-    .schedule-row__body { flex: 1; min-width: 0; }
-    .schedule-row__title {
-      font-size: var(--text-base);
-      font-weight: 600;
-      color: var(--ink);
-      letter-spacing: -0.01em;
-      margin-bottom: 3px;
-    }
-    .schedule-row__meta {
-      font-size: var(--text-xs);
-      color: var(--ink-muted);
-      display: flex; flex-wrap: wrap; gap: var(--sp-3);
-    }
-    .schedule-row__type-label {
-      font-size: var(--text-xs);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .label--practice { color: var(--ink-faint); }
-    .label--friendly  { color: var(--accent); }
-    .label--official  { color: var(--ink); }
+/* ===== ATTENDANCE ===== */
+.att-section{padding:16px 0 0;border-top:1px solid var(--gray-100);margin-top:4px}
+.att-title{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--gray-400);margin-bottom:14px}
+.att-card{background:var(--gray-50);border-radius:var(--radius);padding:12px;margin-bottom:8px}
+.att-name{font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:10px}
+.att-grade{font-size:12px;color:var(--gray-400);font-weight:400;margin-left:4px}
+.att-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.att-seg-btn{
+  padding:9px 4px;border-radius:8px;font-size:13px;font-weight:600;
+  border:1.5px solid var(--gray-200);background:var(--white);
+  color:var(--gray-600);text-align:center;cursor:pointer;transition:all .15s;
+}
+.att-seg-btn.sel-○{background:var(--green-bg);border-color:#16A34A;color:var(--green)}
+.att-seg-btn.sel-△{background:var(--amber-bg);border-color:#D97706;color:var(--amber)}
+.att-seg-btn.sel-×{background:var(--red-bg);border-color:#DC2626;color:var(--red)}
 
-    /* Filter tabs */
-    .filter-bar {
-      display: flex; gap: var(--sp-2);
-      padding: var(--sp-4);
-      border-bottom: 1px solid var(--line);
-      overflow-x: auto; scrollbar-width: none;
-    }
-    .filter-bar::-webkit-scrollbar { display: none; }
-    .filter-tab {
-      padding: 6px var(--sp-4);
-      border-radius: 20px;
-      font-size: var(--text-xs);
-      font-weight: 500;
-      white-space: nowrap;
-      border: 1px solid var(--line);
-      color: var(--ink-muted);
-      background: var(--white);
-      transition: all var(--tr);
-    }
-    .filter-tab.active {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: var(--white);
-    }
+/* ===== ADMIN ATT SUMMARY ===== */
+.att-summary{padding:16px 0 0;margin-top:4px;border-top:1px solid var(--gray-100)}
+.att-stats{display:flex;gap:8px;margin-bottom:12px}
+.att-stat{flex:1;text-align:center;background:var(--gray-50);border-radius:8px;padding:10px 4px}
+.att-stat-num{font-size:22px;font-weight:800;color:var(--gray-800)}
+.att-stat-label{font-size:11px;color:var(--gray-400)}
+.att-bar{height:5px;background:var(--gray-200);border-radius:3px;margin-bottom:10px;overflow:hidden}
+.att-bar-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .4s}
+.att-rate{font-size:12px;color:var(--gray-400);margin-bottom:12px}
+.att-member-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--gray-100);font-size:13px}
+.att-member-row:last-child{border-bottom:none}
+.att-status-○{color:var(--green);font-weight:700}
+.att-status-△{color:var(--amber);font-weight:700}
+.att-status-×{color:var(--red);font-weight:700}
 
-    /* ============================================================
-       RESULTS LIST
-    ============================================================ */
-    .result-body { padding: 0 var(--sp-4); }
-    .result-row {
-      display: flex; align-items: center;
-      padding: var(--sp-5) 0;
-      border-bottom: 1px solid var(--line);
-      cursor: pointer;
-      gap: var(--sp-4);
-      margin: 0 calc(-1 * var(--sp-4));
-      padding-left: var(--sp-4);
-      padding-right: var(--sp-4);
-      transition: background var(--tr);
-    }
-    .result-row:hover { background: var(--surface); }
-    .result-row__score {
-      font-size: var(--text-2xl);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      font-variant-numeric: tabular-nums;
-      color: var(--ink);
-      flex-shrink: 0;
-      line-height: 1;
-    }
-    .result-row__info { flex: 1; min-width: 0; }
-    .result-row__opp {
-      font-size: var(--text-sm);
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: 2px;
-    }
-    .result-row__date { font-size: var(--text-xs); color: var(--ink-faint); }
-    .result-badge {
-      font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.04em;
-      padding: 3px 8px; border-radius: 20px; flex-shrink: 0;
-    }
+/* ===== PLAYERS ===== */
+.players-wrap{padding:16px}
+.grade-title{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--gray-400);padding:16px 0 8px}
+.player-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:1px;background:var(--gray-200);border-radius:var(--radius);overflow:hidden;margin-bottom:4px}
+.player-card{
+  background:var(--white);padding:14px 12px;
+  cursor:pointer;transition:background .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.player-card:hover{background:var(--gray-50)}
+.player-num{font-size:20px;font-weight:800;color:var(--blue);letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+.player-name{font-size:13px;font-weight:700;color:var(--gray-800);margin:5px 0 3px}
+.player-meta{font-size:11px;color:var(--gray-400)}
 
-    /* ============================================================
-       PLAYERS
-    ============================================================ */
-    .players-body { padding: 0 var(--sp-4); }
-    .grade-label {
-      font-size: var(--text-xs);
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      padding: var(--sp-5) 0 var(--sp-3);
-    }
-    .player-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 1px;
-      background: var(--line);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-bottom: var(--sp-4);
-    }
-    .player-card {
-      background: var(--white);
-      padding: var(--sp-4);
-      cursor: pointer;
-      transition: background var(--tr);
-      -webkit-tap-highlight-color: transparent;
-    }
-    .player-card:hover { background: var(--surface); }
-    .player-card__num {
-      font-size: var(--text-xl);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-      font-variant-numeric: tabular-nums;
-      line-height: 1.1;
-    }
-    .player-card__name {
-      font-size: var(--text-sm);
-      font-weight: 600;
-      color: var(--ink);
-      margin: var(--sp-1) 0;
-    }
-    .player-card__meta { font-size: var(--text-xs); color: var(--ink-faint); }
+/* ===== NOTICES ===== */
+.notice-wrap{padding:0 16px}
+.notice-item{
+  padding:16px 0;border-bottom:1px solid var(--gray-100);cursor:pointer;
+  margin:0 -16px;padding:16px;
+  transition:background .1s;
+}
+.notice-item:hover{background:var(--gray-50)}
+.notice-pin{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--blue);margin-bottom:4px}
+.notice-title{font-size:15px;font-weight:700;color:var(--gray-800);margin-bottom:4px;letter-spacing:-.01em}
+.notice-preview{font-size:13px;color:var(--gray-600);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.notice-date{font-size:11px;color:var(--gray-400);margin-top:6px}
 
-    /* ============================================================
-       NOTICES
-    ============================================================ */
-    .notice-body { padding: 0 var(--sp-4); }
-    .notice-item {
-      padding: var(--sp-5) 0;
-      border-bottom: 1px solid var(--line);
-      cursor: pointer;
-      margin: 0 calc(-1 * var(--sp-4));
-      padding-left: var(--sp-4);
-      padding-right: var(--sp-4);
-      transition: background var(--tr);
-    }
-    .notice-item:hover { background: var(--surface); }
-    .notice-item__pin {
-      font-size: var(--text-xs);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: var(--sp-1);
-    }
-    .notice-item__title {
-      font-size: var(--text-base);
-      font-weight: 600;
-      color: var(--ink);
-      letter-spacing: -0.01em;
-      margin-bottom: var(--sp-1);
-    }
-    .notice-item__preview {
-      font-size: var(--text-sm); color: var(--ink-muted);
-      display: -webkit-box; -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical; overflow: hidden;
-      line-height: 1.5;
-    }
-    .notice-item__date { font-size: var(--text-xs); color: var(--ink-faint); margin-top: var(--sp-2); }
+/* ===== MEMBERS ===== */
+.members-wrap{padding:16px}
+.invite-panel{
+  background:linear-gradient(135deg,#0057B8,#1E3A5F);
+  border-radius:var(--radius-lg);padding:16px;margin-bottom:20px;color:var(--white);
+}
+.invite-panel-title{font-size:13px;font-weight:700;margin-bottom:12px}
+.invite-btns{display:flex;gap:8px;margin-bottom:12px}
+.btn-invite{
+  padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;
+  border:1.5px solid rgba(255,255,255,.4);color:var(--white);
+  background:rgba(255,255,255,.1);cursor:pointer;transition:background .15s;
+}
+.btn-invite:hover{background:rgba(255,255,255,.2)}
+.invite-url{
+  background:rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;
+  font-size:12px;font-family:monospace;word-break:break-all;
+  color:rgba(255,255,255,.9);line-height:1.5;
+}
+.btn-copy{
+  margin-top:8px;padding:6px 14px;border-radius:20px;
+  font-size:12px;font-weight:700;color:var(--white);
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+  cursor:pointer;
+}
+.member-row{
+  display:flex;align-items:center;gap:10px;
+  padding:12px;background:var(--white);border-radius:var(--radius);
+  box-shadow:var(--shadow);margin-bottom:8px;cursor:pointer;
+  transition:box-shadow .15s;
+}
+.member-row:hover{box-shadow:var(--shadow-md)}
+.member-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--blue-light);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;flex-shrink:0;
+}
+.member-info{flex:1;min-width:0}
+.member-name{font-size:14px;font-weight:600;color:var(--gray-800)}
+.member-email{font-size:12px;color:var(--gray-400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.member-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.member-tag{font-size:11px;color:var(--gray-600);background:var(--gray-100);padding:2px 7px;border-radius:10px}
+.member-role{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;flex-shrink:0;letter-spacing:.03em}
+.role-admin{background:var(--blue);color:var(--white)}
+.role-parent{background:var(--gray-100);color:var(--gray-600);border:1px solid var(--gray-200)}
 
-    /* ============================================================
-       MEMBERS
-    ============================================================ */
-    .members-body { padding: 0 var(--sp-4); }
-    .invite-panel {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: var(--sp-4);
-      margin: var(--sp-4) 0;
-    }
-    .invite-panel__title {
-      font-size: var(--text-sm); font-weight: 600; color: var(--ink);
-      margin-bottom: var(--sp-3);
-    }
-    .invite-panel__btns { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-3); }
-    .invite-url {
-      font-size: var(--text-xs);
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: var(--sp-3);
-      word-break: break-all;
-      color: var(--ink-muted);
-      line-height: 1.5;
-    }
-    .member-row {
-      display: flex; align-items: center; gap: var(--sp-3);
-      padding: var(--sp-4) 0;
-      border-bottom: 1px solid var(--line);
-      cursor: pointer;
-      margin: 0 calc(-1 * var(--sp-4));
-      padding-left: var(--sp-4); padding-right: var(--sp-4);
-      transition: background var(--tr);
-    }
-    .member-row:last-child { border-bottom: none; }
-    .member-row:hover { background: var(--surface); }
-    .member-avatar {
-      width: 34px; height: 34px; border-radius: 50%;
-      background: var(--surface); border: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: center;
-      font-size: var(--text-sm); font-weight: 600; color: var(--ink-muted);
-      flex-shrink: 0;
-    }
-    .member-info { flex: 1; min-width: 0; }
-    .member-name { font-size: var(--text-sm); font-weight: 600; color: var(--ink); }
-    .member-email { font-size: var(--text-xs); color: var(--ink-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .player-tags { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-top: 3px; }
-    .player-tag {
-      font-size: var(--text-xs); color: var(--ink-muted);
-      background: var(--surface);
-      padding: 1px 6px; border-radius: 10px;
-      border: 1px solid var(--line);
-    }
-    .role-tag {
-      font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.03em;
-      padding: 3px 8px; border-radius: 20px; flex-shrink: 0;
-    }
-    .role-admin { background: var(--accent); color: var(--white); }
-    .role-parent { background: var(--surface); color: var(--ink-muted); border: 1px solid var(--line); }
+/* ===== FORM ===== */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-600);margin-bottom:6px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-section{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--gray-400);margin:20px 0 12px;padding-top:16px;border-top:1px solid var(--gray-100)}
+.form-hint{font-size:12px;color:var(--gray-400);margin-top:5px;line-height:1.5}
 
-    /* ============================================================
-       MODAL — bottom sheet
-    ============================================================ */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 150; display: flex; align-items: flex-end; justify-content: center; }
-    .modal-overlay.hidden { display: none; }
-    .modal {
-      background: var(--white);
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-      padding: var(--sp-5) var(--sp-4) var(--sp-10);
-      width: 100%; max-width: 600px; max-height: 92vh; overflow-y: auto;
-    }
-    .modal__header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: var(--sp-5);
-    }
-    .modal__title { font-size: var(--text-base); font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
-    .modal__close {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: var(--surface);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--ink-muted); font-size: 14px;
-      transition: background var(--tr);
-    }
-    .modal__close:hover { background: var(--line); }
+/* ===== PAGE HEADER ===== */
+.page-header{padding:20px 16px 16px;border-bottom:1px solid var(--gray-100)}
+.page-header h1{font-size:20px;font-weight:800;color:var(--gray-800);letter-spacing:-.02em}
+.page-header p{font-size:13px;color:var(--gray-400);margin-top:3px}
 
-    /* Attendance in modal */
-    .att-section-title {
-      font-size: var(--text-xs); font-weight: 600;
-      letter-spacing: 0.05em; text-transform: uppercase;
-      color: var(--ink-faint);
-      padding: var(--sp-5) 0 var(--sp-3);
-      border-top: 1px solid var(--line);
-      margin-top: var(--sp-4);
-    }
-    .att-player-row {
-      display: flex; align-items: center; gap: var(--sp-3);
-      padding: var(--sp-3) 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .att-player-name { flex: 1; font-size: var(--text-sm); font-weight: 500; color: var(--ink); }
-    .att-player-grade { font-size: var(--text-xs); color: var(--ink-faint); }
-    /* Segment control for attendance */
-    .att-segment {
-      display: flex;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-    }
-    .att-btn {
-      padding: 7px 14px;
-      font-size: var(--text-sm);
-      font-weight: 500;
-      color: var(--ink-muted);
-      background: var(--white);
-      border: none;
-      border-right: 1px solid var(--line);
-      transition: all var(--tr);
-      cursor: pointer;
-    }
-    .att-btn:last-child { border-right: none; }
-    .att-btn.sel-○ { background: rgba(22,101,52,.08); color: var(--ok); font-weight: 700; }
-    .att-btn.sel-△ { background: rgba(180,130,0,.08); color: #92650A; font-weight: 700; }
-    .att-btn.sel-× { background: rgba(185,28,28,.08); color: var(--danger); font-weight: 700; }
+/* ===== BUTTONS ===== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px 18px;border-radius:var(--radius);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .15s;border:none;letter-spacing:-.01em;
+}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn-blue{background:var(--blue);color:var(--white)}
+.btn-blue:hover{background:var(--blue-dark)}
+.btn-ghost{background:var(--white);color:var(--gray-800);border:1.5px solid var(--gray-200)}
+.btn-ghost:hover{border-color:var(--gray-400)}
+.btn-danger{background:#DC2626;color:var(--white)}
+.btn-sm{padding:7px 14px;font-size:13px}
+.btn-full{width:100%}
 
-    /* ============================================================
-       FORMS
-    ============================================================ */
-    .form-group { margin-bottom: var(--sp-4); }
-    .form-label {
-      display: block;
-      font-size: var(--text-xs);
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      color: var(--ink-muted);
-      margin-bottom: var(--sp-2);
-      text-transform: uppercase;
-    }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
-    .score-team-label { font-size: var(--text-xs); color: var(--ink-faint); text-align: center; margin-bottom: var(--sp-2); }
-    .score-input-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--sp-3); }
-    .score-input-row input { text-align: center; font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.03em; }
-    .score-vs { color: var(--line); font-size: var(--text-lg); text-align: center; }
+/* ===== FAB ===== */
+.fab{
+  position:fixed;bottom:80px;right:16px;
+  width:50px;height:50px;border-radius:50%;
+  background:var(--blue);color:var(--white);
+  display:none;align-items:center;justify-content:center;
+  font-size:22px;z-index:90;box-shadow:0 4px 16px rgba(0,87,184,.35);
+  -webkit-tap-highlight-color:transparent;transition:background .15s;
+}
+.fab:hover{background:var(--blue-dark)}
 
-    /* ============================================================
-       BUTTONS
-    ============================================================ */
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
-      padding: 11px var(--sp-5);
-      border-radius: var(--radius-sm);
-      font-size: var(--text-sm);
-      font-weight: 600;
-      transition: opacity var(--tr), background var(--tr);
-      -webkit-tap-highlight-color: transparent;
-      letter-spacing: -0.01em;
-      cursor: pointer;
-    }
-    .btn:disabled { opacity: .4; pointer-events: none; }
-    .btn--primary { background: var(--ink); color: var(--white); }
-    .btn--primary:hover { background: #1a1a1a; }
-    .btn--ghost { background: var(--white); color: var(--ink); border: 1px solid var(--line); }
-    .btn--ghost:hover { background: var(--surface); }
-    .btn--danger { background: var(--danger); color: var(--white); }
-    .btn--accent { background: var(--accent); color: var(--white); }
-    .btn--sm { padding: 7px var(--sp-4); font-size: var(--text-xs); }
-    .btn--full { width: 100%; }
+/* ===== UTILS ===== */
+.loading{display:flex;align-items:center;justify-content:center;padding:48px 16px;gap:10px;font-size:13px;color:var(--gray-400)}
+.spinner{width:18px;height:18px;border:2px solid var(--gray-200);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:48px 16px}
+.empty-title{font-size:15px;font-weight:600;color:var(--gray-600);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--gray-400)}
+.toast-wrap{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:var(--gray-800);color:var(--white);padding:10px 18px;border-radius:24px;font-size:13px;font-weight:600;white-space:nowrap;animation:tin .2s ease,tout .25s ease 2.5s forwards}
+.toast.ok{background:#15803D}
+.toast.err{background:#DC2626}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes tout{from{opacity:1}to{opacity:0}}
+.section-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
 
-    /* FAB */
-    .fab {
-      position: fixed; bottom: 80px; right: var(--sp-4);
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      background: var(--ink);
-      color: var(--white);
-      display: none; align-items: center; justify-content: center;
-      font-size: 22px; z-index: 90;
-      transition: background var(--tr);
-    }
-    .fab:hover { background: #1a1a1a; }
-
-    /* ============================================================
-       EMPTY STATE
-    ============================================================ */
-    .empty-state {
-      padding: var(--sp-12) var(--sp-4);
-      text-align: center;
-    }
-    .empty-state__title {
-      font-size: var(--text-base);
-      font-weight: 600;
-      color: var(--ink-muted);
-      margin-bottom: var(--sp-2);
-    }
-    .empty-state__sub { font-size: var(--text-sm); color: var(--ink-faint); }
-
-    /* ============================================================
-       LOADING
-    ============================================================ */
-    .loading {
-      display: flex; align-items: center; justify-content: center;
-      padding: var(--sp-12) var(--sp-4);
-      gap: var(--sp-3);
-      font-size: var(--text-sm);
-      color: var(--ink-faint);
-    }
-    .spinner {
-      width: 16px; height: 16px;
-      border: 1.5px solid var(--line);
-      border-top-color: var(--ink-muted);
-      border-radius: 50%;
-      animation: spin .6s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ============================================================
-       TOAST
-    ============================================================ */
-    .toast-container {
-      position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%);
-      z-index: 200; display: flex; flex-direction: column; gap: var(--sp-2);
-      pointer-events: none;
-    }
-    .toast {
-      background: var(--ink); color: var(--white);
-      padding: 9px var(--sp-5);
-      border-radius: 20px;
-      font-size: var(--text-sm); font-weight: 500;
-      white-space: nowrap;
-      animation: tin .2s ease, tout .25s ease 2.6s forwards;
-    }
-    .toast--success { background: #14532D; }
-    .toast--error   { background: var(--danger); }
-    @keyframes tin  { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-    @keyframes tout { from { opacity: 1; } to { opacity: 0; } }
-
-    /* ============================================================
-       LOGIN SCREEN
-    ============================================================ */
-    #loginScreen {
-      position: fixed; inset: 0;
-      background: var(--white);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 300; padding: var(--sp-6);
-    }
-    .login-card {
-      width: 100%; max-width: 360px;
-      text-align: center;
-    }
-    .login-logo { margin-bottom: var(--sp-8); }
-    .login-logo img.teamlogo {
-      width: 180px; height: auto;
-      margin: 0 auto;
-      display: block;
-    }
-    .login-logo__sub {
-      font-size: var(--text-xs);
-      color: var(--ink-faint);
-      margin-top: var(--sp-3);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .btn-google {
-      width: 100%; padding: 13px var(--sp-5);
-      border-radius: var(--radius-sm);
-      font-size: var(--text-sm); font-weight: 600;
-      background: var(--white);
-      color: var(--ink);
-      border: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: center; gap: var(--sp-3);
-      cursor: pointer;
-      transition: background var(--tr), border-color var(--tr);
-    }
-    .btn-google:hover { background: var(--surface); border-color: var(--ink-faint); }
-    .btn-google:disabled { opacity: .5; pointer-events: none; }
-    .google-icon { width: 18px; height: 18px; flex-shrink: 0; }
-    .login-notice { font-size: var(--text-xs); color: var(--ink-faint); margin-top: var(--sp-5); line-height: 1.7; }
-    .error-msg {
-      background: rgba(185,28,28,.06); color: var(--danger);
-      border: 1px solid rgba(185,28,28,.2);
-      padding: var(--sp-3) var(--sp-4);
-      border-radius: var(--radius-sm);
-      font-size: var(--text-sm);
-      margin-bottom: var(--sp-4);
-      display: none; text-align: left;
-    }
-
-    /* INVITE SCREEN */
-    #inviteScreen {
-      position: fixed; inset: 0; background: var(--white);
-      display: none; align-items: center; justify-content: center;
-      z-index: 300; padding: var(--sp-6);
-    }
-    #inviteScreen.show { display: flex; }
-    .invite-card {
-      width: 100%; max-width: 360px;
-      text-align: center;
-    }
-    .invite-card__title { font-size: var(--text-xl); font-weight: 700; color: var(--ink); letter-spacing: -0.02em; margin-bottom: var(--sp-2); }
-    .invite-card__sub { font-size: var(--text-sm); color: var(--ink-muted); margin-bottom: var(--sp-6); line-height: 1.6; }
-    .role-badge { display: inline-block; background: var(--surface); border: 1px solid var(--line); color: var(--ink-muted); padding: 4px 12px; border-radius: 20px; font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.04em; margin-bottom: var(--sp-5); }
-
-    /* Detail modal info rows */
-    .detail-row { margin-bottom: var(--sp-4); }
-    .detail-row__label { font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: var(--sp-1); }
-    .detail-row__val { font-size: var(--text-sm); color: var(--ink); line-height: 1.5; }
-
-    /* Score display in modal */
-    .score-display {
-      display: flex; align-items: center; justify-content: center;
-      gap: var(--sp-6); margin: var(--sp-5) 0;
-    }
-    .score-display__side { text-align: center; }
-    .score-display__team { font-size: var(--text-xs); color: var(--ink-faint); margin-bottom: var(--sp-1); }
-    .score-display__num { font-size: var(--text-3xl); font-weight: 700; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; color: var(--ink); line-height: 1; }
-    .score-display__vs { font-size: var(--text-sm); color: var(--line); }
-
-
-    /* ============================================================
-       CALENDAR — Google Calendar style
-    ============================================================ */
-    :root {
-      --blue-main: #0057B8;
-      --blue-light: #E8F0FE;
-      --blue-soft: #4A90D9;
-      --navy: #1E3A5F;
-      --cal-gray: #F5F7FA;
-      --cal-border: #E0E4EA;
-      --cal-today: #0057B8;
-      --type-official: #0057B8;
-      --type-friendly: #4A90D9;
-      --type-practice: #8A99AA;
-      --type-event: #1E3A5F;
-    }
-    .cal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 16px 12px;
-      background: var(--white);
-      border-bottom: 1px solid var(--cal-border);
-      position: sticky; top: 0; z-index: 10;
-    }
-    .cal-header__month {
-      font-size: 17px; font-weight: 700; color: var(--navy);
-      letter-spacing: -0.02em;
-    }
-    .cal-header__nav { display: flex; align-items: center; gap: 4px; }
-    .cal-nav-btn {
-      width: 32px; height: 32px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--navy); font-size: 16px;
-      transition: background 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .cal-nav-btn:hover { background: var(--cal-gray); }
-    .cal-today-btn {
-      font-size: 12px; font-weight: 600; color: var(--blue-main);
-      padding: 5px 12px; border-radius: 20px;
-      border: 1.5px solid var(--blue-main);
-      transition: all 0.15s;
-    }
-    .cal-today-btn:hover { background: var(--blue-light); }
-
-    .cal-weekdays {
-      display: grid; grid-template-columns: repeat(7, 1fr);
-      background: var(--white);
-      border-bottom: 1px solid var(--cal-border);
-    }
-    .cal-weekday {
-      text-align: center; padding: 6px 0;
-      font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
-      color: var(--ink-faint); text-transform: uppercase;
-    }
-    .cal-weekday.sun { color: #C62828; }
-    .cal-weekday.sat { color: var(--blue-main); }
-
-    .cal-grid {
-      display: grid; grid-template-columns: repeat(7, 1fr);
-      background: var(--cal-border);
-      gap: 1px;
-    }
-    .cal-cell {
-      background: var(--white);
-      min-height: 72px;
-      padding: 4px 3px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: background 0.1s;
-    }
-    .cal-cell:hover { background: var(--cal-gray); }
-    .cal-cell.other-month { background: var(--cal-gray); }
-    .cal-cell.other-month .cal-day-num { color: var(--ink-faint); }
-    .cal-cell.today .cal-day-num {
-      background: var(--cal-today);
-      color: var(--white);
-      border-radius: 50%;
-      width: 24px; height: 24px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700;
-    }
-    .cal-day-num {
-      font-size: 12px; font-weight: 500;
-      color: var(--ink); text-align: center;
-      width: 24px; height: 24px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 2px;
-    }
-    .cal-day-num.sun { color: #C62828; }
-    .cal-day-num.sat { color: var(--blue-main); }
-    .cal-event {
-      border-radius: 3px; padding: 1px 4px;
-      font-size: 10px; font-weight: 600;
-      margin-bottom: 2px; color: var(--white);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      cursor: pointer; line-height: 1.5;
-    }
-    .cal-event.official  { background: var(--type-official); }
-    .cal-event.friendly  { background: var(--type-friendly); }
-    .cal-event.practice  { background: var(--type-practice); }
-    .cal-event.event     { background: var(--type-event); }
-    .cal-more {
-      font-size: 10px; color: var(--blue-main); font-weight: 600;
-      padding: 0 3px; cursor: pointer;
-    }
-
-    /* 日別予定リスト（日付タップ後） */
-    .day-schedule-header {
-      padding: 14px 16px 10px;
-      border-bottom: 1px solid var(--cal-border);
-      background: var(--white);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .day-schedule-header__date {
-      font-size: 15px; font-weight: 700; color: var(--navy);
-    }
-    .day-schedule-list { padding: 8px 0; }
-    .day-event-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--cal-border);
-      cursor: pointer; transition: background 0.1s;
-    }
-    .day-event-row:hover { background: var(--cal-gray); }
-    .day-event-bar {
-      width: 4px; align-self: stretch; border-radius: 2px; flex-shrink: 0;
-    }
-    .day-event-bar.official { background: var(--type-official); }
-    .day-event-bar.friendly { background: var(--type-friendly); }
-    .day-event-bar.practice { background: var(--type-practice); }
-    .day-event-bar.event    { background: var(--type-event); }
-    .day-event-info { flex: 1; min-width: 0; }
-    .day-event-type {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
-      text-transform: uppercase; margin-bottom: 2px;
-    }
-    .day-event-type.official { color: var(--type-official); }
-    .day-event-type.friendly { color: var(--type-friendly); }
-    .day-event-type.practice { color: var(--type-practice); }
-    .day-event-type.event    { color: var(--type-event); }
-    .day-event-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
-    .day-event-meta { font-size: 12px; color: var(--ink-muted); }
-
-    /* 予定詳細モーダル — リッチ版 */
-    .sch-detail-hero {
-      padding: 20px 16px 16px;
-      border-bottom: 1px solid var(--cal-border);
-    }
-    .sch-detail-type {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
-      text-transform: uppercase; margin-bottom: 8px;
-      padding: 3px 10px; border-radius: 20px;
-    }
-    .sch-detail-type.official { background: rgba(0,87,184,.1); color: var(--type-official); }
-    .sch-detail-type.friendly { background: rgba(74,144,217,.1); color: var(--type-friendly); }
-    .sch-detail-type.practice { background: rgba(138,153,170,.12); color: var(--type-practice); }
-    .sch-detail-type.event    { background: rgba(30,58,95,.1); color: var(--type-event); }
-    .sch-detail-title { font-size: 20px; font-weight: 800; color: var(--navy); letter-spacing: -0.02em; line-height: 1.2; }
-    .sch-detail-rows { padding: 0 16px; }
-    .sch-detail-row {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 13px 0; border-bottom: 1px solid var(--cal-border);
-    }
-    .sch-detail-row:last-child { border-bottom: none; }
-    .sch-detail-icon {
-      width: 36px; height: 36px; border-radius: 8px;
-      background: var(--cal-gray);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      color: var(--navy);
-    }
-    .sch-detail-icon svg { width: 18px; height: 18px; }
-    .sch-detail-label { font-size: 11px; color: var(--ink-faint); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 2px; }
-    .sch-detail-val { font-size: 14px; color: var(--ink); line-height: 1.5; }
-    .sch-detail-link { color: var(--blue-main); text-decoration: underline; }
-
-    /* 出欠セクション */
-    .att-section {
-      padding: 16px;
-      border-top: 1px solid var(--cal-border);
-    }
-    .att-section-hdr {
-      font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
-      text-transform: uppercase; color: var(--ink-faint);
-      margin-bottom: 12px;
-    }
-    .att-player-card {
-      background: var(--cal-gray); border-radius: 10px;
-      padding: 12px; margin-bottom: 8px;
-    }
-    .att-player-card__name { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
-    .att-player-card__grade { font-size: 11px; color: var(--ink-faint); margin-left: 4px; }
-    .att-seg {
-      display: grid; grid-template-columns: repeat(3,1fr);
-      gap: 6px;
-    }
-    .att-seg-btn {
-      padding: 8px 4px; border-radius: 8px;
-      font-size: 13px; font-weight: 600;
-      border: 1.5px solid var(--cal-border);
-      background: var(--white); color: var(--ink-muted);
-      text-align: center; cursor: pointer;
-      transition: all 0.15s;
-    }
-    .att-seg-btn.sel-○ { background: rgba(22,101,52,.08); border-color: #2E7D32; color: #2E7D32; }
-    .att-seg-btn.sel-△ { background: rgba(245,158,11,.08); border-color: #D97706; color: #D97706; }
-    .att-seg-btn.sel-× { background: rgba(185,28,28,.08); border-color: #C62828; color: #C62828; }
-
-    /* 添付ファイル */
-    .attach-section { padding: 0 16px 16px; }
-    .attach-section-hdr {
-      font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
-      text-transform: uppercase; color: var(--ink-faint);
-      margin-bottom: 10px; margin-top: 16px;
-    }
-    .attach-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; background: var(--cal-gray);
-      border-radius: 8px; margin-bottom: 6px;
-      cursor: pointer; text-decoration: none;
-    }
-    .attach-item__icon {
-      width: 36px; height: 36px; border-radius: 6px;
-      background: var(--blue-main); color: var(--white);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; flex-shrink: 0;
-    }
-    .attach-item__name { font-size: 13px; font-weight: 600; color: var(--ink); }
-    .attach-item__size { font-size: 11px; color: var(--ink-faint); }
-    .attach-upload-btn {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 10px; border: 1.5px dashed var(--cal-border);
-      border-radius: 8px; color: var(--blue-main); font-size: 13px; font-weight: 600;
-      background: var(--white); cursor: pointer; width: 100%;
-      transition: background 0.15s;
-    }
-    .attach-upload-btn:hover { background: var(--blue-light); }
-
-    /* 出欠状況（管理者） */
-    .att-summary {
-      padding: 16px; border-top: 1px solid var(--cal-border);
-    }
-    .att-summary-hdr {
-      font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
-      text-transform: uppercase; color: var(--ink-faint);
-      margin-bottom: 10px;
-    }
-    .att-rate-bar {
-      height: 6px; border-radius: 3px; background: var(--cal-border);
-      margin-bottom: 12px; overflow: hidden;
-    }
-    .att-rate-fill { height: 100%; background: var(--blue-main); border-radius: 3px; transition: width 0.4s; }
-    .att-stat-row {
-      display: flex; gap: 8px; margin-bottom: 12px;
-    }
-    .att-stat {
-      flex: 1; text-align: center; padding: 8px 4px;
-      background: var(--cal-gray); border-radius: 8px;
-    }
-    .att-stat__num { font-size: 20px; font-weight: 800; color: var(--navy); }
-    .att-stat__label { font-size: 11px; color: var(--ink-faint); }
-    .att-member-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 7px 0; border-bottom: 1px solid var(--cal-border);
-      font-size: 13px;
-    }
-    .att-member-row:last-child { border-bottom: none; }
-    .att-status-○ { color: #2E7D32; font-weight: 700; }
-    .att-status-△ { color: #D97706; font-weight: 700; }
-    .att-status-× { color: #C62828; font-weight: 700; }
-
-    /* カレンダーview切替 */
-    .cal-view-toggle { display: none; } /* 月表示固定 */
-
-    /* スケジュール登録フォーム拡張 */
-    .form-section-title {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
-      text-transform: uppercase; color: var(--ink-faint);
-      margin: 16px 0 8px; padding-top: 12px;
-      border-top: 1px solid var(--cal-border);
-    }
-    .map-preview {
-      width: 100%; height: 120px; border-radius: 8px;
-      background: var(--cal-gray); border: 1px solid var(--cal-border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; color: var(--ink-faint);
-      margin-top: 6px; overflow: hidden;
-    }
-    .map-preview iframe { width: 100%; height: 100%; border: none; }
-
-  </style>
+/* PC */
+@media(min-width:768px){
+  body{padding-bottom:0;padding-left:220px}
+  .bottom-nav{display:none}
+  .sidebar{
+    display:flex;flex-direction:column;
+    position:fixed;left:0;top:0;bottom:0;width:220px;
+    background:var(--white);border-right:1px solid var(--gray-200);
+    padding:16px 0;overflow-y:auto;z-index:100;
+  }
+  .sidebar-logo{padding:0 16px 16px;border-bottom:1px solid var(--gray-100);margin-bottom:8px}
+  .sidebar-logo img{height:28px;width:auto}
+  .sidebar-btn{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 16px;color:var(--gray-600);font-size:13px;font-weight:500;
+    transition:all .15s;cursor:pointer;width:100%;text-align:left;
+  }
+  .sidebar-btn:hover{background:var(--gray-50);color:var(--gray-800)}
+  .sidebar-btn.active{color:var(--blue);background:var(--blue-light)}
+  .sidebar-btn svg{width:18px;height:18px;flex-shrink:0;stroke-width:1.75}
+  .sidebar-footer{margin-top:auto;padding:12px 16px 0;border-top:1px solid var(--gray-100)}
+  .sidebar-user{font-size:12px;color:var(--gray-400);margin-bottom:6px}
+  .app-header{left:220px}
+  .fab{bottom:24px;right:24px}
+}
+@media(max-width:767px){.sidebar{display:none}}
+</style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">
-      <img class="teamlogo" src="logo.jpg" alt="Matsuyama South">
-      <div class="login-logo__sub">チーム運営アプリ</div>
-    </div>
-    <div class="error-msg" id="loginError"></div>
-    <!-- ログインフォーム -->
-    <div id="loginForm">
-      <div style="margin-bottom:12px">
-        <input type="email" id="loginEmail" placeholder="メールアドレス" style="margin-bottom:8px">
-        <input type="password" id="loginPassword" placeholder="パスワード">
+<div id="loginScreen" class="screen active">
+  <div id="loginBg" style="position:fixed;inset:0;background:linear-gradient(160deg,#0057B8 0%,#1E3A5F 100%);display:flex;align-items:center;justify-content:center;padding:24px">
+    <div class="login-box">
+      <div class="login-logo">
+        <img src="logo.jpg" alt="Matsuyama South">
+        <div class="login-subtitle">チーム運営アプリ</div>
       </div>
-      <button class="btn btn--primary btn--full" id="loginBtn" style="margin-bottom:8px">ログイン</button>
-      <div class="login-notice">このアプリは招待を受けたチームメンバーのみ利用できます</div>
+      <div class="login-error" id="loginError"></div>
+      <div class="login-field">
+        <label>メールアドレス</label>
+        <input type="email" id="loginEmail" placeholder="example@gmail.com" autocomplete="email">
+      </div>
+      <div class="login-field">
+        <label>パスワード</label>
+        <input type="password" id="loginPassword" placeholder="パスワード" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" id="loginBtn">ログイン</button>
+      <div class="login-notice">松山SOUTHチームの招待を受けた方のみ利用できます</div>
     </div>
   </div>
 </div>
 
 <!-- INVITE -->
-<div id="inviteScreen">
-  <div class="invite-card" id="inviteCard"><div class="loading"><div class="spinner"></div></div></div>
+<div id="inviteScreen" class="screen">
+  <div style="position:fixed;inset:0;background:linear-gradient(160deg,#0057B8 0%,#1E3A5F 100%);display:flex;align-items:center;justify-content:center;padding:24px">
+    <div class="invite-box" id="inviteBox">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </div>
 </div>
 
-<!-- topbar removed -->
+<!-- MAIN APP -->
+<div id="app">
+  <!-- HEADER -->
+  <header class="app-header" id="appHeader">
+    <div class="header-logo"><img src="logo.jpg" alt="Matsuyama South"></div>
+    <div class="header-right">
+      <span class="header-user" id="headerUser"></span>
+      <span class="header-badge admin-only" id="headerBadge" style="display:none">管理者</span>
+      <button class="btn-logout" id="logoutBtn">ログアウト</button>
+    </div>
+  </header>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar" style="display:none">
-  <div class="sidebar__logo">
-    <img src="logo.jpg" alt="Matsuyama South" style="height:28px;width:auto;margin-bottom:0">
-  </div>
-  <button class="sidebar__item" data-page="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>ホーム</button>
-  <button class="sidebar__item" data-page="schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>スケジュール</button>
-  <button class="sidebar__item" data-page="result"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 21 12 21 16 21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 4H17l-1 7a5 5 0 01-10 0L5 4"/><path d="M5 4H2v3a3 3 0 003 3"/><path d="M19 4h3v3a3 3 0 01-3 3"/></svg>試合結果</button>
-  <button class="sidebar__item" data-page="players"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>選手</button>
-  <button class="sidebar__item" data-page="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>お知らせ</button>
-  <button class="sidebar__item admin-only" data-page="members" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>メンバー管理</button>
-  <div class="sidebar__footer">
-    <div class="sidebar__username" id="sidebarUser"></div>
-    <button class="sidebar__item" id="sidebarLogout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>ログアウト</button>
-  </div>
-</aside>
+  <!-- SIDEBAR (PC) -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><img src="logo.jpg" alt="Matsuyama South"></div>
+    <button class="sidebar-btn active" data-page="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>ホーム</button>
+    <button class="sidebar-btn" data-page="schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>スケジュール</button>
+    <button class="sidebar-btn" data-page="results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 21 12 21 16 21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 4H17l-1 7a5 5 0 01-10 0L5 4"/><path d="M5 4H2v3a3 3 0 003 3"/><path d="M19 4h3v3a3 3 0 01-3 3"/></svg>試合結果</button>
+    <button class="sidebar-btn" data-page="players"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>選手名簿</button>
+    <button class="sidebar-btn" data-page="notices"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>お知らせ</button>
+    <button class="sidebar-btn admin-only" data-page="members" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>メンバー管理</button>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" id="sidebarUser"></div>
+      <button class="sidebar-btn" id="sidebarLogout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>ログアウト</button>
+    </div>
+  </aside>
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav" id="bottomNav" style="display:none">
-  <button class="nav-item active" data-page="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>ホーム</button>
-  <button class="nav-item" data-page="schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>予定</button>
-  <button class="nav-item" data-page="result"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 21 12 21 16 21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 4H17l-1 7a5 5 0 01-10 0L5 4"/><path d="M5 4H2v3a3 3 0 003 3"/><path d="M19 4h3v3a3 3 0 01-3 3"/></svg>結果</button>
-  <button class="nav-item" data-page="players"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>選手</button>
-  <button class="nav-item" data-page="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>お知らせ</button>
-  <button class="nav-item admin-only" data-page="members" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>管理</button>
-</nav>
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-page="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>ホーム</button>
+    <button class="nav-btn" data-page="schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>予定</button>
+    <button class="nav-btn" data-page="results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 21 12 21 16 21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 4H17l-1 7a5 5 0 01-10 0L5 4"/><path d="M5 4H2v3a3 3 0 003 3"/><path d="M19 4h3v3a3 3 0 01-3 3"/></svg>結果</button>
+    <button class="nav-btn" data-page="players"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>選手</button>
+    <button class="nav-btn" data-page="notices"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>お知らせ</button>
+    <button class="nav-btn admin-only" data-page="members" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>管理</button>
+  </nav>
 
-<!-- MAIN -->
-<main id="main" style="display:none">
-  <div id="page-home" class="page active">
-    <div class="home-hero">
-      <img src="logo.jpg" alt="Matsuyama South" class="home-hero__logo-img">
-      <div class="home-hero__sub" id="homeGreeting">チーム運営アプリ</div>
-    </div>
-    <div class="home-body">
-      <div id="homeContent"><div class="loading"><div class="spinner"></div></div></div>
-    </div>
-  </div>
-  <div id="page-schedule" class="page" style="padding:0">
-    <!-- カレンダーヘッダー -->
-    <div class="cal-header">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="cal-header__month" id="calMonthLabel">2026年6月</div>
-        <button class="cal-today-btn" id="calTodayBtn">今日</button>
-      </div>
-      <div class="cal-header__nav">
-        <button class="cal-nav-btn" id="calPrevBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button class="cal-nav-btn" id="calNextBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-      </div>
-    </div>
-    <!-- 曜日ヘッダー -->
-    <div class="cal-weekdays">
-      <div class="cal-weekday sun">日</div>
-      <div class="cal-weekday">月</div>
-      <div class="cal-weekday">火</div>
-      <div class="cal-weekday">水</div>
-      <div class="cal-weekday">木</div>
-      <div class="cal-weekday">金</div>
-      <div class="cal-weekday sat">土</div>
-    </div>
-    <!-- カレンダーグリッド -->
-    <div class="cal-grid" id="calGrid"></div>
-    <!-- 日別予定リスト（タップ後に表示） -->
-    <div id="daySchedulePanel" style="display:none">
-      <div class="day-schedule-header">
-        <div class="day-schedule-header__date" id="dayScheduleDate"></div>
-        <button class="cal-nav-btn" id="dayScheduleClose">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <div class="day-schedule-list" id="dayScheduleList"></div>
-    </div>
-  </div>
-  <div id="page-result" class="page">
-    <div class="page-header"><h1>試合結果</h1></div>
-    <div class="result-body">
-      <div id="resultList"><div class="loading"><div class="spinner"></div></div></div>
-    </div>
-  </div>
-  <div id="page-players" class="page">
-    <div class="page-header"><h1>選手名簿</h1><p id="playerCount"></p></div>
-    <div class="players-body">
-      <div id="playerList"><div class="loading"><div class="spinner"></div></div></div>
-    </div>
-  </div>
-  <div id="page-notice" class="page">
-    <div class="page-header"><h1>お知らせ</h1></div>
-    <div class="notice-body">
-      <div id="noticeList"><div class="loading"><div class="spinner"></div></div></div>
-    </div>
-  </div>
-  <div id="page-members" class="page">
-    <div class="page-header"><h1>メンバー管理</h1><p id="memberCount"></p></div>
-    <div class="members-body">
-      <div class="invite-panel">
-        <div class="invite-panel__title">招待URLを発行</div>
-        <div class="invite-panel__btns">
-          <button class="btn btn--ghost btn--sm" id="inviteParentBtn">保護者を招待</button>
-          <button class="btn btn--ghost btn--sm" id="inviteAdminBtn">管理者を招待</button>
-        </div>
-        <div class="invite-url" id="inviteUrlBox" style="display:none"></div>
-        <button class="btn btn--ghost btn--sm" id="copyInviteBtn" style="display:none;margin-top:8px">URLをコピー</button>
-      </div>
-      <div id="memberList"></div>
-    </div>
-  </div>
-</main>
+  <!-- PAGES -->
+  <main>
+    <div id="page-home" class="page active"><div class="page-wrap"><div id="homeInner"><div class="loading"><div class="spinner"></div></div></div></div></div>
+    <div id="page-schedule" class="page"><div class="page-wrap" id="scheduleInner"></div></div>
+    <div id="page-results" class="page"><div class="page-wrap"><div class="page-header"><h1>試合結果</h1></div><div class="notice-wrap" id="resultsList"><div class="loading"><div class="spinner"></div></div></div></div></div>
+    <div id="page-players" class="page"><div class="page-wrap"><div class="page-header"><h1>選手名簿</h1><p id="playerCount"></p></div><div class="players-wrap" id="playersList"><div class="loading"><div class="spinner"></div></div></div></div></div>
+    <div id="page-notices" class="page"><div class="page-wrap"><div class="page-header"><h1>お知らせ</h1></div><div class="notice-wrap" id="noticesList"><div class="loading"><div class="spinner"></div></div></div></div></div>
+    <div id="page-members" class="page"><div class="page-wrap"><div class="page-header"><h1>メンバー管理</h1><p id="memberCount"></p></div><div class="members-wrap"><div class="invite-panel"><div class="invite-panel-title">招待URLを発行</div><div class="invite-btns"><button class="btn-invite" id="inviteParentBtn">保護者を招待</button><button class="btn-invite" id="inviteAdminBtn">管理者を招待</button></div><div class="invite-url" id="inviteUrlBox" style="display:none"></div><button class="btn-copy" id="copyInviteBtn" style="display:none">URLをコピー</button></div><div id="membersList"></div></div></div></div>
+  </main>
+
+  <button class="fab" id="fab">＋</button>
+  <div class="toast-wrap" id="toastWrap"></div>
+</div>
 
 <!-- MODAL -->
 <div class="modal-overlay hidden" id="modalOverlay">
   <div class="modal">
-    <div class="modal__header">
-      <div class="modal__title" id="modalTitle"></div>
-      <button class="modal__close" id="modalClose">✕</button>
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" id="modalClose">✕</button>
     </div>
     <div id="modalBody"></div>
   </div>
 </div>
 
-<!-- FAB -->
-<button class="fab" id="fab">＋</button>
-<div class="toast-container" id="toastContainer"></div>
-
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
-  getRedirectResult, signOut, onAuthStateChanged,
-  createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  updateProfile }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, updateDoc, deleteDoc,
-  getDocs, query, where, orderBy, limit, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-// Storage: 後で有効化
-// import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject }
-//   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,signOut,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc,collection,addDoc,updateDoc,deleteDoc,getDocs,query,orderBy,limit,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ⚠️ ここにFirebase設定を貼り付けてください
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyD9Xjg1DMv4usML5IM9RhcI0KkE9Tf2nW8",
-  authDomain: "matsuyama-south-ce88a.firebaseapp.com",
-  projectId: "matsuyama-south-ce88a",
-  storageBucket: "matsuyama-south-ce88a.firebasestorage.app",
-  messagingSenderId: "12671596624",
-  appId: "1:12671596624:web:9e58c1940891f260d87955"
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyD9Xjg1DMv4usML5IM9RhcI0KkE9Tf2nW8",
+  authDomain:"matsuyama-south-ce88a.firebaseapp.com",
+  projectId:"matsuyama-south-ce88a",
+  storageBucket:"matsuyama-south-ce88a.firebasestorage.app",
+  messagingSenderId:"12671596624",
+  appId:"1:12671596624:web:9e58c1940891f260d87955"
 };
-const TEAM_ID = "matsuyama-south";
+const TEAM_ID="matsuyama-south";
+const app=initializeApp(FIREBASE_CONFIG);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-const app = initializeApp(FIREBASE_CONFIG);
-const auth = getAuth(app);
-const db = getFirestore(app);
-// const storage = getStorage(app); // 後で有効化
-const provider = new GoogleAuthProvider();
+// ===== STATE =====
+let CU=null,CM=null;
+let schedules=[],results=[],players=[],notices=[],members=[];
+let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
 
-let currentUser = null, currentMember = null;
-let schedules = [], results = [], players = [], notices = [], members = [];
-let currentFilter = "all";
+// ===== UTILS =====
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const fmtDate=s=>{if(!s)return'';const d=new Date(s+'T00:00:00');return`${d.getMonth()+1}/${d.getDate()}（${'日月火水木金土'[d.getDay()]}）`};
+const fmtDateFull=s=>{if(!s)return'';const d=new Date(s+'T00:00:00');return`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${'日月火水木金土'[d.getDay()]}）`};
+const fmtMonth=s=>{const d=new Date(s+'T00:00:00');return`${d.getFullYear()}年${d.getMonth()+1}月`};
+const fmtTS=ts=>{if(!ts)return'';const d=ts.toDate?ts.toDate():new Date(ts);return`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`};
+const TL={practice:'練習',friendly:'練習試合',official:'公式戦',event:'イベント'};
+const TC={practice:'practice',friendly:'friendly',official:'official',event:'event'};
 
-const $ = id => document.getElementById(id);
-const fmtDate = s => { if(!s)return""; const d=new Date(s+"T00:00:00"); return `${d.getMonth()+1}/${d.getDate()}（${"日月火水木金土"[d.getDay()]}）`; };
-const fmtDateFull = s => { if(!s)return""; const d=new Date(s+"T00:00:00"); return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${"日月火水木金土"[d.getDay()]}）`; };
-const fmtMonth = s => { const d=new Date(s+"T00:00:00"); return `${d.getFullYear()}年${d.getMonth()+1}月`; };
-const fmtTS = ts => { if(!ts)return""; const d=ts.toDate?ts.toDate():new Date(ts); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; };
-const TL = {practice:"練習",friendly:"練習試合",official:"公式戦"};
-const TYPE_LABEL = {practice:'練習',friendly:'練習試合',official:'公式戦',event:'イベント'};
-const TYPE_CLASS = {practice:'practice',friendly:'friendly',official:'official',event:'event'};
-const TB = {practice:"badge--practice",friendly:"badge--friendly",official:"badge--official"};
-const RB = {"勝":"badge--win","負":"badge--lose","分":"badge--draw"};
-
-function toast(msg, type="") {
-  const c=$("toastContainer"), t=document.createElement("div");
-  t.className=`toast${type?` toast--${type}`:""}`;t.textContent=msg;
-  c.appendChild(t);setTimeout(()=>t.remove(),3000);
+function toast(msg,type=''){
+  const w=$('toastWrap'),t=document.createElement('div');
+  t.className=`toast${type?' '+type:''}`;t.textContent=msg;
+  w.appendChild(t);setTimeout(()=>t.remove(),3000);
 }
-function openModal(title, html) { $("modalTitle").textContent=title; $("modalBody").innerHTML=html; $("modalOverlay").classList.remove("hidden"); }
-function closeModal() { $("modalOverlay").classList.add("hidden"); }
-$("modalClose").addEventListener("click",closeModal);
-$("modalOverlay").addEventListener("click",e=>{if(e.target===$("modalOverlay"))closeModal();});
+function openModal(title,html){$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modalOverlay').classList.remove('hidden')}
+function closeModal(){$('modalOverlay').classList.add('hidden')}
+$('modalClose').onclick=closeModal;
+$('modalOverlay').onclick=e=>{if(e.target===$('modalOverlay'))closeModal()};
 
-async function getMember(uid) {
-  const snap=await getDoc(doc(db,"teams",TEAM_ID,"members",uid));
-  return snap.exists()?{id:snap.id,...snap.data()}:null;
+// ===== FIREBASE =====
+async function getMember(uid){
+  const s=await getDoc(doc(db,'teams',TEAM_ID,'members',uid));
+  return s.exists()?{id:s.id,...s.data()}:null;
 }
-async function createInvite(role) {
+async function createInvite(role){
   const token=crypto.randomUUID();
-  await setDoc(doc(db,"teams",TEAM_ID,"invites",token),{role,createdAt:serverTimestamp(),used:false,expiresAt:new Date(Date.now()+7*24*60*60*1000)});
+  await setDoc(doc(db,'teams',TEAM_ID,'invites',token),{role,createdAt:serverTimestamp(),used:false,expiresAt:new Date(Date.now()+7*24*60*60*1000)});
   return token;
 }
-async function validateInvite(token) {
-  const snap=await getDoc(doc(db,"teams",TEAM_ID,"invites",token));
-  if(!snap.exists())return null;
-  const d=snap.data();
+async function validateInvite(token){
+  const s=await getDoc(doc(db,'teams',TEAM_ID,'invites',token));
+  if(!s.exists())return null;
+  const d=s.data();
   if(d.used||d.expiresAt.toDate()<new Date())return null;
   return d;
 }
-async function consumeInvite(token,uid,displayName,email) {
-  const invite=await validateInvite(token);
-  if(!invite)throw new Error("招待URLが無効または期限切れです");
-  await setDoc(doc(db,"teams",TEAM_ID,"members",uid),{displayName,email,role:invite.role,playerIds:[],createdAt:serverTimestamp()});
-  await updateDoc(doc(db,"teams",TEAM_ID,"invites",token),{used:true,usedBy:uid,usedAt:serverTimestamp()});
-  return invite.role;
+async function consumeInvite(token,uid,name,email){
+  const inv=await validateInvite(token);
+  if(!inv)throw new Error('招待URLが無効または期限切れです');
+  await setDoc(doc(db,'teams',TEAM_ID,'members',uid),{displayName:name,email,role:inv.role,playerIds:[],createdAt:serverTimestamp()});
+  await updateDoc(doc(db,'teams',TEAM_ID,'invites',token),{used:true,usedBy:uid,usedAt:serverTimestamp()});
+  return inv.role;
 }
 
-// NAVIGATION
-function navigate(page) {
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  const el=$(`page-${page}`); if(el)el.classList.add("active"); else console.warn('page not found:',page);
-  document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
-  $("fab").style.display="none";
+// ===== NAV =====
+function navigate(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=$(`page-${page}`);if(el)el.classList.add('active');
+  document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  $('fab').style.display='none';
   loadPage(page);
 }
-document.querySelectorAll("[data-page]").forEach(btn=>btn.addEventListener("click",()=>navigate(btn.dataset.page)));
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>navigate(b.dataset.page));
 
-async function loadPage(page) {
-  if(page==="home")await loadHome();
-  else if(page==="schedule")await loadSchedule();
-  else if(page==="result")await loadResult();
-  else if(page==="players")await loadPlayers();
-  else if(page==="notice")await loadNotice();
-  else if(page==="members")await loadMembers();
+async function loadPage(p){
+  if(p==='home')await loadHome();
+  else if(p==='schedule')await loadSchedule();
+  else if(p==='results')await loadResults();
+  else if(p==='players')await loadPlayers();
+  else if(p==='notices')await loadNotices();
+  else if(p==='members')await loadMembers();
 }
 
-// HOME
-async function loadHome() {
-  // 挨拶セット
+// ===== HOME =====
+async function loadHome(){
+  const today=new Date().toISOString().split('T')[0];
   const hr=new Date().getHours();
   const greet=hr<12?'おはようございます':'こんにちは';
-  const greetEl=$("homeGreeting");
-  if(greetEl) greetEl.textContent=`${greet}、${currentMember?.displayName?.split(' ')[0]||''}さん`;
-  $("homeContent").innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
-  const today=new Date().toISOString().split("T")[0];
-  let s=null,r=null,n=null;
-  try {
-    const [sq,rq,nq]=await Promise.all([
-      getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),where("date",">=",today),orderBy("date","asc"),limit(1))),
-      getDocs(query(collection(db,"teams",TEAM_ID,"results"),orderBy("date","desc"),limit(1))),
-      getDocs(query(collection(db,"teams",TEAM_ID,"notices"),orderBy("createdAt","desc"),limit(1)))
+  const dows='日月火水木金土';
+  const now=new Date();
+  const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${dows[now.getDay()]}）`;
+  let next=null,lastResult=null,lastNotice=null;
+  try{
+    const[sq,rq,nq]=await Promise.all([
+      getDocs(query(collection(db,'teams',TEAM_ID,'schedules'),where('date','>=',today),orderBy('date','asc'),limit(1))),
+      getDocs(query(collection(db,'teams',TEAM_ID,'results'),orderBy('date','desc'),limit(1))),
+      getDocs(query(collection(db,'teams',TEAM_ID,'notices'),orderBy('createdAt','desc'),limit(1)))
     ]);
-    s=sq.docs[0]?{id:sq.docs[0].id,...sq.docs[0].data()}:null;
-    r=rq.docs[0]?{id:rq.docs[0].id,...rq.docs[0].data()}:null;
-    n=nq.docs[0]?{id:nq.docs[0].id,...nq.docs[0].data()}:null;
-  } catch(e) { console.log('Home load error:', e); }
-  const resLabel = r ? (r.result==='勝'?'WIN':r.result==='負'?'LOSE':'DRAW') : '';
-  const resClass = r ? (r.result==='勝'?'result--win':r.result==='負'?'result--lose':'result--draw') : '';
-  const typeLabel = s ? (TYPE_LABEL[s.type]||s.type) : '';
-  $("homeContent").innerHTML=`
-    <div class="home-section">
-      <div class="section-eyebrow">次回の予定 <span class="section-more" onclick="navigate('schedule')">すべて見る</span></div>
-      ${s?`<div onclick="showScheduleDetail('${s.id}')" style="cursor:pointer;padding:16px 0">
-        <div style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:10px;background:${s.type==='official'?'rgba(0,87,184,.1)':s.type==='friendly'?'rgba(74,144,217,.1)':'rgba(138,153,170,.12)'};color:${s.type==='official'?'#0057B8':s.type==='friendly'?'#4A90D9':'#8A99AA'}">${TYPE_LABEL[s.type]||s.type}</div>
-        <div style="font-size:22px;font-weight:800;color:var(--navy);letter-spacing:-0.03em;line-height:1.15;margin-bottom:8px">${s.title}</div>
-        ${s.opponent?`<div style="font-size:13px;color:var(--ink-muted);margin-bottom:6px">vs ${s.opponent}</div>`:''}
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <div style="font-size:13px;color:var(--ink-muted);display:flex;align-items:center;gap:6px">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            ${fmtDate(s.date)}${s.startTime?' 開始 '+s.startTime:''}
-          </div>
-          ${s.gatherTime?`<div style="font-size:13px;color:var(--ink-muted);display:flex;align-items:center;gap:6px">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            集合 ${s.gatherTime}${s.gatherPlace?' · '+s.gatherPlace:''}
-          </div>`:''}
-          ${s.location?`<div style="font-size:13px;color:var(--ink-muted);display:flex;align-items:center;gap:6px">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            ${s.location}
-          </div>`:''}
-        </div>
-        <div style="margin-top:14px;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#0057B8;border-bottom:1px solid rgba(0,87,184,.2);padding-bottom:1px">
-          出欠を入力する
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </div>
-      </div>`:`<div style="padding:24px 0 8px">
-        <div style="font-size:13px;color:var(--ink-faint);margin-bottom:16px">まだ予定が登録されていません</div>
-        ${currentMember?.role==='admin'?`<button class="btn btn--ghost btn--sm" onclick="navigate('schedule')">予定を登録する</button>`:''}
-      </div>`}
+    if(sq.docs[0])next={id:sq.docs[0].id,...sq.docs[0].data()};
+    if(rq.docs[0])lastResult={id:rq.docs[0].id,...rq.docs[0].data()};
+    if(nq.docs[0])lastNotice={id:nq.docs[0].id,...nq.docs[0].data()};
+  }catch(e){console.log('Home error:',e)}
+
+  const rl=lastResult?(lastResult.result==='勝'?'WIN':lastResult.result==='負'?'LOSE':'DRAW'):'';
+  const rc=lastResult?(lastResult.result==='勝'?'badge-win':lastResult.result==='負'?'badge-lose':'badge-draw'):'';
+
+  $('homeInner').innerHTML=`
+    <div class="home-hero">
+      <div class="home-hero__logo"><img src="logo.jpg" alt="Matsuyama South"></div>
+      <div class="home-hero__greeting">${greet}、${CM?.displayName?.split(' ')[0]||''}さん</div>
+      <div class="home-hero__date">${dateStr}</div>
     </div>
-    <div class="home-section">
-      <div class="section-eyebrow">最新試合結果 <span class="section-more" onclick="navigate('result')">すべて見る</span></div>
-      ${r?`<div class="score-row" onclick="showResultDetail('${r.id}')">
-        <div class="score-row__date">${fmtDateFull(r.date)} — ${TL[r.type]||r.type}</div>
-        <div class="score-row__main">
-          <div class="score-row__num">${r.scoreUs}</div>
-          <div class="score-row__sep">—</div>
-          <div class="score-row__num">${r.scoreThem}</div>
-          <div class="score-row__teams">
-            <div class="score-row__team">松山SOUTH</div>
-            <div class="score-row__team">${r.opponent}</div>
-          </div>
-          <div class="score-row__result ${resClass}">${resLabel}</div>
+    ${next?`<div class="home-next">
+      <div class="home-next__label">次回の予定</div>
+      <div class="home-next__body" onclick="showSchDetail('${next.id}')">
+        <div class="home-next__type" style="color:${next.type==='official'?'var(--blue)':next.type==='friendly'?'var(--blue-mid)':'var(--gray-400)'}">${TL[next.type]||next.type}</div>
+        <div class="home-next__title">${next.title}</div>
+        ${next.opponent?`<div style="font-size:13px;color:var(--gray-600);margin-bottom:10px">vs ${next.opponent}</div>`:''}
+        <div class="home-next__meta">
+          <div class="home-next__row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${fmtDate(next.date)}${next.startTime?' 開始 '+next.startTime:''}</div>
+          ${next.gatherTime?`<div class="home-next__row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>集合 ${next.gatherTime}${next.gatherPlace?' · '+next.gatherPlace:''}</div>`:''}
+          ${next.location?`<div class="home-next__row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${next.location}</div>`:''}
         </div>
-      </div>`:`<div class="empty-state" style="padding:32px 0"><div class="empty-state__title">試合結果はありません</div></div>`}
-    </div>
-    <div class="home-section">
-      <div class="section-eyebrow">お知らせ <span class="section-more" onclick="navigate('notice')">すべて見る</span></div>
-      ${n?`<div class="notice-row" onclick="navigate('notice')">
-        <div class="notice-row__title">${n.title}</div>
-        <div class="notice-row__body">${n.body}</div>
-      </div>`:`<div class="empty-state" style="padding:32px 0"><div class="empty-state__title">お知らせはありません</div></div>`}
+        <div class="home-next__cta"><span class="home-next__cta-text">出欠を入力する</span><svg class="home-next__cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+    </div>`:`<div style="margin:16px;background:var(--white);border-radius:var(--radius-lg);padding:24px;text-align:center;box-shadow:var(--shadow)"><div class="empty-title">予定はありません</div>${CM?.role==='admin'?`<button class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="navigate('schedule')">予定を登録する</button>`:''}</div>`}
+    <div class="home-sections">
+      <div class="home-section">
+        <div class="home-section-header">
+          <div class="home-section-title">最新試合結果</div>
+          <span class="home-section-more" onclick="navigate('results')">すべて見る</span>
+        </div>
+        ${lastResult?`<div class="card card--click" onclick="navigate('results')">
+          <div class="result-card">
+            <div class="result-score">${lastResult.scoreUs}<span class="result-sep">—</span>${lastResult.scoreThem}</div>
+            <div class="result-info"><div class="result-opp">${lastResult.opponent}</div><div class="result-date">${fmtDate(lastResult.date)} · ${TL[lastResult.type]||lastResult.type}</div></div>
+            <span class="result-badge ${rc}">${rl}</span>
+          </div>
+        </div>`:`<div class="card"><div class="empty-title" style="font-size:13px">試合結果はありません</div></div>`}
+      </div>
+      <div class="home-section">
+        <div class="home-section-header">
+          <div class="home-section-title">お知らせ</div>
+          <span class="home-section-more" onclick="navigate('notices')">すべて見る</span>
+        </div>
+        ${lastNotice?`<div class="card card--click" onclick="navigate('notices')">
+          <div style="font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:4px">${lastNotice.title}</div>
+          <div style="font-size:13px;color:var(--gray-600);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${lastNotice.body}</div>
+        </div>`:`<div class="card"><div class="empty-title" style="font-size:13px">お知らせはありません</div></div>`}
+      </div>
     </div>
   `;
 }
 
-// ============================================================
-// SCHEDULE — Googleカレンダー連携（GAS経由）
-// ============================================================
-
-// ⚠️ GASデプロイ後にここにURLを設定してください
-const GAS_URL = 'https://script.google.com/macros/s/AKfycby1bJs1C7gIGPUJRpXhBSSkbQpbVAY9JCmVfDi86Xc7aZkoVjN82lV5sMcNl76FSyFvqg/exec';
-
-let calYear  = new Date().getFullYear();
-let calMonth = new Date().getMonth(); // 0-indexed
-let gasEvents = []; // GASから取得したイベント
-
-async function loadSchedule() {
-  $("calGrid").innerHTML = '';
-  $("calMonthLabel").textContent = `${calYear}年${calMonth+1}月`;
-
-  // Firestoreから予定を取得（GAS連携は後日設定）
-  $("calGrid").innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;font-size:13px;color:var(--ink-faint)"><div class="spinner" style="margin:0 auto 8px"></div>読み込み中...</div>';
-  try {
-    const snap = await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
-    gasEvents = snap.docs.map(d=>({id:d.id,...d.data()}));
-  } catch(e) { console.log("Load error:",e); gasEvents=[]; }
-  // GAS連携（設定済みの場合のみ）
-  if(GAS_URL && GAS_URL !== 'YOUR_GAS_WEB_APP_URL_HERE') {
-    try {
-      const res = await fetch(`${GAS_URL}?year=${calYear}&month=${calMonth+1}`);
-      const json = await res.json();
-      if(!json.error) gasEvents = json.events || [];
-    } catch(e) { console.log("GAS error:", e); }
-  }
-
-  // Firestoreの補足データとマージ
-  try {
-    const snap = await getDocs(query(collection(db,"teams",TEAM_ID,"schedules"),orderBy("date","asc")));
-    const fsData = {};
-    snap.docs.forEach(d => { fsData[d.id] = d.data(); });
-    // GASイベントにFirestoreの補足データをマージ
-    gasEvents = gasEvents.map(ev => {
-      const fs = fsData[ev.id] || {};
-      return { ...ev, ...fs, id: ev.id }; // GASデータ優先、FSで補完
-    });
-  } catch(e) { /* ignore */ }
-
-  if(currentMember.role === "admin") {
-    $("fab").style.display = "flex";
-    $("fab").onclick = () => openScheduleForm(null);
-  }
-
+// ===== SCHEDULE =====
+async function loadSchedule(){
+  $('scheduleInner').innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
+  try{
+    const snap=await getDocs(query(collection(db,'teams',TEAM_ID,'schedules'),orderBy('date','asc')));
+    schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(e){schedules=[]}
+  if(CM?.role==='admin'){$('fab').style.display='flex';$('fab').onclick=()=>openSchForm(null)}
   renderCalendar();
-
-  // ナビゲーション
-  $("calPrevBtn").onclick = () => {
-    calMonth--;
-    if(calMonth < 0){ calMonth = 11; calYear--; }
-    loadSchedule();
-  };
-  $("calNextBtn").onclick = () => {
-    calMonth++;
-    if(calMonth > 11){ calMonth = 0; calYear++; }
-    loadSchedule();
-  };
-  $("calTodayBtn").onclick = () => {
-    const t = new Date();
-    calYear = t.getFullYear();
-    calMonth = t.getMonth();
-    loadSchedule();
-  };
-  $("dayScheduleClose").onclick = () => {
-    $("daySchedulePanel").style.display = "none";
-  };
+  $('calPrevBtn').onclick=()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--}renderCalendar()};
+  $('calNextBtn').onclick=()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++}renderCalendar()};
+  $('calTodayBtn').onclick=()=>{const t=new Date();calYear=t.getFullYear();calMonth=t.getMonth();renderCalendar()};
+  $('dayPanelClose').onclick=()=>$('dayPanel').style.display='none';
 }
 
-function renderCalendar() {
-  const todayStr = new Date().toISOString().split("T")[0];
-  $("calMonthLabel").textContent = `${calYear}年${calMonth+1}月`;
-
-  const firstDay  = new Date(calYear, calMonth, 1);
-  const lastDay   = new Date(calYear, calMonth+1, 0);
-  const startDow  = firstDay.getDay();
-  const totalDays = lastDay.getDate();
-
-  // 当月イベントをdate別に整理
-  const byDate = {};
-  gasEvents.forEach(ev => {
-    if(!byDate[ev.date]) byDate[ev.date] = [];
-    byDate[ev.date].push(ev);
-  });
-
-  let cells = [];
-  for(let i = 0; i < startDow; i++){
-    const d = new Date(calYear, calMonth, -startDow+i+1);
-    cells.push({ date: d, current: false });
-  }
-  for(let d = 1; d <= totalDays; d++){
-    cells.push({ date: new Date(calYear, calMonth, d), current: true });
-  }
-  const remaining = 42 - cells.length;
-  for(let d = 1; d <= remaining; d++){
-    cells.push({ date: new Date(calYear, calMonth+1, d), current: false });
-  }
-
-  const pad = n => String(n).padStart(2,'0');
-  $("calGrid").innerHTML = cells.map(c => {
-    const dateStr = `${c.date.getFullYear()}-${pad(c.date.getMonth()+1)}-${pad(c.date.getDate())}`;
-    const dow = c.date.getDay();
-    const isToday = dateStr === todayStr;
-    const events = byDate[dateStr] || [];
-    const shown = events.slice(0, 2);
-    const more  = events.length - shown.length;
-    const numClass = dow===0?'sun':dow===6?'sat':'';
-    return `<div class="cal-cell${c.current?'':' other-month'}${isToday?' today':''}" onclick="openDaySchedule('${dateStr}')">
-      <div class="cal-day-num ${numClass}">${c.date.getDate()}</div>
-      ${shown.map(ev=>`<div class="cal-event ${TYPE_CLASS[ev.type]||'practice'}" onclick="event.stopPropagation();showScheduleDetail('${ev.id}')">${ev.title}</div>`).join('')}
+function renderCalendar(){
+  const todayStr=new Date().toISOString().split('T')[0];
+  $('calMonthLabel').textContent=`${calYear}年${calMonth+1}月`;
+  const firstDow=new Date(calYear,calMonth,1).getDay();
+  const totalDays=new Date(calYear,calMonth+1,0).getDate();
+  const byDate={};
+  schedules.forEach(s=>{if(!byDate[s.date])byDate[s.date]=[];byDate[s.date].push(s)});
+  let cells=[];
+  for(let i=0;i<firstDow;i++)cells.push({d:new Date(calYear,calMonth,-firstDow+i+1),cur:false});
+  for(let d=1;d<=totalDays;d++)cells.push({d:new Date(calYear,calMonth,d),cur:true});
+  while(cells.length<42)cells.push({d:new Date(calYear,calMonth+1,cells.length-firstDow-totalDays+1),cur:false});
+  $('calGrid').innerHTML=cells.map(c=>{
+    const ds=`${c.d.getFullYear()}-${pad(c.d.getMonth()+1)}-${pad(c.d.getDate())}`;
+    const dow=c.d.getDay();
+    const isToday=ds===todayStr;
+    const evs=byDate[ds]||[];
+    const shown=evs.slice(0,2),more=evs.length-shown.length;
+    const nc=dow===0?'sun':dow===6?'sat':'';
+    return`<div class="cal-cell${c.cur?'':' other'}${isToday?' today':''}" onclick="openDayPanel('${ds}')">
+      <div class="cal-num ${nc}">${c.d.getDate()}</div>
+      ${shown.map(s=>`<div class="cal-ev ${TC[s.type]||'practice'}" onclick="event.stopPropagation();showSchDetail('${s.id}')">${s.title}</div>`).join('')}
       ${more>0?`<div class="cal-more">+${more}件</div>`:''}
     </div>`;
   }).join('');
 }
 
-window.openDaySchedule = function(dateStr) {
-  const d = new Date(dateStr+'T00:00:00');
-  const dows = '日月火水木金土';
-  $("dayScheduleDate").textContent = `${d.getMonth()+1}月${d.getDate()}日（${dows[d.getDay()]}）`;
-  const events = gasEvents.filter(ev => ev.date === dateStr);
-  if(!events.length){
-    $("dayScheduleList").innerHTML = `<div class="empty-state" style="padding:24px"><div class="empty-state__title">この日の予定はありません</div></div>`;
-  } else {
-    $("dayScheduleList").innerHTML = events.map(ev=>`
-      <div class="day-event-row" onclick="showScheduleDetail('${ev.id}')">
-        <div class="day-event-bar ${TYPE_CLASS[ev.type]||'practice'}"></div>
-        <div class="day-event-info">
-          <div class="day-event-type ${TYPE_CLASS[ev.type]||'practice'}">${TYPE_LABEL[ev.type]||ev.type}</div>
-          <div class="day-event-title">${ev.title}</div>
-          <div class="day-event-meta">${ev.startTime||''}${ev.location?' · '+ev.location:''}</div>
-        </div>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
-      </div>`).join('');
-  }
-  $("daySchedulePanel").style.display = "block";
-  $("daySchedulePanel").scrollIntoView({ behavior:'smooth', block:'start' });
+window.openDayPanel=function(ds){
+  const dows='日月火水木金土';
+  const d=new Date(ds+'T00:00:00');
+  $('dayPanelDate').textContent=`${d.getMonth()+1}月${d.getDate()}日（${dows[d.getDay()]}）`;
+  const evs=schedules.filter(s=>s.date===ds);
+  $('dayPanelList').innerHTML=evs.length===0
+    ?`<div class="empty" style="padding:20px"><div class="empty-title">この日の予定はありません</div></div>`
+    :evs.map(s=>`<div class="day-ev-row" onclick="showSchDetail('${s.id}')">
+      <div class="day-ev-bar ${TC[s.type]||'practice'}"></div>
+      <div class="day-ev-info">
+        <div class="day-ev-type ${TC[s.type]||'practice'}">${TL[s.type]||s.type}</div>
+        <div class="day-ev-title">${s.title}</div>
+        <div class="day-ev-meta">${s.startTime||''}${s.location?' · '+s.location:''}</div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9AA3B0" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </div>`).join('');
+  $('dayPanel').style.display='block';
+  $('dayPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
 };
 
-window.showScheduleDetail = async function(id) {
-  const ev = gasEvents.find(x => x.id === id);
-  if(!ev) return;
-  const isAdmin = currentMember.role === "admin";
-  const tc = TYPE_CLASS[ev.type] || 'practice';
-  const tl = TYPE_LABEL[ev.type] || ev.type;
-  const dows = '日月火水木金土';
-  const d = new Date(ev.date+'T00:00:00');
-  const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${dows[d.getDay()]}）`;
-
-  // 出欠取得（Firestoreから：キーはGoogleカレンダーのeventId）
-  let myResponses = [];
-  try {
-    const attSnap = await getDoc(doc(db,"teams",TEAM_ID,"attendance",id,"responses",currentUser.uid));
-    if(attSnap.exists()) myResponses = attSnap.data().responses || [];
-  } catch(e) {}
-
-  // 選手取得
-  try {
-    const pSnap = await getDocs(query(collection(db,"teams",TEAM_ID,"players"),orderBy("number","asc")));
-    players = pSnap.docs.map(d=>({id:d.id,...d.data()}));
-  } catch(e) {}
-  const myPlayers = players.filter(p => currentMember.playerIds?.includes(p.id));
-
-  // 管理者出欠集計
-  let attSummaryHtml = '';
+window.showSchDetail=async function(id){
+  const s=schedules.find(x=>x.id===id);if(!s)return;
+  const isAdmin=CM?.role==='admin';
+  let myResp=[];
+  try{const a=await getDoc(doc(db,'teams',TEAM_ID,'attendance',id,'responses',CU.uid));if(a.exists())myResp=a.data().responses||[]}catch(e){}
+  try{const ps=await getDocs(query(collection(db,'teams',TEAM_ID,'players'),orderBy('number','asc')));players=ps.docs.map(d=>({id:d.id,...d.data()}))}catch(e){}
+  const myPlayers=players.filter(p=>CM?.playerIds?.includes(p.id));
+  let attSummary='';
   if(isAdmin){
-    try {
-      const aSnap = await getDocs(collection(db,"teams",TEAM_ID,"attendance",id,"responses"));
-      const allAtt = aSnap.docs.map(d=>d.data());
-      const flat = allAtt.flatMap(a => a.responses||[]);
-      const total = flat.length;
-      const ok    = flat.filter(r=>r.status==='○').length;
-      const ng    = flat.filter(r=>r.status==='×').length;
-      const maybe = flat.filter(r=>r.status==='△').length;
-      const rate  = total>0 ? Math.round(ok/total*100) : 0;
-      attSummaryHtml = `<div class="att-summary">
-        <div class="att-summary-hdr">出欠状況（管理者）</div>
-        <div class="att-stat-row">
-          <div class="att-stat"><div class="att-stat__num att-status-○">${ok}</div><div class="att-stat__label">出席</div></div>
-          <div class="att-stat"><div class="att-stat__num att-status-△">${maybe}</div><div class="att-stat__label">未定</div></div>
-          <div class="att-stat"><div class="att-stat__num att-status-×">${ng}</div><div class="att-stat__label">欠席</div></div>
+    try{
+      const as=await getDocs(collection(db,'teams',TEAM_ID,'attendance',id,'responses'));
+      const flat=as.docs.flatMap(d=>d.data().responses||[]);
+      const ok=flat.filter(r=>r.status==='○').length;
+      const maybe=flat.filter(r=>r.status==='△').length;
+      const ng=flat.filter(r=>r.status==='×').length;
+      const total=flat.length;
+      const rate=total?Math.round(ok/total*100):0;
+      attSummary=`<div class="att-summary">
+        <div class="att-title">出欠状況（管理者）</div>
+        <div class="att-stats">
+          <div class="att-stat"><div class="att-stat-num att-status-○">${ok}</div><div class="att-stat-label">出席</div></div>
+          <div class="att-stat"><div class="att-stat-num att-status-△">${maybe}</div><div class="att-stat-label">未定</div></div>
+          <div class="att-stat"><div class="att-stat-num att-status-×">${ng}</div><div class="att-stat-label">欠席</div></div>
         </div>
-        <div class="att-rate-bar"><div class="att-rate-fill" style="width:${rate}%"></div></div>
-        <div style="font-size:12px;color:var(--ink-faint);margin-bottom:10px">出席率 ${rate}%（${total}名回答）</div>
+        <div class="att-bar"><div class="att-bar-fill" style="width:${rate}%"></div></div>
+        <div class="att-rate">出席率 ${rate}%（${total}名回答）</div>
         ${flat.map(r=>`<div class="att-member-row"><span>${r.playerName||r.playerId}</span><span class="att-status-${r.status||'?'}">${r.status||'—'}</span></div>`).join('')}
       </div>`;
-    } catch(e) {}
+    }catch(e){}
   }
-
-  // DriveリンクHTML
-  const linksHtml = (ev.driveUrl || ev.parkingUrl) ? `
-    <div class="sch-detail-row">
-      <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      <div>
-        <div class="sch-detail-label">ファイル・資料</div>
-        ${ev.driveUrl?`<a href="${ev.driveUrl}" target="_blank" class="sch-detail-link" style="display:block;margin-bottom:4px">大会要項・資料を開く</a>`:''}
-        ${ev.parkingUrl?`<a href="${ev.parkingUrl}" target="_blank" class="sch-detail-link">駐車場案内を開く</a>`:''}
-      </div>
-    </div>` : '';
-
-  openModal(ev.title, `
-    <div class="sch-detail-hero">
-      <div class="sch-detail-type ${tc}">${tl}</div>
-      <div class="sch-detail-title">${ev.title}</div>
+  openModal(s.title,`
+    <div class="sch-hero">
+      <div class="sch-type-badge ${TC[s.type]||'practice'}">${TL[s.type]||s.type}</div>
+      <div class="sch-title">${s.title}</div>
     </div>
-    <div class="sch-detail-rows">
-      <div class="sch-detail-row">
-        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <div><div class="sch-detail-label">日時</div>
-        <div class="sch-detail-val">${dateStr}${ev.startTime?' '+ev.startTime+(ev.endTime?' 〜 '+ev.endTime:''):''}</div></div>
-      </div>
-      ${ev.gatherTime?`<div class="sch-detail-row">
-        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-        <div><div class="sch-detail-label">集合</div><div class="sch-detail-val">${ev.gatherTime}${ev.gatherPlace?' · '+ev.gatherPlace:''}</div></div>
-      </div>`:''}
-      ${ev.location?`<div class="sch-detail-row">
-        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-        <div><div class="sch-detail-label">場所</div><div class="sch-detail-val">${ev.location}${ev.mapUrl?`<br><a href="${ev.mapUrl}" target="_blank" class="sch-detail-link">Googleマップで開く</a>`:''}</div></div>
-      </div>`:''}
-      ${ev.opponent?`<div class="sch-detail-row">
-        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <div><div class="sch-detail-label">対戦相手</div><div class="sch-detail-val">${ev.opponent}</div></div>
-      </div>`:''}
-      ${ev.items?`<div class="sch-detail-row">
-        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
-        <div><div class="sch-detail-label">持参物</div><div class="sch-detail-val">${ev.items}</div></div>
-      </div>`:''}
-      ${linksHtml}
-      ${ev.note?`<div class="sch-detail-row">
-        <div class="sch-detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div><div class="sch-detail-label">備考</div><div class="sch-detail-val" style="white-space:pre-wrap">${ev.note}</div></div>
-      </div>`:''}
+    <div>
+      <div class="sch-row"><div class="sch-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="sch-label">日時</div><div class="sch-val">${fmtDateFull(s.date)}${s.startTime?' '+s.startTime+(s.endTime?' 〜 '+s.endTime:''):''}</div></div></div>
+      ${s.gatherTime?`<div class="sch-row"><div class="sch-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div><div class="sch-label">集合</div><div class="sch-val">${s.gatherTime}${s.gatherPlace?' · '+s.gatherPlace:''}</div></div></div>`:''}
+      ${s.location?`<div class="sch-row"><div class="sch-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="sch-label">場所</div><div class="sch-val">${s.location}${s.mapUrl?`<br><a href="${s.mapUrl}" target="_blank" class="sch-link">マップで開く</a>`:''}</div></div></div>`:''}
+      ${s.opponent?`<div class="sch-row"><div class="sch-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><div><div class="sch-label">対戦相手</div><div class="sch-val">${s.opponent}</div></div></div>`:''}
+      ${s.items?`<div class="sch-row"><div class="sch-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div><div><div class="sch-label">持参物</div><div class="sch-val">${s.items}</div></div></div>`:''}
+      ${s.driveUrl?`<div class="sch-row"><div class="sch-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="sch-label">資料・要項</div><div class="sch-val"><a href="${s.driveUrl}" target="_blank" class="sch-link">Googleドライブで開く</a></div></div></div>`:''}
+      ${s.note?`<div class="sch-row"><div class="sch-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="sch-label">備考</div><div class="sch-val" style="white-space:pre-wrap">${s.note}</div></div></div>`:''}
     </div>
     <div class="att-section">
-      <div class="att-section-hdr">出欠の入力</div>
+      <div class="att-title">出欠の入力</div>
       ${myPlayers.length===0
-        ?`<p style="font-size:13px;color:var(--ink-faint)">選手が紐付けられていません。メンバー管理から設定してください。</p>`
-        :myPlayers.map(p=>{
-          const cur = myResponses.find(r=>r.playerId===p.id)?.status||'';
-          return `<div class="att-player-card">
-            <div class="att-player-card__name">${p.name}<span class="att-player-card__grade">${p.grade}年 #${p.number}</span></div>
-            <div class="att-seg">
-              ${['○','△','×'].map(st=>`<button class="att-seg-btn ${cur===st?`sel-${st}`:''}" data-pid="${p.id}" data-st="${st}" onclick="selectAtt('${id}','${p.id}','${st}',this)">
-                ${st==='○'?'出席':st==='△'?'未定':'欠席'}
-              </button>`).join('')}
-            </div>
-          </div>`;
-        }).join('')}
+        ?`<p style="font-size:13px;color:var(--gray-400)">選手が紐付けられていません。管理者に連絡してください。</p>`
+        :myPlayers.map(p=>{const cur=myResp.find(r=>r.playerId===p.id)?.status||'';return`<div class="att-card">
+          <div class="att-name">${p.name}<span class="att-grade">${p.grade}年 #${p.number}</span></div>
+          <div class="att-seg">
+            ${['○','△','×'].map(st=>`<button class="att-seg-btn${cur===st?' sel-'+st:''}" data-pid="${p.id}" data-st="${st}" onclick="selectAtt('${id}','${p.id}','${st}',this)">${st==='○'?'出席':st==='△'?'未定':'欠席'}</button>`).join('')}
+          </div>
+        </div>`}).join('')}
     </div>
-    ${attSummaryHtml}
-    ${isAdmin?`<div style="padding:0 16px 16px">
-      <button class="btn btn--ghost btn--sm" onclick="openScheduleForm('${id}')">Firestoreに補足情報を登録</button>
-    </div>`:''}
+    ${attSummary}
+    ${isAdmin?`<div style="display:flex;gap:8px;margin-top:16px"><button class="btn btn-ghost btn-sm" onclick="openSchForm('${s.id}')">編集</button><button class="btn btn-danger btn-sm" onclick="delSch('${s.id}')">削除</button></div>`:''}
   `);
 };
 
-window.selectAtt = async function(scheduleId, playerId, status, btn) {
-  document.querySelectorAll(`[data-pid="${playerId}"]`).forEach(b=>b.className="att-seg-btn");
-  btn.classList.add(`sel-${status}`);
-  const cards = document.querySelectorAll(".att-player-card"), responses = [];
+window.selectAtt=async function(schId,playerId,status,btn){
+  document.querySelectorAll(`[data-pid="${playerId}"]`).forEach(b=>b.className='att-seg-btn');
+  btn.classList.add('sel-'+status);
+  const cards=document.querySelectorAll('.att-card'),responses=[];
   cards.forEach(card=>{
-    const pid = card.querySelector("[data-pid]")?.dataset.pid;
-    const sel = card.querySelector(".att-seg-btn[class*='sel-']");
-    if(pid&&sel){ const p=players.find(x=>x.id===pid); responses.push({playerId:pid,playerName:p?.name||pid,status:sel.dataset.st}); }
+    const pid=card.querySelector('[data-pid]')?.dataset.pid;
+    const sel=card.querySelector('.att-seg-btn[class*="sel-"]');
+    if(pid&&sel){const p=players.find(x=>x.id===pid);responses.push({playerId:pid,playerName:p?.name||pid,status:sel.dataset.st})}
   });
-  try{
-    // 出欠はFirestoreへ（キー = GoogleカレンダーのイベントID）
-    await setDoc(doc(db,"teams",TEAM_ID,"attendance",scheduleId,"responses",currentUser.uid),
-      {responses, updatedAt:serverTimestamp()}, {merge:true});
-    toast("出欠を保存しました","success");
-  } catch(e){ toast("保存に失敗しました","error"); }
+  try{await setDoc(doc(db,'teams',TEAM_ID,'attendance',schId,'responses',CU.uid),{responses,updatedAt:serverTimestamp()},{merge:true});toast('出欠を保存しました','ok')}
+  catch(e){toast('保存に失敗しました','err')}
 };
 
-// Firestoreへの補足情報登録（GASで取れない情報を補完）
-window.openScheduleForm = function(id) {
+window.openSchForm=function(id){
   closeModal();
-  const ev = id ? gasEvents.find(x=>x.id===id) : null;
-  openModal(ev?"補足情報を編集":"Firestoreに予定を登録", `
-    <p style="font-size:12px;color:var(--ink-faint);margin-bottom:12px">
-      ${ev ? 'Googleカレンダーに登録できない補足情報を保存します' : '予定を直接Firestoreに登録します（GAS未設定時）'}
-    </p>
-    ${!ev?`<div class="form-group"><label class="form-label">タイトル *</label><input id="f_title" placeholder="例：春季市民大会"></div>
+  const s=id?schedules.find(x=>x.id===id):null;
+  openModal(s?'予定を編集':'予定を登録',`
+    <div class="form-group"><label class="form-label">タイトル *</label><input id="f_title" value="${s?.title||''}" placeholder="例：春季市民大会"></div>
     <div class="form-group"><label class="form-label">種別 *</label><select id="f_type">
-      <option value="practice">練習</option><option value="friendly">練習試合</option>
-      <option value="official">公式戦</option><option value="event">イベント</option>
+      <option value="practice"${s?.type==='practice'?' selected':''}>練習</option>
+      <option value="friendly"${s?.type==='friendly'?' selected':''}>練習試合</option>
+      <option value="official"${s?.type==='official'?' selected':''}>公式戦</option>
+      <option value="event"${s?.type==='event'?' selected':''}>イベント・総会</option>
     </select></div>
-    <div class="form-group"><label class="form-label">日付 *</label><input type="date" id="f_date"></div>
+    <div class="form-group"><label class="form-label">日付 *</label><input type="date" id="f_date" value="${s?.date||''}"></div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">開始</label><input type="time" id="f_st"></div>
-      <div class="form-group"><label class="form-label">終了</label><input type="time" id="f_et"></div>
-    </div>`:''}
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">集合時間</label><input type="time" id="f_gt" value="${ev?.gatherTime||''}"></div>
-      <div class="form-group"><label class="form-label">集合場所</label><input id="f_gp" value="${ev?.gatherPlace||''}" placeholder="例：駐車場入口"></div>
+      <div class="form-group"><label class="form-label">開始時間</label><input type="time" id="f_st" value="${s?.startTime||''}"></div>
+      <div class="form-group"><label class="form-label">終了時間</label><input type="time" id="f_et" value="${s?.endTime||''}"></div>
     </div>
-    ${!ev?`<div class="form-group"><label class="form-label">場所</label><input id="f_loc" value="" placeholder="例：松山市民球場"></div>`:''}
-    <div class="form-group"><label class="form-label">対戦相手</label><input id="f_opp" value="${ev?.opponent||''}" placeholder="例：南山スポーツ少年団"></div>
-    <div class="form-group"><label class="form-label">持参物</label><input id="f_items" value="${ev?.items||''}" placeholder="例：ユニフォーム、グローブ"></div>
-    <div class="form-group"><label class="form-label">Driveリンク（大会要項など）</label><input id="f_drive" value="${ev?.driveUrl||''}" placeholder="https://drive.google.com/..."></div>
-    <div class="form-group"><label class="form-label">駐車場案内リンク</label><input id="f_parking" value="${ev?.parkingUrl||''}" placeholder="https://drive.google.com/..."></div>
-    <div class="form-group"><label class="form-label">備考</label><textarea id="f_note" placeholder="連絡事項など">${ev?.note||''}</textarea></div>
-    <button class="btn btn--primary btn--full" id="saveSchBtn">保存する</button>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">集合時間</label><input type="time" id="f_gt" value="${s?.gatherTime||''}"></div>
+      <div class="form-group"><label class="form-label">集合場所</label><input id="f_gp" value="${s?.gatherPlace||''}" placeholder="例：駐車場入口"></div>
+    </div>
+    <div class="form-section">場所・対戦</div>
+    <div class="form-group"><label class="form-label">場所</label><input id="f_loc" value="${s?.location||''}" placeholder="例：松山市民球場"></div>
+    <div class="form-group"><label class="form-label">GoogleマップURL</label><input id="f_map" value="${s?.mapUrl||''}" placeholder="https://maps.google.com/..."><div class="form-hint">コピーしたURLを貼り付けるとリンクが表示されます</div></div>
+    <div class="form-group"><label class="form-label">対戦相手</label><input id="f_opp" value="${s?.opponent||''}" placeholder="例：南山スポーツ少年団"></div>
+    <div class="form-section">その他</div>
+    <div class="form-group"><label class="form-label">持参物</label><input id="f_items" value="${s?.items||''}" placeholder="例：ユニフォーム、グローブ、水筒"></div>
+    <div class="form-group"><label class="form-label">資料リンク（Googleドライブ）</label><input id="f_drive" value="${s?.driveUrl||''}" placeholder="https://drive.google.com/..."><div class="form-hint">大会要項・組み合わせ表などのGoogleドライブURLを貼り付け</div></div>
+    <div class="form-group"><label class="form-label">備考</label><textarea id="f_note">${s?.note||''}</textarea></div>
+    <button class="btn btn-blue btn-full" id="saveSchBtn">保存する</button>
   `);
-
-  $("saveSchBtn").addEventListener("click", async () => {
-    $("saveSchBtn").disabled=true; $("saveSchBtn").textContent="保存中...";
+  $('saveSchBtn').onclick=async()=>{
+    const title=$('f_title').value.trim(),date=$('f_date').value;
+    if(!title||!date){toast('タイトルと日付は必須です','err');return}
+    $('saveSchBtn').disabled=true;$('saveSchBtn').textContent='保存中...';
     try{
-      const data = {
-        gatherTime:  $("f_gt")?.value||'',
-        gatherPlace: $("f_gp")?.value.trim()||'',
-        opponent:    $("f_opp")?.value.trim()||'',
-        items:       $("f_items")?.value.trim()||'',
-        driveUrl:    $("f_drive")?.value.trim()||'',
-        parkingUrl:  $("f_parking")?.value.trim()||'',
-        note:        $("f_note")?.value.trim()||'',
-        updatedAt:   serverTimestamp()
-      };
-      if(!ev){
-        // Firestore直接登録（GAS未使用時）
-        const title = $("f_title")?.value.trim();
-        const date  = $("f_date")?.value;
-        if(!title||!date){toast("タイトルと日付は必須です","error");$("saveSchBtn").disabled=false;$("saveSchBtn").textContent="保存する";return;}
-        Object.assign(data,{title,date,type:$("f_type")?.value,startTime:$("f_st")?.value,endTime:$("f_et")?.value,location:$("f_loc")?.value.trim(),createdAt:serverTimestamp()});
-        const ref = await addDoc(collection(db,"teams",TEAM_ID,"schedules"),data);
-        gasEvents.push({...data, id:ref.id});
-      } else {
-        await setDoc(doc(db,"teams",TEAM_ID,"schedules",id),data,{merge:true});
-        const idx = gasEvents.findIndex(x=>x.id===id);
-        if(idx>=0) gasEvents[idx]={...gasEvents[idx],...data};
-      }
-      renderCalendar();
-      closeModal();
-      toast("保存しました","success");
-    }catch(e){
-      console.error(e);
-      toast("保存に失敗しました","error");
-      $("saveSchBtn").disabled=false; $("saveSchBtn").textContent="保存する";
-    }
-  });
+      const data={title,date,type:$('f_type').value,startTime:$('f_st').value,endTime:$('f_et').value,gatherTime:$('f_gt').value,gatherPlace:$('f_gp').value.trim(),location:$('f_loc').value.trim(),mapUrl:$('f_map').value.trim(),opponent:$('f_opp').value.trim(),items:$('f_items').value.trim(),driveUrl:$('f_drive').value.trim(),note:$('f_note').value.trim(),createdBy:CU.uid};
+      if(s?.id)await updateDoc(doc(db,'teams',TEAM_ID,'schedules',s.id),{...data,updatedAt:serverTimestamp()});
+      else await addDoc(collection(db,'teams',TEAM_ID,'schedules'),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+      const snap=await getDocs(query(collection(db,'teams',TEAM_ID,'schedules'),orderBy('date','asc')));
+      schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderCalendar();closeModal();toast(s?'更新しました':'登録しました','ok');
+    }catch(e){console.error(e);toast('保存に失敗しました','err');$('saveSchBtn').disabled=false;$('saveSchBtn').textContent='保存する'}
+  };
+};
+window.delSch=async function(id){
+  if(!confirm('この予定を削除しますか？'))return;
+  await deleteDoc(doc(db,'teams',TEAM_ID,'schedules',id));
+  schedules=schedules.filter(s=>s.id!==id);renderCalendar();closeModal();toast('削除しました');
 };
 
-window.delSchedule = async function(id) {
-  if(!confirm("Firestoreの補足情報を削除しますか？\n※Googleカレンダーの予定は削除されません"))return;
-  try{
-    await deleteDoc(doc(db,"teams",TEAM_ID,"schedules",id));
-    const idx = gasEvents.findIndex(x=>x.id===id);
-    if(idx>=0) gasEvents.splice(idx,1);
-    renderCalendar();
-    closeModal();
-    toast("削除しました");
-  }catch(e){ toast("削除に失敗しました","error"); }
-};
-
-// RESULT
-async function loadResult() {
-  $("resultList").innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
-  try {
-    const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"results"),orderBy("date","desc")));
-    results=snap.docs.map(d=>({id:d.id,...d.data()}));
-  } catch(e) { console.log('Result error:',e); results=[]; }
-  if(currentMember.role==="admin"){$("fab").style.display="flex";$("fab").onclick=()=>openResultForm(null);}
-  if(!results.length){$("resultList").innerHTML=`<div class="empty-state"><div class="empty-state__title">試合結果はありません</div></div>`;return;}
-  $("resultList").innerHTML=results.map(r=>{
+// ===== RESULTS =====
+async function loadResults(){
+  $('resultsList').innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
+  try{const snap=await getDocs(query(collection(db,'teams',TEAM_ID,'results'),orderBy('date','desc')));results=snap.docs.map(d=>({id:d.id,...d.data()}))}catch(e){results=[]}
+  if(CM?.role==='admin'){$('fab').style.display='flex';$('fab').onclick=()=>openResultForm(null)}
+  if(!results.length){$('resultsList').innerHTML=`<div class="empty"><div class="empty-title">試合結果はありません</div></div>`;return}
+  $('resultsList').innerHTML=results.map(r=>{
     const rl=r.result==='勝'?'WIN':r.result==='負'?'LOSE':'DRAW';
-    const rc=r.result==='勝'?'result--win':r.result==='負'?'result--lose':'result--draw';
-    return `<div class="result-row" onclick="showResultDetail('${r.id}')">
-      <div class="result-row__score">${r.scoreUs}<span style="color:var(--line);font-weight:300;margin:0 4px">—</span>${r.scoreThem}</div>
-      <div class="result-row__info">
-        <div class="result-row__opp">${r.opponent}</div>
-        <div class="result-row__date">${fmtDate(r.date)} · ${TL[r.type]||r.type}</div>
+    const rc=r.result==='勝'?'badge-win':r.result==='負'?'badge-lose':'badge-draw';
+    return`<div class="notice-item" onclick="showResultDetail('${r.id}')">
+      <div class="result-card">
+        <div class="result-score">${r.scoreUs}<span class="result-sep">—</span>${r.scoreThem}</div>
+        <div class="result-info"><div class="result-opp">vs ${r.opponent}</div><div class="result-date">${fmtDate(r.date)} · ${TL[r.type]||r.type}</div></div>
+        <span class="result-badge ${rc}">${rl}</span>
       </div>
-      <div class="result-badge ${rc}">${rl}</div>
+      ${r.comment?`<div style="font-size:13px;color:var(--gray-600);margin-top:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${r.comment}</div>`:''}
     </div>`;
-  }).join("");
+  }).join('');
 }
-window.showResultDetail = function(id) {
-  const r=results.find(x=>x.id===id); if(!r)return;
-  const isAdmin=currentMember.role==="admin";
-  openModal("試合詳細",`
-    <div class="detail-row"><div class="detail-row__label">${TL[r.type]||r.type}</div><div class="detail-row__val">${fmtDateFull(r.date)}</div></div>
-    <div class="score-display">
-      <div class="score-display__side"><div class="score-display__team">松山SOUTH</div><div class="score-display__num">${r.scoreUs}</div></div>
-      <div class="score-display__vs">—</div>
-      <div class="score-display__side"><div class="score-display__team">${r.opponent}</div><div class="score-display__num">${r.scoreThem}</div></div>
+window.showResultDetail=function(id){
+  const r=results.find(x=>x.id===id);if(!r)return;
+  const rl=r.result==='勝'?'WIN':r.result==='負'?'LOSE':'DRAW';
+  const rc=r.result==='勝'?'badge-win':r.result==='負'?'badge-lose':'badge-draw';
+  openModal('試合詳細',`
+    <div style="text-align:center;padding:16px 0 20px;border-bottom:1px solid var(--gray-100)">
+      <div style="font-size:12px;color:var(--gray-400);margin-bottom:8px">${fmtDateFull(r.date)} · ${TL[r.type]||r.type}</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px">
+        <div><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">松山SOUTH</div><div style="font-size:44px;font-weight:800;color:var(--gray-800);letter-spacing:-.04em;line-height:1">${r.scoreUs}</div></div>
+        <div style="color:var(--gray-200);font-size:24px;font-weight:300">—</div>
+        <div><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">${r.opponent}</div><div style="font-size:44px;font-weight:800;color:var(--gray-800);letter-spacing:-.04em;line-height:1">${r.scoreThem}</div></div>
+      </div>
+      <span class="result-badge ${rc}" style="font-size:13px;padding:5px 14px">${rl}</span>
     </div>
-    ${r.comment?`<div class="detail-row"><div class="detail-row__label">コメント</div><div class="detail-row__val">${r.comment}</div></div>`:""}
-    ${isAdmin?`<div style="display:flex;gap:8px;margin-top:20px">
-      <button class="btn btn--ghost btn--full btn--sm" onclick="openResultForm('${r.id}')">編集</button>
-      <button class="btn btn--danger btn--full btn--sm" onclick="delResult('${r.id}')">削除</button>
-    </div>`:""}`);
+    ${r.comment?`<div style="padding:16px 0;font-size:14px;color:var(--gray-600);line-height:1.7;white-space:pre-wrap">${r.comment}</div>`:''}
+    ${CM?.role==='admin'?`<div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-ghost btn-sm" onclick="openResultForm('${r.id}')">編集</button><button class="btn btn-danger btn-sm" onclick="delResult('${r.id}')">削除</button></div>`:''}
+  `);
 };
-window.openResultForm = function(id) {
-  closeModal(); const r=id?results.find(x=>x.id===id):null;
-  openModal(r?"試合結果を編集":"試合結果を登録",`
+window.openResultForm=function(id){
+  closeModal();const r=id?results.find(x=>x.id===id):null;
+  openModal(r?'試合結果を編集':'試合結果を登録',`
     <div class="form-group"><label class="form-label">対戦相手 *</label><input id="f_opp" value="${r?.opponent||''}" placeholder="例：南山スポーツ少年団"></div>
-    <div class="form-group"><label class="form-label">種別 *</label><select id="f_type">
-      <option value="friendly" ${r?.type==='friendly'?'selected':''}>練習試合</option>
-      <option value="official" ${r?.type==='official'?'selected':''}>公式戦</option>
-    </select></div>
+    <div class="form-group"><label class="form-label">種別</label><select id="f_type"><option value="friendly"${r?.type==='friendly'?' selected':''}>練習試合</option><option value="official"${r?.type==='official'?' selected':''}>公式戦</option></select></div>
     <div class="form-group"><label class="form-label">日付 *</label><input type="date" id="f_date" value="${r?.date||''}"></div>
     <div class="form-group"><label class="form-label">スコア *</label>
-      <div class="score-team-label">松山SOUTH ／ 相手</div>
-      <div class="score-input-row">
-        <input type="number" id="f_us" value="${r?.scoreUs??''}" min="0" placeholder="0">
-        <div class="score-vs">対</div>
-        <input type="number" id="f_them" value="${r?.scoreThem??''}" min="0" placeholder="0">
-      </div></div>
-    <div class="form-group"><label class="form-label">勝敗 *</label><select id="f_result">
-      <option value="勝" ${r?.result==='勝'?'selected':''}>勝</option>
-      <option value="負" ${r?.result==='負'?'selected':''}>負</option>
-      <option value="分" ${r?.result==='分'?'selected':''}>引分</option>
-    </select></div>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
+        <div><div style="font-size:11px;color:var(--gray-400);text-align:center;margin-bottom:4px">松山SOUTH</div><input type="number" id="f_us" value="${r?.scoreUs??''}" min="0" style="text-align:center;font-size:20px;font-weight:700"></div>
+        <div style="color:var(--gray-200);font-size:20px;text-align:center">—</div>
+        <div><div style="font-size:11px;color:var(--gray-400);text-align:center;margin-bottom:4px">相手</div><input type="number" id="f_them" value="${r?.scoreThem??''}" min="0" style="text-align:center;font-size:20px;font-weight:700"></div>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">勝敗</label><select id="f_result"><option value="勝"${r?.result==='勝'?' selected':''}>勝</option><option value="負"${r?.result==='負'?' selected':''}>負</option><option value="分"${r?.result==='分'?' selected':''}>引分</option></select></div>
     <div class="form-group"><label class="form-label">コメント</label><textarea id="f_comment">${r?.comment||''}</textarea></div>
-    <button class="btn btn--primary btn--full" id="saveResBtn">保存する</button>`);
-  ["f_us","f_them"].forEach(fid=>{document.getElementById(fid)?.addEventListener("input",()=>{
-    const us=parseInt($("f_us").value)||0,them=parseInt($("f_them").value)||0;
-    $("f_result").value=us>them?"勝":us<them?"負":"分";
-  });});
-  $("saveResBtn").addEventListener("click",async()=>{
-    const opponent=$("f_opp").value.trim(),date=$("f_date").value,scoreUs=parseInt($("f_us").value),scoreThem=parseInt($("f_them").value);
-    if(!opponent||!date||isNaN(scoreUs)||isNaN(scoreThem)){toast("必須項目を入力してください","error");return;}
-    $("saveResBtn").disabled=true;$("saveResBtn").textContent="保存中...";
+    <button class="btn btn-blue btn-full" id="saveResBtn">保存する</button>
+  `);
+  ['f_us','f_them'].forEach(fid=>document.getElementById(fid)?.addEventListener('input',()=>{
+    const us=parseInt($('f_us').value)||0,them=parseInt($('f_them').value)||0;
+    $('f_result').value=us>them?'勝':us<them?'負':'分';
+  }));
+  $('saveResBtn').onclick=async()=>{
+    const opp=$('f_opp').value.trim(),date=$('f_date').value,us=parseInt($('f_us').value),them=parseInt($('f_them').value);
+    if(!opp||!date||isNaN(us)||isNaN(them)){toast('必須項目を入力してください','err');return}
+    $('saveResBtn').disabled=true;$('saveResBtn').textContent='保存中...';
     try{
-      const data={opponent,date,scoreUs,scoreThem,type:$("f_type").value,result:$("f_result").value,comment:$("f_comment").value.trim(),createdBy:currentUser.uid};
-      if(r?.id)await updateDoc(doc(db,"teams",TEAM_ID,"results",r.id),{...data,updatedAt:serverTimestamp()});
-      else await addDoc(collection(db,"teams",TEAM_ID,"results"),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
-      closeModal();await loadResult();toast(r?"更新しました":"登録しました","success");
-    }catch(e){toast("保存に失敗しました","error");$("saveResBtn").disabled=false;$("saveResBtn").textContent="保存する";}
-  });
+      const data={opponent:opp,date,type:$('f_type').value,scoreUs:us,scoreThem:them,result:$('f_result').value,comment:$('f_comment').value.trim(),createdBy:CU.uid};
+      if(r?.id)await updateDoc(doc(db,'teams',TEAM_ID,'results',r.id),{...data,updatedAt:serverTimestamp()});
+      else await addDoc(collection(db,'teams',TEAM_ID,'results'),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+      const snap=await getDocs(query(collection(db,'teams',TEAM_ID,'results'),orderBy('date','desc')));
+      results=snap.docs.map(d=>({id:d.id,...d.data()}));
+      await loadResults();closeModal();toast(r?'更新しました':'登録しました','ok');
+    }catch(e){console.error(e);toast('保存に失敗しました','err');$('saveResBtn').disabled=false;$('saveResBtn').textContent='保存する'}
+  };
 };
-window.delResult = async function(id) {
-  if(!confirm("この試合結果を削除しますか？"))return;
-  await deleteDoc(doc(db,"teams",TEAM_ID,"results",id));
-  closeModal();await loadResult();toast("削除しました");
+window.delResult=async function(id){
+  if(!confirm('この試合結果を削除しますか？'))return;
+  await deleteDoc(doc(db,'teams',TEAM_ID,'results',id));
+  await loadResults();closeModal();toast('削除しました');
 };
 
-// PLAYERS
-async function loadPlayers() {
-  $("playerList").innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
-  try {
-    const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"players"),orderBy("number","asc")));
-    players=snap.docs.map(d=>({id:d.id,...d.data()}));
-  } catch(e) { console.log('Players error:',e); players=[]; }
-  $("playerCount").textContent=`${players.length}名登録中`;
-  if(currentMember.role==="admin"){$("fab").style.display="flex";$("fab").onclick=()=>openPlayerForm(null);}
-  if(!players.length){$("playerList").innerHTML=`<div class="empty-state"><div class="empty-state__title">選手が登録されていません</div></div>`;return;}
+// ===== PLAYERS =====
+async function loadPlayers(){
+  $('playersList').innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
+  try{const snap=await getDocs(query(collection(db,'teams',TEAM_ID,'players'),orderBy('number','asc')));players=snap.docs.map(d=>({id:d.id,...d.data()}))}catch(e){players=[]}
+  $('playerCount').textContent=`${players.length}名登録中`;
+  if(CM?.role==='admin'){$('fab').style.display='flex';$('fab').onclick=()=>openPlayerForm(null)}
+  if(!players.length){$('playersList').innerHTML=`<div class="empty"><div class="empty-title">選手が登録されていません</div></div>`;return}
   const grades={};
-  players.forEach(p=>{const g=p.grade||"?";if(!grades[g])grades[g]=[];grades[g].push(p);});
-  $("playerList").innerHTML=Object.keys(grades).sort((a,b)=>Number(a)-Number(b)).map(g=>`
-    <div class="grade-label">${g}年生</div>
+  players.forEach(p=>{const g=p.grade||'?';if(!grades[g])grades[g]=[];grades[g].push(p)});
+  $('playersList').innerHTML=Object.keys(grades).sort((a,b)=>Number(a)-Number(b)).map(g=>`
+    <div class="grade-title">${g}年生</div>
     <div class="player-grid">${grades[g].map(p=>`<div class="player-card" onclick="openPlayerForm('${p.id}')">
-      <div class="player-card__num">${p.number||'—'}</div>
-      <div class="player-card__name">${p.name}</div>
-      <div class="player-card__meta">${p.bats||'?'}打 · ${p.throws||'?'}投</div>
-    </div>`).join("")}</div>`).join("");
+      <div class="player-num">${p.number||'—'}</div>
+      <div class="player-name">${p.name}</div>
+      <div class="player-meta">${p.bats||'?'}打 · ${p.throws||'?'}投</div>
+    </div>`).join('')}</div>
+  `).join('');
 }
-window.openPlayerForm = function(id) {
-  if(currentMember.role!=="admin")return;
+window.openPlayerForm=function(id){
+  if(CM?.role!=='admin')return;
   const p=id?players.find(x=>x.id===id):null;
-  openModal(p?"選手を編集":"選手を登録",`
+  openModal(p?'選手を編集':'選手を登録',`
     <div class="form-group"><label class="form-label">氏名 *</label><input id="f_name" value="${p?.name||''}" placeholder="例：松山 太郎"></div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">学年 *</label><select id="f_grade">${[1,2,3,4,5,6].map(g=>`<option value="${g}" ${p?.grade==g?'selected':''}>${g}年</option>`).join("")}</select></div>
+      <div class="form-group"><label class="form-label">学年 *</label><select id="f_grade">${[1,2,3,4,5,6].map(g=>`<option value="${g}"${p?.grade==g?' selected':''}>${g}年</option>`).join('')}</select></div>
       <div class="form-group"><label class="form-label">背番号</label><input type="number" id="f_num" value="${p?.number||''}" min="0" max="99"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">打席</label><select id="f_bats">
-        <option value="右" ${p?.bats==='右'?'selected':''}>右打</option>
-        <option value="左" ${p?.bats==='左'?'selected':''}>左打</option>
-        <option value="両" ${p?.bats==='両'?'selected':''}>両打</option>
-      </select></div>
-      <div class="form-group"><label class="form-label">投球</label><select id="f_throws">
-        <option value="右" ${p?.throws==='右'?'selected':''}>右投</option>
-        <option value="左" ${p?.throws==='左'?'selected':''}>左投</option>
-      </select></div>
+      <div class="form-group"><label class="form-label">打席</label><select id="f_bats"><option value="右"${p?.bats==='右'?' selected':''}>右打</option><option value="左"${p?.bats==='左'?' selected':''}>左打</option><option value="両"${p?.bats==='両'?' selected':''}>両打</option></select></div>
+      <div class="form-group"><label class="form-label">投球</label><select id="f_throws"><option value="右"${p?.throws==='右'?' selected':''}>右投</option><option value="左"${p?.throws==='左'?' selected':''}>左投</option></select></div>
     </div>
-    <button class="btn btn--primary btn--full" id="savePlBtn" style="margin-bottom:.38rem">保存する</button>
-    ${p?`<button class="btn btn--danger btn--full" id="delPlBtn">削除</button>`:""}`);
-  $("savePlBtn").addEventListener("click",async()=>{
-    const name=$("f_name").value.trim();if(!name){toast("氏名は必須です","error");return;}
-    $("savePlBtn").disabled=true;$("savePlBtn").textContent="保存中...";
+    <button class="btn btn-blue btn-full" id="savePlBtn" style="margin-bottom:8px">保存する</button>
+    ${p?`<button class="btn btn-danger btn-full" id="delPlBtn">削除</button>`:''}
+  `);
+  $('savePlBtn').onclick=async()=>{
+    const name=$('f_name').value.trim();if(!name){toast('氏名は必須です','err');return}
+    $('savePlBtn').disabled=true;$('savePlBtn').textContent='保存中...';
     try{
-      const data={name,grade:parseInt($("f_grade").value),number:parseInt($("f_num").value)||0,bats:$("f_bats").value,throws:$("f_throws").value};
-      if(p?.id)await updateDoc(doc(db,"teams",TEAM_ID,"players",p.id),{...data,updatedAt:serverTimestamp()});
-      else await addDoc(collection(db,"teams",TEAM_ID,"players"),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
-      closeModal();await loadPlayers();toast(p?"更新しました":"登録しました","success");
-    }catch(e){toast("保存に失敗しました","error");$("savePlBtn").disabled=false;$("savePlBtn").textContent="保存する";}
-  });
-  $("delPlBtn")?.addEventListener("click",async()=>{
+      const data={name,grade:parseInt($('f_grade').value),number:parseInt($('f_num').value)||0,bats:$('f_bats').value,throws:$('f_throws').value};
+      if(p?.id)await updateDoc(doc(db,'teams',TEAM_ID,'players',p.id),{...data,updatedAt:serverTimestamp()});
+      else await addDoc(collection(db,'teams',TEAM_ID,'players'),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+      await loadPlayers();closeModal();toast(p?'更新しました':'登録しました','ok');
+    }catch(e){console.error(e);toast('保存に失敗しました','err');$('savePlBtn').disabled=false;$('savePlBtn').textContent='保存する'}
+  };
+  $('delPlBtn')?.addEventListener('click',async()=>{
     if(!confirm(`${p.name}を削除しますか？`))return;
-    await deleteDoc(doc(db,"teams",TEAM_ID,"players",p.id));
-    closeModal();await loadPlayers();toast("削除しました");
+    await deleteDoc(doc(db,'teams',TEAM_ID,'players',p.id));
+    await loadPlayers();closeModal();toast('削除しました');
   });
 };
 
-// NOTICE
-async function loadNotice() {
-  $("noticeList").innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
-  try {
-    const snap=await getDocs(query(collection(db,"teams",TEAM_ID,"notices"),orderBy("createdAt","desc")));
-    notices=snap.docs.map(d=>({id:d.id,...d.data()}));
-  } catch(e) { console.log('Notice error:',e); notices=[]; }
-  if(currentMember.role==="admin"){$("fab").style.display="flex";$("fab").onclick=()=>openNoticeForm();}
-  if(!notices.length){$("noticeList").innerHTML=`<div class="empty-state"><div class="empty-state__title">お知らせはありません</div></div>`;return;}
-  $("noticeList").innerHTML=notices.map(n=>`<div class="notice-item" onclick="showNoticeDetail('${n.id}')">
-    ${n.pinned?`<div class="notice-item__pin">固定</div>`:""}
-    <div class="notice-item__title">${n.title}</div>
-    <div class="notice-item__preview">${n.body}</div>
-    <div class="notice-item__date">${fmtTS(n.createdAt)}</div>
-  </div>`).join("");
+// ===== NOTICES =====
+async function loadNotices(){
+  $('noticesList').innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
+  try{const snap=await getDocs(query(collection(db,'teams',TEAM_ID,'notices'),orderBy('createdAt','desc')));notices=snap.docs.map(d=>({id:d.id,...d.data()}))}catch(e){notices=[]}
+  if(CM?.role==='admin'){$('fab').style.display='flex';$('fab').onclick=()=>openNoticeForm()}
+  if(!notices.length){$('noticesList').innerHTML=`<div class="empty"><div class="empty-title">お知らせはありません</div></div>`;return}
+  $('noticesList').innerHTML=notices.map(n=>`<div class="notice-item" onclick="showNoticeDetail('${n.id}')">
+    ${n.pinned?`<div class="notice-pin">固定</div>`:''}
+    <div class="notice-title">${n.title}</div>
+    <div class="notice-preview">${n.body}</div>
+    <div class="notice-date">${fmtTS(n.createdAt)}</div>
+  </div>`).join('');
 }
-window.showNoticeDetail = function(id) {
+window.showNoticeDetail=function(id){
   const n=notices.find(x=>x.id===id);if(!n)return;
   openModal(n.title,`
-    <div class="detail-row"><div class="detail-row__label">${fmtTS(n.createdAt)}</div></div>
-    <div style="font-size:15px;line-height:1.8;color:var(--ink);white-space:pre-wrap">${n.body}</div>
-    ${currentMember.role==="admin"?`<div style="margin-top:20px"><button class="btn btn--danger btn--sm" onclick="delNotice('${n.id}')">削除</button></div>`:""}`);
+    <div style="font-size:12px;color:var(--gray-400);margin-bottom:14px">${fmtTS(n.createdAt)}</div>
+    <div style="font-size:14px;color:var(--gray-800);line-height:1.8;white-space:pre-wrap">${n.body}</div>
+    ${CM?.role==='admin'?`<div style="margin-top:16px"><button class="btn btn-danger btn-sm" onclick="delNotice('${n.id}')">削除</button></div>`:''}
+  `);
 };
-window.openNoticeForm = function() {
-  openModal("お知らせを投稿",`
+window.openNoticeForm=function(){
+  openModal('お知らせを投稿',`
     <div class="form-group"><label class="form-label">タイトル *</label><input id="f_ntitle" placeholder="例：練習日程変更のお知らせ"></div>
     <div class="form-group"><label class="form-label">本文 *</label><textarea id="f_nbody" style="min-height:120px" placeholder="内容を入力してください"></textarea></div>
-    <div class="form-group" style="display:flex;align-items:center;gap:.45rem">
-      <input type="checkbox" id="f_pinned" style="width:auto;accent-color:var(--navy)">
-      <label for="f_pinned" class="form-label" style="margin:0">上部に固定する</label>
-    </div>
-    <button class="btn btn--primary btn--full" id="saveNBtn">投稿する</button>`);
-  $("saveNBtn").addEventListener("click",async()=>{
-    const title=$("f_ntitle").value.trim(),body=$("f_nbody").value.trim();
-    if(!title||!body){toast("タイトルと本文は必須です","error");return;}
-    $("saveNBtn").disabled=true;$("saveNBtn").textContent="投稿中...";
+    <div class="form-group" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="f_pin" style="width:auto;accent-color:var(--blue)"><label for="f_pin" class="form-label" style="margin:0">上部に固定する</label></div>
+    <button class="btn btn-blue btn-full" id="saveNBtn">投稿する</button>
+  `);
+  $('saveNBtn').onclick=async()=>{
+    const title=$('f_ntitle').value.trim(),body=$('f_nbody').value.trim();
+    if(!title||!body){toast('タイトルと本文は必須です','err');return}
+    $('saveNBtn').disabled=true;$('saveNBtn').textContent='投稿中...';
     try{
-      await addDoc(collection(db,"teams",TEAM_ID,"notices"),{title,body,pinned:$("f_pinned").checked,createdBy:currentUser.uid,createdAt:serverTimestamp()});
-      closeModal();await loadNotice();toast("投稿しました","success");
-    }catch(e){toast("投稿に失敗しました","error");$("saveNBtn").disabled=false;$("saveNBtn").textContent="投稿する";}
-  });
+      await addDoc(collection(db,'teams',TEAM_ID,'notices'),{title,body,pinned:$('f_pin').checked,createdBy:CU.uid,createdAt:serverTimestamp()});
+      await loadNotices();closeModal();toast('投稿しました','ok');
+    }catch(e){toast('投稿に失敗しました','err');$('saveNBtn').disabled=false;$('saveNBtn').textContent='投稿する'}
+  };
 };
-window.delNotice = async function(id) {
-  if(!confirm("このお知らせを削除しますか？"))return;
-  await deleteDoc(doc(db,"teams",TEAM_ID,"notices",id));
-  closeModal();await loadNotice();toast("削除しました");
+window.delNotice=async function(id){
+  if(!confirm('このお知らせを削除しますか？'))return;
+  await deleteDoc(doc(db,'teams',TEAM_ID,'notices',id));
+  await loadNotices();closeModal();toast('削除しました');
 };
 
-// MEMBERS
-async function loadMembers() {
-  const [mSnap,pSnap]=await Promise.all([getDocs(collection(db,"teams",TEAM_ID,"members")),getDocs(query(collection(db,"teams",TEAM_ID,"players"),orderBy("number","asc")))]);
-  members=mSnap.docs.map(d=>({id:d.id,...d.data()}));
-  players=pSnap.docs.map(d=>({id:d.id,...d.data()}));
-  $("memberCount").textContent=`${members.length}名登録中`;
-  $("memberList").innerHTML=members.map(m=>{
+// ===== MEMBERS =====
+async function loadMembers(){
+  const[ms,ps]=await Promise.all([
+    getDocs(collection(db,'teams',TEAM_ID,'members')).catch(()=>({docs:[]})),
+    getDocs(query(collection(db,'teams',TEAM_ID,'players'),orderBy('number','asc'))).catch(()=>({docs:[]}))
+  ]);
+  members=ms.docs.map(d=>({id:d.id,...d.data()}));
+  players=ps.docs.map(d=>({id:d.id,...d.data()}));
+  $('memberCount').textContent=`${members.length}名登録中`;
+  $('membersList').innerHTML=members.map(m=>{
     const mp=players.filter(p=>m.playerIds?.includes(p.id));
-    return `<div class="member-row" onclick="openMemberForm('${m.id}')">
-      <div class="member-avatar">${(m.displayName||"?")[0]}</div>
+    return`<div class="member-row" onclick="openMemberForm('${m.id}')">
+      <div class="member-avatar">${(m.displayName||'?')[0]}</div>
       <div class="member-info">
-        <div class="member-name">${m.displayName||"（未設定）"}</div>
-        <div class="member-email">${m.email||""}</div>
-        <div class="player-tags">${mp.map(p=>`<span class="player-tag">${p.name}</span>`).join("")}</div>
+        <div class="member-name">${m.displayName||'（未設定）'}</div>
+        <div class="member-email">${m.email||''}</div>
+        <div class="member-tags">${mp.map(p=>`<span class="member-tag">${p.name}</span>`).join('')}</div>
       </div>
-      <span class="role-tag ${m.role==='admin'?'role-admin':'role-parent'}">${m.role==='admin'?'管理者':'保護者'}</span>
+      <span class="member-role ${m.role==='admin'?'role-admin':'role-parent'}">${m.role==='admin'?'管理者':'保護者'}</span>
     </div>`;
-  }).join("");
+  }).join('');
 }
-window.openMemberForm = function(uid) {
+window.openMemberForm=function(uid){
   const m=members.find(x=>x.id===uid);if(!m)return;
-  openModal(m.displayName||"メンバー設定",`
-    <div class="form-group"><label class="form-label">権限</label><select id="f_role">
-      <option value="parent" ${m.role==='parent'?'selected':''}>保護者</option>
-      <option value="admin" ${m.role==='admin'?'selected':''}>管理者</option>
-    </select></div>
+  openModal(m.displayName||'メンバー設定',`
+    <div class="form-group"><label class="form-label">権限</label><select id="f_role"><option value="parent"${m.role==='parent'?' selected':''}>保護者</option><option value="admin"${m.role==='admin'?' selected':''}>管理者</option></select></div>
     <div class="form-group"><label class="form-label">紐付ける選手</label>
-      ${players.map(p=>`<label style="display:flex;align-items:center;gap:.45rem;padding:.32rem 0;cursor:pointer">
-        <input type="checkbox" value="${p.id}" ${m.playerIds?.includes(p.id)?'checked':''} style="width:auto;accent-color:var(--navy)">
-        <span style="font-size:.83rem">${p.name}（${p.grade}年 #${p.number}）</span>
-      </label>`).join("")}
-      ${players.length===0?`<p style="font-size:.78rem;color:var(--gray-600)">選手が登録されていません</p>`:""}
+      ${players.map(p=>`<label style="display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;border-bottom:1px solid var(--gray-100)">
+        <input type="checkbox" value="${p.id}"${m.playerIds?.includes(p.id)?' checked':''} style="width:auto;accent-color:var(--blue)">
+        <span style="font-size:14px">${p.name}（${p.grade}年 #${p.number}）</span>
+      </label>`).join('')}
+      ${!players.length?`<p style="font-size:13px;color:var(--gray-400)">選手が登録されていません</p>`:''}
     </div>
-    <button class="btn btn--primary btn--full" id="saveMBtn">保存する</button>`);
-  $("saveMBtn").addEventListener("click",async()=>{
-    const role=$("f_role").value;
+    <button class="btn btn-blue btn-full" id="saveMBtn">保存する</button>
+  `);
+  $('saveMBtn').onclick=async()=>{
+    const role=$('f_role').value;
     const pids=[...document.querySelectorAll('#modalBody input[type=checkbox]:checked')].map(el=>el.value);
-    $("saveMBtn").disabled=true;$("saveMBtn").textContent="保存中...";
+    $('saveMBtn').disabled=true;$('saveMBtn').textContent='保存中...';
     try{
-      await updateDoc(doc(db,"teams",TEAM_ID,"members",uid),{role,playerIds:pids});
-      closeModal();await loadMembers();toast("更新しました","success");
-    }catch(e){toast("保存に失敗しました","error");$("saveMBtn").disabled=false;$("saveMBtn").textContent="保存する";}
-  });
+      await updateDoc(doc(db,'teams',TEAM_ID,'members',uid),{role,playerIds:pids});
+      await loadMembers();closeModal();toast('更新しました','ok');
+    }catch(e){toast('保存に失敗しました','err');$('saveMBtn').disabled=false;$('saveMBtn').textContent='保存する'}
+  };
 };
-$("inviteParentBtn").addEventListener("click",async()=>{
-  $("inviteParentBtn").disabled=true;
-  try{const token=await createInvite("parent");const url=`${location.origin}${location.pathname}?token=${token}`;$("inviteUrlBox").textContent=url;$("inviteUrlBox").style.display="block";$("copyInviteBtn").style.display="inline-flex";$("copyInviteBtn").onclick=()=>navigator.clipboard.writeText(url).then(()=>toast("コピーしました","success"));}catch(e){toast("生成に失敗しました","error");}
-  $("inviteParentBtn").disabled=false;
-});
-$("inviteAdminBtn").addEventListener("click",async()=>{
-  $("inviteAdminBtn").disabled=true;
-  try{const token=await createInvite("admin");const url=`${location.origin}${location.pathname}?token=${token}`;$("inviteUrlBox").textContent=url;$("inviteUrlBox").style.display="block";$("copyInviteBtn").style.display="inline-flex";$("copyInviteBtn").onclick=()=>navigator.clipboard.writeText(url).then(()=>toast("コピーしました","success"));}catch(e){toast("生成に失敗しました","error");}
-  $("inviteAdminBtn").disabled=false;
-});
+async function handleInvite(role){
+  const token=await createInvite(role);
+  const url=`${location.origin}${location.pathname}?token=${token}`;
+  $('inviteUrlBox').textContent=url;$('inviteUrlBox').style.display='block';
+  $('copyInviteBtn').style.display='inline-block';
+  $('copyInviteBtn').onclick=()=>navigator.clipboard.writeText(url).then(()=>toast('コピーしました','ok'));
+}
+$('inviteParentBtn').onclick=()=>handleInvite('parent');
+$('inviteAdminBtn').onclick=()=>handleInvite('admin');
 
-// INVITE HANDLING
-async function handleInviteToken(token,user) {
-  $("inviteScreen").classList.add("show");$("loginScreen").style.display="none";
-  const inviteCard=$("inviteCard");
+// ===== BOOT =====
+function bootApp(user,member){
+  CU=user;CM=member;
+  $('loginScreen').classList.remove('active');
+  $('inviteScreen').classList.remove('active');
+  $('app').style.display='block';
+  $('headerUser').textContent=member.displayName?.split(' ')[0]||'';
+  $('sidebarUser').textContent=member.displayName||'';
+  if(member.role==='admin'){
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
+    $('headerBadge').style.display='';
+  }
+  navigate('home');
+}
+
+// ===== INVITE HANDLING =====
+async function handleInviteToken(token,user){
+  $('loginScreen').classList.remove('active');
+  $('inviteScreen').classList.add('active');
+  const box=$('inviteBox');
   try{
     const existing=await getMember(user.uid);
-    if(existing){$("inviteScreen").classList.remove("show");bootApp(user,existing);return;}
-    const invite=await validateInvite(token);
-    if(!invite){inviteCard.innerHTML=`<div class="invite-card__icon">⏰</div><div class="invite-card__title">招待URLが無効です</div><div class="invite-card__sub">期限切れまたは使用済みです</div>`;return;}
-    const roleLabel=invite.role==="admin"?"管理者":"保護者";
-    inviteCard.innerHTML=`
-      <div class="invite-card__title">松山SOUTHへようこそ！</div>
-      <div class="invite-card__sub">アカウントを作成してチームに参加します</div>
-      <div class="role-badge">${roleLabel}</div>
-      <div style="text-align:left;margin-bottom:12px">
-        <div style="margin-bottom:8px">
-          <label style="font-size:11px;font-weight:600;color:#6B6B6B;display:block;margin-bottom:4px">お名前</label>
-          <input type="text" id="inv_name" placeholder="例：山田 花子" style="width:100%;padding:10px 12px;border:1px solid #EBEBEB;border-radius:6px;font-size:15px">
-        </div>
-        <div style="margin-bottom:8px">
-          <label style="font-size:11px;font-weight:600;color:#6B6B6B;display:block;margin-bottom:4px">メールアドレス</label>
-          <input type="email" id="inv_email" placeholder="example@gmail.com" style="width:100%;padding:10px 12px;border:1px solid #EBEBEB;border-radius:6px;font-size:15px">
-        </div>
-        <div style="margin-bottom:16px">
-          <label style="font-size:11px;font-weight:600;color:#6B6B6B;display:block;margin-bottom:4px">パスワード（6文字以上）</label>
-          <input type="password" id="inv_pass" placeholder="パスワードを設定" style="width:100%;padding:10px 12px;border:1px solid #EBEBEB;border-radius:6px;font-size:15px">
-        </div>
-      </div>
-      <button class="btn btn--primary btn--full" id="joinBtn">チームに参加する</button>
-      <div id="invError" style="color:#B91C1C;font-size:12px;margin-top:8px;display:none"></div>
+    if(existing){$('inviteScreen').classList.remove('active');bootApp(user,existing);return}
+    const inv=await validateInvite(token);
+    if(!inv){box.innerHTML=`<div class="invite-title" style="color:#DC2626">招待URLが無効です</div><div class="invite-sub">期限切れまたは使用済みです</div>`;return}
+    const roleLabel=inv.role==='admin'?'管理者':'保護者';
+    box.innerHTML=`
+      <div class="invite-team-logo"><img src="logo.jpg" alt="Matsuyama South"></div>
+      <div class="invite-title">松山SOUTHへようこそ</div>
+      <div class="invite-sub">アカウントを作成してチームに参加します</div>
+      <span class="invite-role">${roleLabel}</span>
+      <div class="invite-field"><label>お名前</label><input type="text" id="inv_name" placeholder="例：山田 花子"></div>
+      <div class="invite-field"><label>メールアドレス</label><input type="email" id="inv_email" placeholder="example@gmail.com"></div>
+      <div class="invite-field"><label>パスワード（6文字以上）</label><input type="password" id="inv_pass" placeholder="パスワードを設定"></div>
+      <button class="btn-primary" id="joinBtn" style="margin-top:4px">チームに参加する</button>
+      <div class="invite-error" id="invErr"></div>
     `;
-    $("joinBtn").addEventListener("click",async()=>{
-      const name=$("inv_name").value.trim();
-      const email=$("inv_email").value.trim();
-      const pass=$("inv_pass").value;
-      const invErr=$("invError");
-      if(!name||!email||!pass){invErr.textContent="すべて入力してください";invErr.style.display="block";return;}
-      if(pass.length<6){invErr.textContent="パスワードは6文字以上です";invErr.style.display="block";return;}
-      $("joinBtn").disabled=true;$("joinBtn").textContent="登録中...";
+    $('joinBtn').onclick=async()=>{
+      const name=$('inv_name')?.value.trim(),email=$('inv_email')?.value.trim(),pass=$('inv_pass')?.value;
+      const errEl=$('invErr');
+      if(!name||!email||!pass){errEl.textContent='すべて入力してください';errEl.style.display='block';return}
+      if(pass.length<6){errEl.textContent='パスワードは6文字以上です';errEl.style.display='block';return}
+      $('joinBtn').disabled=true;$('joinBtn').textContent='登録中...';
       try{
-        // Firebaseアカウント作成
-        const cred = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(cred.user, {displayName: name});
-        await consumeInvite(token, cred.user.uid, name, email);
-        const member = await getMember(cred.user.uid);
-        $("inviteScreen").classList.remove("show");
-        bootApp(cred.user, member);
+        const cred=await createUserWithEmailAndPassword(auth,email,pass);
+        await updateProfile(cred.user,{displayName:name});
+        await consumeInvite(token,cred.user.uid,name,email);
+        const mem=await getMember(cred.user.uid);
+        $('inviteScreen').classList.remove('active');bootApp(cred.user,mem);
       }catch(e){
-        invErr.textContent = e.code==="auth/email-already-in-use"?"このメールアドレスはすでに登録されています":e.message;
-        invErr.style.display="block";
-        $("joinBtn").disabled=false;$("joinBtn").textContent="チームに参加する";
+        errEl.textContent=e.code==='auth/email-already-in-use'?'このメールアドレスはすでに登録されています':e.message;
+        errEl.style.display='block';$('joinBtn').disabled=false;$('joinBtn').textContent='チームに参加する';
       }
-    });
-  }catch(e){inviteCard.innerHTML=`<div class="invite-card__sub" style="color:var(--red)">エラーが発生しました</div>`;}
+    };
+  }catch(e){box.innerHTML=`<div class="invite-sub" style="color:#DC2626">エラーが発生しました</div>`}
 }
 
-// BOOT
-function bootApp(user,member) {
-  currentUser=user;currentMember=member;
-  $("loginScreen").style.display="none";
-  // sidebar is CSS-controlled (PC only)
-  $("bottomNav").style.display="flex";
-  $("main").style.display="block";
-  if(member.role==="admin")document.querySelectorAll(".admin-only").forEach(el=>el.style.display="");
-  const su=$("sidebarUser"); if(su) su.textContent=member.displayName||"";
-  navigate("home");
-}
-
-// AUTH
-const googleSvg=`<svg class="google-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>`;
-
-const handleLogout=async()=>{if(confirm("ログアウトしますか？")){await signOut(auth);location.reload();}};
-// logoutBtn removed with topbar
-$("sidebarLogout").addEventListener("click",handleLogout);
-
-// ⚠️ 開発用：ログインボタン → そのまま入る
-$("loginBtn").addEventListener("click", async () => {
-  const email = $("loginEmail").value.trim();
-  const pass  = $("loginPassword").value;
-  const errEl = $("loginError");
-  errEl.style.display = "none";
-  if(!email||!pass){errEl.textContent="メールアドレスとパスワードを入力してください";errEl.style.display="block";return;}
-  $("loginBtn").disabled = true; $("loginBtn").textContent = "ログイン中...";
-  try {
-    const cred = await signInWithEmailAndPassword(auth, email, pass);
-    const member = await getMember(cred.user.uid);
-    if(!member){
-      errEl.textContent = "このアカウントはチームに登録されていません。";
-      errEl.style.display = "block";
-      await signOut(auth);
-      $("loginBtn").disabled=false; $("loginBtn").textContent="ログイン";
-      return;
-    }
-    bootApp(cred.user, member);
-  } catch(e) {
-    errEl.textContent = e.code==="auth/invalid-credential"?"メールアドレスまたはパスワードが間違っています":e.message;
-    errEl.style.display = "block";
-    $("loginBtn").disabled=false; $("loginBtn").textContent="ログイン";
+// ===== AUTH =====
+$('loginBtn').onclick=async()=>{
+  const email=$('loginEmail').value.trim(),pass=$('loginPassword').value;
+  const errEl=$('loginError');errEl.style.display='none';
+  if(!email||!pass){errEl.textContent='メールアドレスとパスワードを入力してください';errEl.style.display='block';return}
+  $('loginBtn').disabled=true;$('loginBtn').textContent='ログイン中...';
+  try{
+    const cred=await signInWithEmailAndPassword(auth,email,pass);
+    const mem=await getMember(cred.user.uid);
+    if(!mem){errEl.textContent='このアカウントはチームに登録されていません';errEl.style.display='block';await signOut(auth);$('loginBtn').disabled=false;$('loginBtn').textContent='ログイン';return}
+    bootApp(cred.user,mem);
+  }catch(e){
+    errEl.textContent=e.code==='auth/invalid-credential'?'メールアドレスまたはパスワードが間違っています':e.message;
+    errEl.style.display='block';$('loginBtn').disabled=false;$('loginBtn').textContent='ログイン';
   }
+};
+const handleLogout=async()=>{if(confirm('ログアウトしますか？')){await signOut(auth);location.reload()}};
+$('logoutBtn').onclick=handleLogout;
+$('sidebarLogout').onclick=handleLogout;
+
+onAuthStateChanged(auth,async user=>{
+  if(!user)return;
+  const params=new URLSearchParams(location.search);
+  const token=params.get('token');
+  if(token){await handleInviteToken(token,user);return}
+  try{const mem=await getMember(user.uid);if(mem)bootApp(user,mem)}catch(e){console.error(e)}
 });
 
-// 認証状態を監視
-onAuthStateChanged(auth, async user => {
-  if(!user) return; // ログイン画面を表示したまま
-  try {
-    const member = await getMember(user.uid);
-    if(member) bootApp(user, member);
-  } catch(e) { console.error("Auth error:", e); }
-});
+// ===== SCHEDULE PAGE STRUCTURE =====
+$('scheduleInner').innerHTML=`
+  <div class="cal-header">
+    <div class="cal-month" id="calMonthLabel"></div>
+    <div class="cal-controls">
+      <button class="cal-today" id="calTodayBtn">今日</button>
+      <button class="cal-nav" id="calPrevBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="cal-nav" id="calNextBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </div>
+  <div class="cal-weekdays">
+    <div class="cal-wd sun">日</div><div class="cal-wd">月</div><div class="cal-wd">火</div>
+    <div class="cal-wd">水</div><div class="cal-wd">木</div><div class="cal-wd">金</div><div class="cal-wd sat">土</div>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
+  <div id="dayPanel" style="display:none">
+    <div class="day-panel-header">
+      <div class="day-panel-date" id="dayPanelDate"></div>
+      <button class="day-panel-close" id="dayPanelClose"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div id="dayPanelList"></div>
+  </div>
+`;
 </script>
 
 <script>
-if('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  });
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
 </script>
 </body>
