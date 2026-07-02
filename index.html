@@ -648,6 +648,7 @@ select{
         <input type="password" id="loginPassword" placeholder="パスワード" autocomplete="current-password">
       </div>
       <button class="btn-primary" id="loginBtn">ログイン</button>
+      <div style="text-align:center;margin-top:14px"><a href="#" id="forgotLink" style="font-size:13px;color:var(--blue);font-weight:600">パスワードを忘れた方はこちら</a></div>
       <div class="login-notice">松山SOUTHチームの招待を受けた方のみ利用できます</div>
     </div>
   </div>
@@ -735,6 +736,7 @@ select{
             <button class="att-tab-btn active" data-att-tab="unanswered">未回答</button>
             <button class="att-tab-btn" data-att-tab="answered">回答済み</button>
             <button class="att-tab-btn" data-att-tab="past">過去</button>
+            <button class="att-tab-btn admin-only" data-att-tab="stats" style="display:none">集計</button>
           </div>
         </div>
         <div class="att-body" id="attBody"><div class="loading"><div class="spinner"></div></div></div>
@@ -763,7 +765,7 @@ select{
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,signOut,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getAuth,signOut,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,doc,getDoc,setDoc,collection,addDoc,updateDoc,deleteDoc,getDocs,query,orderBy,limit,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const FIREBASE_CONFIG={
@@ -1045,7 +1047,10 @@ window.showSchDetail=async function(id){
         </div>`}).join('')}
     </div>
     ${attSummary}
-    ${isAdmin?`<div style="display:flex;gap:8px;margin-top:16px"><button class="btn btn-ghost btn-sm" onclick="openSchForm('${s.id}')">編集</button><button class="btn btn-danger btn-sm" onclick="delSch('${s.id}')">削除</button></div>`:''}
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="shareSch('${s.id}')">LINEで共有</button>
+      ${isAdmin?`<button class="btn btn-ghost btn-sm" onclick="openSchForm('${s.id}')">編集</button><button class="btn btn-ghost btn-sm" onclick="dupSch('${s.id}')">複製</button><button class="btn btn-danger btn-sm" onclick="delSch('${s.id}')">削除</button>`:''}
+    </div>
   `);
 };
 
@@ -1062,9 +1067,9 @@ window.selectAtt=async function(schId,playerId,status,btn){
   catch(e){toast('保存に失敗しました','err')}
 };
 
-window.openSchForm=function(id){
+window.openSchForm=function(id,prefill){
   closeModal();
-  const s=id?schedules.find(x=>x.id===id):null;
+  const s=id?schedules.find(x=>x.id===id):(prefill||null);
   openModal(s?'予定を編集':'予定を登録',`
     <div class="form-group"><label class="form-label">タイトル *</label><input id="f_title" value="${s?.title||''}" placeholder="例：春季市民大会"></div>
     <div class="form-group"><label class="form-label">種別 *</label><select id="f_type">
@@ -1074,6 +1079,12 @@ window.openSchForm=function(id){
       <option value="event"${s?.type==='event'?' selected':''}>イベント・総会</option>
     </select></div>
     <div class="form-group"><label class="form-label">日付 *</label><input type="date" id="f_date" value="${s?.date||''}"></div>
+    ${!id?`<div class="form-group"><label class="form-label">繰り返し</label><select id="f_repeat">
+      <option value="1">繰り返しなし</option>
+      <option value="4">毎週 × 4回</option>
+      <option value="8">毎週 × 8回</option>
+      <option value="12">毎週 × 12回</option>
+    </select><div class="form-hint">同じ曜日・時間で複数週分をまとめて登録します</div></div>`:''}
     <div class="form-row">
       <div class="form-group"><label class="form-label">開始時間</label><input type="time" id="f_st" value="${s?.startTime||''}"></div>
       <div class="form-group"><label class="form-label">終了時間</label><input type="time" id="f_et" value="${s?.endTime||''}"></div>
@@ -1089,6 +1100,7 @@ window.openSchForm=function(id){
     <div class="form-section">その他</div>
     <div class="form-group"><label class="form-label">持参物</label><input id="f_items" value="${s?.items||''}" placeholder="例：ユニフォーム、グローブ、水筒"></div>
     <div class="form-group"><label class="form-label">資料リンク（Googleドライブ）</label><input id="f_drive" value="${s?.driveUrl||''}" placeholder="https://drive.google.com/..."><div class="form-hint">大会要項・組み合わせ表などのGoogleドライブURLを貼り付け</div></div>
+    <div class="form-group"><label class="form-label">出欠回答の締切</label><input type="date" id="f_deadline" value="${s?.deadline||''}"><div class="form-hint">設定すると保護者の未回答カードに締切が表示されます</div></div>
     <div class="form-group"><label class="form-label">備考</label><textarea id="f_note">${s?.note||''}</textarea></div>
     <button class="btn btn-blue btn-full" id="saveSchBtn">保存する</button>
   `);
@@ -1097,12 +1109,23 @@ window.openSchForm=function(id){
     if(!title||!date){toast('タイトルと日付は必須です','err');return}
     $('saveSchBtn').disabled=true;$('saveSchBtn').textContent='保存中...';
     try{
-      const data={title,date,type:$('f_type').value,startTime:$('f_st').value,endTime:$('f_et').value,gatherTime:$('f_gt').value,gatherPlace:$('f_gp').value.trim(),location:$('f_loc').value.trim(),mapUrl:$('f_map').value.trim(),opponent:$('f_opp').value.trim(),items:$('f_items').value.trim(),driveUrl:$('f_drive').value.trim(),note:$('f_note').value.trim(),createdBy:CU.uid};
-      if(s?.id)await updateDoc(doc(db,'teams',TEAM_ID,'schedules',s.id),{...data,updatedAt:serverTimestamp()});
-      else await addDoc(collection(db,'teams',TEAM_ID,'schedules'),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+      const data={title,date,type:$('f_type').value,startTime:$('f_st').value,endTime:$('f_et').value,gatherTime:$('f_gt').value,gatherPlace:$('f_gp').value.trim(),location:$('f_loc').value.trim(),mapUrl:$('f_map').value.trim(),opponent:$('f_opp').value.trim(),items:$('f_items').value.trim(),driveUrl:$('f_drive').value.trim(),deadline:$('f_deadline')?.value||'',note:$('f_note').value.trim(),createdBy:CU.uid};
+      let savedCount=1;
+      if(s?.id){
+        await updateDoc(doc(db,'teams',TEAM_ID,'schedules',s.id),{...data,updatedAt:serverTimestamp()});
+      } else {
+        const repeat=parseInt($('f_repeat')?.value||'1');
+        savedCount=repeat;
+        const base=new Date(date+'T00:00:00');
+        for(let i=0;i<repeat;i++){
+          const d2=new Date(base);d2.setDate(base.getDate()+i*7);
+          const ds=`${d2.getFullYear()}-${pad(d2.getMonth()+1)}-${pad(d2.getDate())}`;
+          await addDoc(collection(db,'teams',TEAM_ID,'schedules'),{...data,date:ds,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+        }
+      }
       const snap=await getDocs(query(collection(db,'teams',TEAM_ID,'schedules'),orderBy('date','asc')));
       schedules=snap.docs.map(d=>({id:d.id,...d.data()}));
-      renderCalendar();closeModal();toast(s?'更新しました':'登録しました','ok');
+      renderCalendar();closeModal();toast(s?.id?'更新しました':(savedCount>1?savedCount+'件登録しました':'登録しました'),'ok');
     }catch(e){console.error(e);toast('保存に失敗しました','err');$('saveSchBtn').disabled=false;$('saveSchBtn').textContent='保存する'}
   };
 };
@@ -1110,6 +1133,32 @@ window.delSch=async function(id){
   if(!confirm('この予定を削除しますか？'))return;
   await deleteDoc(doc(db,'teams',TEAM_ID,'schedules',id));
   schedules=schedules.filter(s=>s.id!==id);renderCalendar();closeModal();toast('削除しました');
+};
+
+// 予定を複製（日付だけ空にしてフォームを開く）
+window.dupSch=function(id){
+  const s=schedules.find(x=>x.id===id);if(!s)return;
+  const copy={...s};delete copy.id;copy.date='';
+  openSchForm(null,copy);
+};
+
+// LINEで共有
+window.shareSch=function(id){
+  const s=schedules.find(x=>x.id===id);if(!s)return;
+  const lines=[
+    `【${TL[s.type]||s.type}】${s.title}`,
+    `日時：${fmtDateFull(s.date)}${s.startTime?' '+s.startTime+(s.endTime?'〜'+s.endTime:''):''}`,
+  ];
+  if(s.gatherTime)lines.push(`集合：${s.gatherTime}${s.gatherPlace?'（'+s.gatherPlace+'）':''}`);
+  if(s.location)lines.push(`場所：${s.location}`);
+  if(s.opponent)lines.push(`対戦：${s.opponent}`);
+  if(s.items)lines.push(`持参物：${s.items}`);
+  if(s.deadline)lines.push(`回答締切：${fmtDate(s.deadline)}`);
+  lines.push('');
+  lines.push('出欠回答はアプリから↓');
+  lines.push(location.origin+location.pathname);
+  const text=encodeURIComponent(lines.join('\n'));
+  window.open('https://line.me/R/share?text='+text,'_blank');
 };
 
 
@@ -1157,6 +1206,8 @@ async function loadAttendance(){
 
   // 管理者用集計
   const adminStats={};
+  window._adminStats=adminStats;
+  window._adminSchedules=futureSchs;
   if(CM?.role==='admin'){
     await Promise.all(futureSchs.map(async s=>{
       try{
@@ -1171,6 +1222,24 @@ async function loadAttendance(){
         const noAnswerMembers=allMembers.filter(m=>m.playerIds?.length>0&&!respondedUids.has(m.id));
         adminStats[s.id]={ok,ng,maybe,noAnswer:noAnswerMembers,total:flat.length};
       }catch(e){adminStats[s.id]={ok:0,ng:0,maybe:0,noAnswer:[],total:0}}
+    }));
+  }
+
+  // 選手別出席率集計（管理者・過去20件から）
+  window._playerStats={};
+  if(CM?.role==='admin'&&pastSchs.length>0){
+    const targets=pastSchs.slice(0,20);
+    await Promise.all(targets.map(async s=>{
+      try{
+        const aSnap=await getDocs(collection(db,'teams',TEAM_ID,'attendance',s.id,'responses'));
+        aSnap.docs.forEach(d=>{
+          (d.data().responses||[]).forEach(r=>{
+            if(!window._playerStats[r.playerId])window._playerStats[r.playerId]={name:r.playerName,ok:0,total:0};
+            window._playerStats[r.playerId].total++;
+            if(r.status==='出席')window._playerStats[r.playerId].ok++;
+          });
+        });
+      }catch(e){}
     }));
   }
 
@@ -1239,6 +1308,26 @@ function renderAttTab(futureSchs,pastSchs,myPlayers,myResponses,adminStats,today
         :answered.map(s=>renderParentCard(s,myPlayers,myResponses[s.id]||[],false)).join('');
     }
 
+  } else if(attTab==='stats'){ // 集計（管理者）
+    const stats=Object.entries(window._playerStats||{});
+    if(stats.length===0){
+      html=`<div class="empty-att"><div class="empty-att-text">集計できる出欠データがまだありません</div></div>`;
+    } else {
+      // 選手名簿順に並べる
+      const sorted=players.map(p=>{
+        const st=window._playerStats[p.id];
+        return st?{...p,ok:st.ok,total:st.total,rate:st.total>0?Math.round(st.ok/st.total*100):0}:null;
+      }).filter(Boolean);
+      html=`<div style="font-size:12px;color:var(--gray-400);margin-bottom:12px">直近の予定（最大20件）の回答をもとに集計</div>`
+        +sorted.map(p=>`<div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:14px;font-weight:700;color:var(--gray-800)">${p.name}<span style="font-size:12px;color:var(--gray-400);font-weight:400;margin-left:6px">${p.grade}年 #${p.number}</span></span>
+            <span style="font-size:15px;font-weight:800;color:var(--blue)">${p.rate}%</span>
+          </div>
+          <div class="att-rate-bar"><div class="att-rate-fill" style="width:${p.rate}%"></div></div>
+          <div style="font-size:11px;color:var(--gray-400);margin-top:5px">出席 ${p.ok}回 / 回答 ${p.total}回</div>
+        </div>`).join('');
+    }
   } else { // past
     if(pastSchs.length===0){
       html=`<div class="empty-att"><div class="empty-att-text">過去の予定はありません</div></div>`;
@@ -1272,6 +1361,7 @@ function renderParentCard(s,myPlayers,responses,isUnanswered){
         <div class="att-card-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${fmtDate(s.date)}${s.startTime?' 開始 '+s.startTime:''}</div>
         ${s.gatherTime?`<div class="att-card-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>集合 ${s.gatherTime}${s.gatherPlace?' · '+s.gatherPlace:''}</div>`:''}
         ${s.location?`<div class="att-card-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${s.location}</div>`:''}
+        ${s.deadline?`<div class="att-card-meta-row" style="color:#991B1B;font-weight:700"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>回答締切 ${fmtDate(s.deadline)}</div>`:''}
       </div>
       ${myPlayers.length>0?`<div class="att-answer-section">${playersHtml}</div>`:`<div style="font-size:13px;color:var(--gray-400);padding-top:10px;border-top:1px solid var(--gray-100)">選手が紐付けられていません</div>`}
     </div>
@@ -1323,9 +1413,10 @@ function renderAdminCard(s,stats){
       </div>
       ${st.noAnswer.length>0?`
         <div class="att-no-answer-title">未回答（${st.noAnswer.length}名）</div>
-        <div class="att-no-answer-list">
+        <div class="att-no-answer-list" style="margin-bottom:12px">
           ${st.noAnswer.map(m=>`<span class="att-no-answer-chip">${m.displayName||m.email}</span>`).join('')}
         </div>
+        <button class="btn btn-blue btn-sm btn-full" onclick="copyReminder('${s.id}')">リマインド文をコピー</button>
       `:`<div style="font-size:13px;color:#166534;font-weight:600">全員回答済み</div>`}
     </div>
   </div>`;
@@ -1337,6 +1428,28 @@ window.toggleAdminCard=function(id){
   if(!h||!d)return;
   const open=d.classList.toggle('open');
   h.classList.toggle('open',open);
+};
+
+// 未回答リマインド文をコピー
+window.copyReminder=function(scheduleId){
+  const s=(window._adminSchedules||schedules).find(x=>x.id===scheduleId);
+  const st=(window._adminStats||{})[scheduleId];
+  if(!s||!st)return;
+  const names=st.noAnswer.map(m=>m.displayName||m.email).join('さん、')+'さん';
+  const lines=[
+    '【出欠回答のお願い】',
+    `${names}`,
+    '',
+    `■ ${s.title}`,
+    `${fmtDateFull(s.date)}${s.startTime?' '+s.startTime:''}`,
+  ];
+  if(s.deadline)lines.push(`回答締切：${fmtDate(s.deadline)}`);
+  lines.push('');
+  lines.push('アプリから回答をお願いします↓');
+  lines.push(location.origin+location.pathname);
+  navigator.clipboard.writeText(lines.join('\n'))
+    .then(()=>toast('リマインド文をコピーしました。LINEに貼り付けてください','ok'))
+    .catch(()=>toast('コピーに失敗しました','err'));
 };
 
 window.answerAtt=async function(scheduleId,playerId,playerName,status,btn){
@@ -1710,6 +1823,21 @@ $('loginBtn').onclick=async()=>{
   }catch(e){
     errEl.textContent=e.code==='auth/invalid-credential'?'メールアドレスまたはパスワードが間違っています':e.message;
     errEl.style.display='block';$('loginBtn').disabled=false;$('loginBtn').textContent='ログイン';
+  }
+};
+$('forgotLink').onclick=async(e)=>{
+  e.preventDefault();
+  const email=$('loginEmail').value.trim();
+  const errEl=$('loginError');
+  if(!email){errEl.textContent='メールアドレスを入力してから「パスワードを忘れた方」を押してください';errEl.style.display='block';return}
+  try{
+    await sendPasswordResetEmail(auth,email);
+    errEl.style.background='#F0FDF4';errEl.style.color='#166534';errEl.style.borderColor='#BBF7D0';
+    errEl.textContent='再設定メールを送信しました。メールのリンクから新しいパスワードを設定してください。';
+    errEl.style.display='block';
+  }catch(e2){
+    errEl.textContent=e2.code==='auth/user-not-found'?'このメールアドレスは登録されていません':'送信に失敗しました。メールアドレスを確認してください';
+    errEl.style.display='block';
   }
 };
 const handleLogout=async()=>{if(confirm('ログアウトしますか？')){await signOut(auth);location.reload()}};
